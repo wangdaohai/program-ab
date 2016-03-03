@@ -25,24 +25,29 @@ package org.alicebot.ab;
 public class Timer {
     private long startTimeMillis;
 
-    public Timer () {
+    public Timer() {
         start();
     }
+
     public void start() {
-       startTimeMillis = System.currentTimeMillis();
+        startTimeMillis = System.currentTimeMillis();
     }
+
     public long elapsedTimeMillis() {
-        return System.currentTimeMillis()-startTimeMillis+1;
+        return System.currentTimeMillis() - startTimeMillis + 1;
     }
+
     public long elapsedRestartMs() {
-        long ms =  System.currentTimeMillis()-startTimeMillis+1;
+        long ms = System.currentTimeMillis() - startTimeMillis + 1;
         start();
         return ms;
     }
-    public float elapsedTimeSecs () {
-        return elapsedTimeMillis()/1000F;
+
+    public float elapsedTimeSecs() {
+        return elapsedTimeMillis() / 1000F;
     }
-    public float elapsedTimeMins () {
-        return elapsedTimeSecs()/60F;
+
+    public float elapsedTimeMins() {
+        return elapsedTimeSecs() / 60F;
     }
 }

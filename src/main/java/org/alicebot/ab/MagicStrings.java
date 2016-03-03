@@ -100,9 +100,10 @@ public class MagicStrings {
     // paths
     public static String root_path = "c:/ab";
 
-	public static void setRootPath(String newRootPath) {
-		root_path = newRootPath;
-	}
+    public static void setRootPath(String newRootPath) {
+        root_path = newRootPath;
+    }
+
     public static void setRootPath() {setRootPath(System.getProperty("user.dir"));}
 
 }

@@ -27,8 +27,8 @@ import java.util.HashMap;
  * Operations on Nodemapper objects are performed by NodemapperOperator class
  */
 public class Nodemapper {
-/*    public static int idCnt=0;
-    public int id;*/
+    /*    public static int idCnt=0;
+        public int id;*/
     public Category category = null;
     public int height = MagicNumbers.max_graph_height;
     public StarBindings starBindings = null;
@@ -41,6 +41,6 @@ public class Nodemapper {
         id = idCnt++;
     }*/
 
- }
+}
 
 

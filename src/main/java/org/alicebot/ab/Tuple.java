@@ -1,6 +1,5 @@
 package org.alicebot.ab;
 
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -37,16 +36,15 @@ public class Tuple extends HashMap<String, String> {
             if (!tuple.visibleVars.contains(x)) {
                 //System.out.println("Tuple: "+name+"!="+tuple.name+" because !tuple.visibleVars.contains("+x+")");
                 return false;
-            }
-            else if (get(x) != null && !get(x).equals(tuple.get(x))) {
+            } else if (get(x) != null && !get(x).equals(tuple.get(x))) {
                 //System.out.println("Tuple: "+name+"!="+tuple.name+" because get("+x+")="+get(x)+" and tuple.get("+x+")="+tuple.get(x));
                 return false;
             }
         }
         //System.out.println("Tuple: values = "+values());
         //System.out.println("Tuple: tuple.values = "+tuple.values());
-        if (values().contains(MagicStrings.unbound_variable)) return false;
-        if (tuple.values().contains(MagicStrings.unbound_variable)) return false;
+        if (values().contains(MagicStrings.unbound_variable)) { return false; }
+        if (tuple.values().contains(MagicStrings.unbound_variable)) { return false; }
         //System.out.println("Tuple: "+name+"="+tuple.name);
         return true;
     }
@@ -57,34 +55,36 @@ public class Tuple extends HashMap<String, String> {
         int result = 1;
         for (String x : visibleVars) {
             result = 31 * result + x.hashCode();
-            if (get(x) != null)
+            if (get(x) != null) {
                 result = 31 * result + get(x).hashCode();
+            }
         }
 
         return result;
     }
 
-
-    public Tuple (HashSet<String> varSet, HashSet<String> visibleVars, Tuple tuple) {
+    public Tuple(HashSet<String> varSet, HashSet<String> visibleVars, Tuple tuple) {
         super();
         //System.out.println("varSet="+varSet);
         //System.out.println("visbileVars="+visibleVars);
-        if (visibleVars != null) this.visibleVars.addAll(visibleVars);
+        if (visibleVars != null) { this.visibleVars.addAll(visibleVars); }
         if (varSet == null && tuple != null) {
-            for (String key : tuple.keySet()) put(key, tuple.get(key));
+            for (String key : tuple.keySet()) { put(key, tuple.get(key)); }
             this.visibleVars.addAll(tuple.visibleVars);
         }
         if (varSet != null) {
-            for (String key : varSet) put(key, MagicStrings.unbound_variable);
+            for (String key : varSet) { put(key, MagicStrings.unbound_variable); }
         }
-        name = "tuple"+index;
+        name = "tuple" + index;
         index++;
         tupleMap.put(name, this);
     }
-    public Tuple (Tuple tuple) {
+
+    public Tuple(Tuple tuple) {
         this(null, null, tuple);
     }
-    public Tuple (HashSet<String> varSet, HashSet<String> visibleVars) {
+
+    public Tuple(HashSet<String> varSet, HashSet<String> visibleVars) {
         this(varSet, visibleVars, null);
     }
 
@@ -95,27 +95,29 @@ public class Tuple extends HashMap<String, String> {
     public String printVars() {
         String result = "";
         for (String x : getVars()) {
-            if (visibleVars.contains(x)) result = result + " "+x;
-            else result = result + " [" + x +"]";
+            result = visibleVars.contains(x) ? (result + " " + x) : (result + " [" + x + "]");
         }
         return result;
     }
+
     public String getValue(String var) {
         String result = get(var);
-        if (result == null) return MagicStrings.default_get;
-        else return result;
+        return result == null ? MagicStrings.default_get : result;
     }
 
     public void bind(String var, String value) {
-        if (get(var) != null && !get(var).equals(MagicStrings.unbound_variable))
-            System.out.println(var+" already bound to "+get(var));
-        else put(var, value);
+        if (get(var) != null && !get(var).equals(MagicStrings.unbound_variable)) {
+            System.out.println(var + " already bound to " + get(var));
+        } else {
+            put(var, value);
+        }
 
     }
-    public String printTuple () {
+
+    public String printTuple() {
         String result = "\n";
         for (String x : keySet()) {
-            result += x+"="+get(x)+"\n";
+            result += x + "=" + get(x) + "\n";
         }
         return result.trim();
     }

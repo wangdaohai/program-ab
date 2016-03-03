@@ -33,9 +33,9 @@ public class MagicBooleans {
     public static boolean qa_test_mode = false;
     public static boolean make_verbs_sets_maps = false;
 
-	public static void trace(String traceString) {
- 		if (trace_mode) {
- 			System.out.println(traceString);
- 		}
- 	}
+    public static void trace(String traceString) {
+        if (trace_mode) {
+            System.out.println(traceString);
+        }
+    }
 }

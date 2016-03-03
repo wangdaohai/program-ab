@@ -26,10 +26,11 @@ public class StarBindings {
     public Stars inputStars;
     public Stars thatStars;
     public Stars topicStars;
-    /** Constructor  -- this class has public members
-     *
+
+    /**
+     * Constructor  -- this class has public members
      */
-    public StarBindings () {
+    public StarBindings() {
         inputStars = new Stars();
         thatStars = new Stars();
         topicStars = new Stars();
