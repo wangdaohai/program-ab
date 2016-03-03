@@ -1,4 +1,5 @@
 apply plugin: 'java'
+apply plugin: 'application'
 
 repositories {
   mavenCentral()
@@ -12,4 +13,14 @@ dependencies {
   compile 'org.json:json:20090211'
 
   testCompile 'junit:junit:4.12'
+}
+
+mainClassName = 'Main'
+
+distributions {
+  main {
+    contents {
+      into ('bots') { from ('bots') }
+    }
+  }
 }
