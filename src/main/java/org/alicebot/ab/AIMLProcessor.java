@@ -38,6 +38,8 @@ public class AIMLProcessor {
 
 	static private boolean DEBUG = false;
 
+    public static AIMLProcessorExtension extension;
+
     /**
      * when parsing an AIML file, process a category element.
      *
@@ -46,7 +48,6 @@ public class AIMLProcessor {
      * @param topic                           value of topic in case this category is wrapped in a <topic> tag
      * @param aimlFile                        name of AIML file being parsed.
      */
-    public static AIMLProcessorExtension extension;
     private static void categoryProcessor(Node n, ArrayList<Category> categories, String topic, String aimlFile, String language) {
         String pattern, that, template;
 
@@ -186,7 +187,7 @@ public class AIMLProcessor {
      * @param that       bot's last reply.
      * @param topic      current topic.
      * @param chatSession   current client chat session.
-     * @param srCnt         number of <srai> activations.
+     * @param srCnt         number of {@code <srai>} activations.
      * @return              bot's reply.
      */
  public static String respond(String input, String that, String topic, Chat chatSession, int srCnt) {
