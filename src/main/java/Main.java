@@ -137,7 +137,7 @@ public final class Main {
                 if (strLine.contains("<entry word")) {
                     int start = strLine.indexOf("<entry word=\"") + "<entry word=\"".length();
                     //int end = strLine.indexOf(" status=");
-                    int end = strLine.indexOf("#");
+                    int end = strLine.indexOf('#');
 
                     word = strLine.substring(start, end);
                     word = word.replaceAll("_", " ");

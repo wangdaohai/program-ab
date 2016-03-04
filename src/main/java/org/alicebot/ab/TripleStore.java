@@ -167,9 +167,9 @@ public class TripleStore {
     }
 
     public void printTriples() {
-        for (String x : idTriple.keySet()) {
-            Triple triple = idTriple.get(x);
-            System.out.println(x + ":" + triple.subject + ":" + triple.predicate + ":" + triple.object);
+        for (Map.Entry<String, Triple> stringTripleEntry : idTriple.entrySet()) {
+            Triple triple = stringTripleEntry.getValue();
+            System.out.println(stringTripleEntry.getKey() + ":" + triple.subject + ":" + triple.predicate + ":" + triple.object);
         }
     }
 
@@ -305,7 +305,7 @@ public class TripleStore {
     }
 
     public Clause adjustClause(Tuple tuple, Clause clause) {
-        Set vars = tuple.getVars();
+        Set<String> vars = tuple.getVars();
         String subj = clause.subj;
         String pred = clause.pred;
         String obj = clause.obj;
@@ -350,7 +350,7 @@ public class TripleStore {
                 result.add(tuple);
             }
         } else {
-            if (triples.size() == 0) { result.add(partial); }
+            if (triples.isEmpty()) { result.add(partial); }
         }
         return result;
     }

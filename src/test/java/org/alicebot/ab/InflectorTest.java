@@ -12,7 +12,7 @@ public class InflectorTest {
     @Test
     public void testPluralize() throws Exception {
         Inflector inflector = new Inflector();
-        String pairs[][] = {{"dog", "dogs"}, {"person", "people"}, {"cats", "cats"}};
+        String[][] pairs = {{"dog", "dogs"}, {"person", "people"}, {"cats", "cats"}};
         for (String[] pair : pairs) {
             String singular = pair[0];
             String expected = pair[1];

@@ -65,12 +65,13 @@ public class Tuple extends HashMap<String, String> {
     }
 
     public Tuple(Set<String> varSet, Set<String> visibleVars, Tuple tuple) {
-        super();
         //System.out.println("varSet="+varSet);
         //System.out.println("visbileVars="+visibleVars);
         if (visibleVars != null) { this.visibleVars.addAll(visibleVars); }
         if (varSet == null && tuple != null) {
-            for (String key : tuple.keySet()) { put(key, tuple.get(key)); }
+            for (Entry<String, String> entry : tuple.entrySet()) {
+                put(entry.getKey(), entry.getValue());
+            }
             this.visibleVars.addAll(tuple.visibleVars);
         }
         if (varSet != null) {
@@ -116,10 +117,10 @@ public class Tuple extends HashMap<String, String> {
     }
 
     public String printTuple() {
-        String result = "\n";
+        StringBuilder result = new StringBuilder().append("\n");
         for (String x : keySet()) {
-            result += x + "=" + get(x) + "\n";
+            result.append(x).append("=").append(get(x)).append("\n");
         }
-        return result.trim();
+        return result.toString().trim();
     }
 }

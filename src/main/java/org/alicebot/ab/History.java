@@ -25,8 +25,8 @@ package org.alicebot.ab;
  * @param <T> type of history object
  */
 public class History<T> {
-    private Object[] history;
-    private String name;
+    private final Object[] history;
+    private final String name;
 
     /**
      * Constructor with default history name

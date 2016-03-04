@@ -3,7 +3,7 @@ package org.alicebot.ab;
 public class ChatTest {
     Bot bot;
     Chat chatSession;
-    String pairs[][] = {
+    String[][] pairs = {
         // Mitsuku demo
         {"wen iz ur bd", "My birthday is October 9"},
         {"I am Stephen Peter Worswick", "Stephen"},
@@ -253,7 +253,6 @@ public class ChatTest {
     };
 
     public ChatTest(Bot bot) {
-        super();
         this.bot = bot;
         this.chatSession = new Chat(bot);
     }

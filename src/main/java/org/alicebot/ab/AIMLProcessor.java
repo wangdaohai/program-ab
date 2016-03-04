@@ -37,7 +37,7 @@ import java.util.Set;
  */
 public final class AIMLProcessor {
 
-    private static boolean DEBUG = false;
+    private static final boolean DEBUG = false;
 
     public static AIMLProcessorExtension extension;
 
@@ -92,7 +92,7 @@ public final class AIMLProcessor {
         Category c = new Category(0, pattern, that, topic, template, aimlFile);
         /*if (template == null) System.out.println("Template is null");
         if (template.length()==0) System.out.println("Template is zero length");*/
-        if (template == null || template.length() == 0) {
+        if (template == null || template.isEmpty()) {
             System.out.println("Category " + c.inputThatTopic() + " discarded due to blank or missing <template>.");
         } else {
             categories.add(c);
@@ -199,7 +199,7 @@ public final class AIMLProcessor {
      */
     public static String respond(String input, String that, String topic, Chat chatSession, int srCnt) {
         MagicBooleans.trace("input: " + input + ", that: " + that + ", topic: " + topic + ", chatSession: " + chatSession + ", srCnt: " + srCnt);
-        if (input == null || input.length() == 0) { input = MagicStrings.null_input; }
+        if (input == null || input.isEmpty()) { input = MagicStrings.null_input; }
         sraiCount = srCnt;
         String response = MagicStrings.default_bot_response;
         try {
@@ -266,14 +266,14 @@ public final class AIMLProcessor {
     public static String evalTagContent(Node node, ParseState ps, Set<String> ignoreAttributes) {
         //MagicBooleans.trace("AIMLProcessor.evalTagContent(node: " + node + ", ps: " + ps + ", ignoreAttributes: " + ignoreAttributes);
         //MagicBooleans.trace("in AIMLProcessor.evalTagContent, node string: " + DomUtils.nodeToString(node));
-        String result = "";
+        StringBuilder result = new StringBuilder();
         try {
             NodeList childList = node.getChildNodes();
             for (int i = 0; i < childList.getLength(); i++) {
                 Node child = childList.item(i);
                 //MagicBooleans.trace("in AIMLProcessor.evalTagContent(), child: " + child);
                 if (ignoreAttributes == null || !ignoreAttributes.contains(child.getNodeName())) {
-                    result += recursEval(child, ps);
+                    result.append(recursEval(child, ps));
                 }
                 //MagicBooleans.trace("in AIMLProcessor.evalTagContent(), result: " + result);
             }
@@ -282,7 +282,7 @@ public final class AIMLProcessor {
             ex.printStackTrace();
         }
         //MagicBooleans.trace("AIMLProcessor.evalTagContent() returning: " + result);
-        return result;
+        return result.toString();
     }
 
     /**
@@ -316,18 +316,21 @@ public final class AIMLProcessor {
         //MagicBooleans.trace("AIMLProcessor.unevaluatedXML(resultIn: " + resultIn + ", node: " + node + ", ps: " + ps);
         String nodeName = node.getNodeName();
         //MagicBooleans.trace("in AIMLProcessor.unevaluatedXML(), nodeName: " + nodeName);
-        String attributes = "";
+        StringBuilder attributesBuilder = new StringBuilder();
         if (node.hasAttributes()) {
             NamedNodeMap XMLAttributes = node.getAttributes();
-            for (int i = 0; i < XMLAttributes.getLength(); i++)
-
-            {
-                attributes += " " + XMLAttributes.item(i).getNodeName() + "=\"" + XMLAttributes.item(i).getNodeValue() + "\"";
+            for (int i = 0; i < XMLAttributes.getLength(); i++) {
+                attributesBuilder.append(" ")
+                    .append(XMLAttributes.item(i).getNodeName())
+                    .append("=\"")
+                    .append(XMLAttributes.item(i).getNodeValue())
+                    .append("\"");
             }
         }
         // String contents = evalTagContent(node, ps, null);
+        String attributes = attributesBuilder.toString();
         String result = "<" + nodeName + attributes + "/>";
-        if (!resultIn.equals("")) { result = "<" + nodeName + attributes + ">" + resultIn + "</" + nodeName + ">"; }
+        if (!resultIn.isEmpty()) { result = "<" + nodeName + attributes + ">" + resultIn + "</" + nodeName + ">"; }
         //MagicBooleans.trace("in AIMLProcessor.unevaluatedXML() returning: " + result);
         return result;
     }
@@ -967,13 +970,13 @@ public final class AIMLProcessor {
     }
 
     private static String learnEvalTagContent(Node node, ParseState ps) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         NodeList childList = node.getChildNodes();
         for (int i = 0; i < childList.getLength(); i++) {
             Node child = childList.item(i);
-            result += recursLearn(child, ps);
+            result.append(recursLearn(child, ps));
         }
-        return result;
+        return result.toString();
     }
 
     private static String learn(Node node, ParseState ps) {                 // learn, learnf AIML 2.0
@@ -1039,7 +1042,7 @@ public final class AIMLProcessor {
      */
     private static String loopCondition(Node node, ParseState ps) {
         boolean loop = true;
-        String result = "";
+        StringBuilder result = new StringBuilder();
         int loopCnt = 0;
         while (loop && loopCnt < MagicNumbers.max_loops) {
             String loopResult = condition(node, ps);
@@ -1050,10 +1053,10 @@ public final class AIMLProcessor {
             } else {
                 loop = false;
             }
-            result += loopResult;
+            result.append(loopResult);
         }
-        if (loopCnt >= MagicNumbers.max_loops) { result = MagicStrings.too_much_looping; }
-        return result;
+        if (loopCnt >= MagicNumbers.max_loops) { return MagicStrings.too_much_looping; }
+        return result.toString();
     }
 
     /**
@@ -1078,11 +1081,11 @@ public final class AIMLProcessor {
         }
         // if there are no <li> nodes, this is a one-shot condition.
         String value;
-        if (liList.size() == 0 && (value = getAttributeOrTagValue(node, ps, "value")) != null &&
+        if (liList.isEmpty() && (value = getAttributeOrTagValue(node, ps, "value")) != null &&
             predicate != null &&
             ps.chatSession.predicates.get(predicate).equalsIgnoreCase(value)) {
             return evalTagContent(node, ps, attributeNames);
-        } else if (liList.size() == 0 && (value = getAttributeOrTagValue(node, ps, "value")) != null &&
+        } else if (liList.isEmpty() && (value = getAttributeOrTagValue(node, ps, "value")) != null &&
             varName != null &&
             ps.vars.get(varName).equalsIgnoreCase(value)) {
             return evalTagContent(node, ps, attributeNames);
@@ -1090,7 +1093,7 @@ public final class AIMLProcessor {
         // otherwise this is a <condition> with <li> items:
         else {
             String result = "";
-            for (int i = 0; i < liList.size() && result.equals(""); i++) {
+            for (int i = 0; i < liList.size() && result.isEmpty(); i++) {
                 Node n = liList.get(i);
                 String liPredicate = predicate;
                 String liVarName = varName;
@@ -1196,7 +1199,7 @@ public final class AIMLProcessor {
             tupleList = tuple.name + " " + tupleList;
         }
         tupleList = tupleList.trim();
-        if (tupleList.length() == 0) { tupleList = "NIL"; }
+        if (tupleList.isEmpty()) { tupleList = "NIL"; }
         String var = "";
         for (String x : visibleVars) {
             var = x;
@@ -1218,7 +1221,7 @@ public final class AIMLProcessor {
                 String[] splitVars = contents.split(" ");
                 for (String var : splitVars) {
                     var = var.trim();
-                    if (var.length() > 0) { visibleVars.add(var); }
+                    if (!var.isEmpty()) { visibleVars.add(var); }
                 }
                 // System.out.println("AIML Processor select: visible vars "+visibleVars);
             } else if (childNode.getNodeName().equals("q") || childNode.getNodeName().equals("notq")) {
@@ -1252,7 +1255,7 @@ public final class AIMLProcessor {
             result = tuple.name + " " + result;
         }
         result = result.trim();
-        if (result.length() == 0) { result = "NIL"; }
+        if (result.isEmpty()) { result = "NIL"; }
         return result;
     }
 
@@ -1304,8 +1307,8 @@ public final class AIMLProcessor {
         String content = (sentence == null ? "" : sentence);
         content = content.trim();
         if (content.contains(" ")) {
-            return content.substring(0, content.indexOf(" "));
-        } else if (content.length() > 0) {
+            return content.substring(0, content.indexOf(' '));
+        } else if (!content.isEmpty()) {
             return content;
         } else {
             return MagicStrings.default_list_item;
@@ -1316,7 +1319,7 @@ public final class AIMLProcessor {
         String content = (sentence == null ? "" : sentence);
         content = content.trim();
         if (content.contains(" ")) {
-            return content.substring(content.indexOf(" ") + 1, content.length());
+            return content.substring(content.indexOf(' ') + 1, content.length());
         } else {
             return MagicStrings.default_list_item;
         }

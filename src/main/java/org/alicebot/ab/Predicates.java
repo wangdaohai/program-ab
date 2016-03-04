@@ -35,12 +35,13 @@ public class Predicates extends HashMap<String, String> {
      * @param value predicate value
      * @return predicate value
      */
+    @Override
     public String put(String key, String value) {
         //MagicBooleans.trace("predicates.put(key: " + key + ", value: " + value + ")");
         if (MagicBooleans.jp_tokenize) {
             if (key.equals("topic")) { value = JapaneseUtils.tokenizeSentence(value); }
         }
-        if (key.equals("topic") && value.length() == 0) { value = MagicStrings.default_get; }
+        if (key.equals("topic") && value.isEmpty()) { value = MagicStrings.default_get; }
         if (value.equals(MagicStrings.too_much_recursion)) { value = MagicStrings.default_list_item; }
         // MagicBooleans.trace("Setting predicate key: " + key + " to value: " + value);
         String result = super.put(key, value);
@@ -74,8 +75,8 @@ public class Predicates extends HashMap<String, String> {
             String strLine;
             while ((strLine = br.readLine()) != null) {
                 if (strLine.contains(":")) {
-                    String property = strLine.substring(0, strLine.indexOf(":"));
-                    String value = strLine.substring(strLine.indexOf(":") + 1);
+                    String property = strLine.substring(0, strLine.indexOf(':'));
+                    String value = strLine.substring(strLine.indexOf(':') + 1);
                     put(property, value);
                 }
             }

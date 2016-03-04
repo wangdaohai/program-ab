@@ -119,7 +119,7 @@ public final class Sraix {
             n1 = sraixResponse.indexOf("custid=");
             if (n1 > 0) {
                 custid = sraixResponse.substring(n1 + "custid=\"".length(), sraixResponse.length());
-                n2 = custid.indexOf("\"");
+                n2 = custid.indexOf('\"');
                 custid = n2 > 0 ? custid.substring(0, n2) : "0";
                 String key = host + ":" + botid;
                 //System.out.println("--> Map "+key+" --> "+custid);
@@ -161,7 +161,7 @@ public final class Sraix {
             String page = NetworkUtils.responseContent(url);
             //MagicBooleans.trace("in Sraix.sraixPannous, page: " + page);
             String text = "";
-            if (page == null || page.length() == 0) {
+            if (page == null || page.isEmpty()) {
                 text = MagicStrings.sraix_failed;
             } else {
                 JSONArray outputJson = new JSONObject(page).getJSONArray("output");
@@ -282,7 +282,7 @@ public final class Sraix {
                     template = template.replace(",", MagicStrings.aimlif_split_char_name);
                     template = template.replaceAll("<a(.*)</a>", "");
                     template = template.trim();
-                    if (template.length() > 0) {
+                    if (!template.isEmpty()) {
                         FileWriter fstream = new FileWriter("c:/ab/bots/sraixcache/aimlif/sraixcache.aiml.csv", true);
                         BufferedWriter fbw = new BufferedWriter(fstream);
                         fbw.write("0," + pattern + ",*,*," + template + ",sraixcache.aiml");

@@ -51,8 +51,8 @@ public class Properties extends HashMap<String, String> {
             String strLine;
             while ((strLine = br.readLine()) != null) {
                 if (strLine.contains(":")) {
-                    String property = strLine.substring(0, strLine.indexOf(":"));
-                    String value = strLine.substring(strLine.indexOf(":") + 1);
+                    String property = strLine.substring(0, strLine.indexOf(':'));
+                    String value = strLine.substring(strLine.indexOf(':') + 1);
                     put(property, value);
                     cnt++;
                 }

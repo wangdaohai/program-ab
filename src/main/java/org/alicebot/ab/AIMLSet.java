@@ -35,8 +35,8 @@ public class AIMLSet extends HashSet<String> {
     String botid; // for external sets
     boolean isExternal = false;
     Bot bot;
-    private Set<String> inCache = new HashSet<>();
-    private Set<String> outCache = new HashSet<>();
+    private final Set<String> inCache = new HashSet<>();
+    private final Set<String> outCache = new HashSet<>();
 
     /**
      * constructor
@@ -44,7 +44,6 @@ public class AIMLSet extends HashSet<String> {
      * @param name name of set
      */
     public AIMLSet(String name, Bot bot) {
-        super();
         this.bot = bot;
         this.setName = name.toLowerCase();
         if (setName.equals(MagicStrings.natural_number_set_name)) { maxLength = 1; }
@@ -103,7 +102,7 @@ public class AIMLSet extends HashSet<String> {
         //Read File Line By Line
         try {
             String strLine;
-            while ((strLine = br.readLine()) != null && strLine.length() > 0) {
+            while ((strLine = br.readLine()) != null && !strLine.isEmpty()) {
                 cnt++;
                 //strLine = bot.preProcessor.normalize(strLine).toUpperCase();
                 // assume the set is pre-normalized for faster loading

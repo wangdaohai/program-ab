@@ -163,7 +163,7 @@ public class Bot {
             writeAIMLIFFiles();
         } else {
             addCategoriesFromAIMLIF();
-            if (brain.getCategories().size() == 0) {
+            if (brain.getCategories().isEmpty()) {
                 System.out.println("No AIMLIF Files found.  Looking for AIML");
                 cnt = addCategoriesFromAIML();
             }
@@ -181,7 +181,7 @@ public class Bot {
         String[] splitPronouns = pronouns.split("\n");
         for (String splitPronoun : splitPronouns) {
             String p = splitPronoun.trim();
-            if (p.length() > 0) { pronounSet.add(p); }
+            if (!p.isEmpty()) { pronounSet.add(p); }
         }
         if (MagicBooleans.trace_mode) { System.out.println("Read pronouns: " + pronounSet); }
         return pronounSet;

@@ -45,7 +45,7 @@ public class Inflector {
         return INSTANCE;
     }
 
-    protected class Rule {
+    protected static class Rule {
 
         protected final String expression;
         protected final Pattern expressionPattern;
@@ -92,8 +92,8 @@ public class Inflector {
         }
     }
 
-    private LinkedList<Rule> plurals = new LinkedList<>();
-    private LinkedList<Rule> singulars = new LinkedList<>();
+    private final LinkedList<Rule> plurals = new LinkedList<>();
+    private final LinkedList<Rule> singulars = new LinkedList<>();
     /**
      * The lowercase words that are to be excluded and not processed. This map can be modified by the users via
      * {@link #getUncountables()}.
@@ -144,7 +144,7 @@ public class Inflector {
     public String pluralize(Object word) {
         if (word == null) { return null; }
         String wordStr = word.toString().trim();
-        if (wordStr.length() == 0) { return wordStr; }
+        if (wordStr.isEmpty()) { return wordStr; }
         if (isUncountable(wordStr)) { return wordStr; }
         for (Rule rule : this.plurals) {
             String result = rule.apply(wordStr);
@@ -187,7 +187,7 @@ public class Inflector {
     public String singularize(Object word) {
         if (word == null) { return null; }
         String wordStr = word.toString().trim();
-        if (wordStr.length() == 0) { return wordStr; }
+        if (wordStr.isEmpty()) { return wordStr; }
         if (isUncountable(wordStr)) { return wordStr; }
         for (Rule rule : this.singulars) {
             String result = rule.apply(wordStr);
@@ -274,7 +274,7 @@ public class Inflector {
                             char... delimiterChars) {
         if (lowerCaseAndUnderscoredWord == null) { return null; }
         lowerCaseAndUnderscoredWord = lowerCaseAndUnderscoredWord.trim();
-        if (lowerCaseAndUnderscoredWord.length() == 0) { return ""; }
+        if (lowerCaseAndUnderscoredWord.isEmpty()) { return ""; }
         if (uppercaseFirstLetter) {
             String result = lowerCaseAndUnderscoredWord;
             // Replace any extra delimiters with underscores (before the underscores are converted in the next step)...
@@ -315,7 +315,7 @@ public class Inflector {
                              char... delimiterChars) {
         if (camelCaseWord == null) { return null; }
         String result = camelCaseWord.trim();
-        if (result.length() == 0) { return ""; }
+        if (result.isEmpty()) { return ""; }
         result = result.replaceAll("([A-Z]+)([A-Z][a-z])", "$1_$2");
         result = result.replaceAll("([a-z\\d])([A-Z])", "$1_$2");
         result = result.replace('-', '_');
@@ -336,7 +336,7 @@ public class Inflector {
     public String capitalize(String words) {
         if (words == null) { return null; }
         String result = words.trim();
-        if (result.length() == 0) { return ""; }
+        if (result.isEmpty()) { return ""; }
         if (result.length() == 1) { return result.toUpperCase(); }
         return "" + Character.toUpperCase(result.charAt(0)) + result.substring(1).toLowerCase();
     }
@@ -361,7 +361,7 @@ public class Inflector {
                            String... removableTokens) {
         if (lowerCaseAndUnderscoredWords == null) { return null; }
         String result = lowerCaseAndUnderscoredWords.trim();
-        if (result.length() == 0) { return ""; }
+        if (result.isEmpty()) { return ""; }
         // Remove a trailing "_id" token
         result = result.replaceAll("_id$", "");
         // Remove all of the tokens that should be removed

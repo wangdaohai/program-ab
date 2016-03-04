@@ -56,11 +56,11 @@ public final class Path extends ArrayList<String> {
      * @return sentence
      */
     public static String pathToSentence(Path path) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for (Path p = path; p != null; p = p.next) {
-            result = result + " " + p.word;
+            result.append(" ").append(p.word);
         }
-        return result.trim();
+        return result.toString().trim();
        /* if (path == null) return "";
         else return path.word+" "+pathToSentence(path.next);*/
     }

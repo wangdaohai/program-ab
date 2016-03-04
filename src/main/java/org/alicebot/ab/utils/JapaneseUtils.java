@@ -21,13 +21,13 @@ public final class JapaneseUtils {
      */
     public static String tokenizeFragment(String fragment) {
         //System.out.println("buildFragment "+fragment);
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for (Morpheme e : Tagger.parse(fragment)) {
-            result += e.surface + " ";
+            result.append(e.surface).append(" ");
             //
             // System.out.println("Feature "+e.feature+" Surface="+e.surface);
         }
-        return result.trim();
+        return result.toString().trim();
     }
 
     /**
@@ -88,33 +88,38 @@ public final class JapaneseUtils {
     }
 
     public static String evalTagContent(Node node) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         //System.out.println("evalTagContent "+node.getNodeName());
         try {
             NodeList childList = node.getChildNodes();
             for (int i = 0; i < childList.getLength(); i++) {
                 Node child = childList.item(i);
-                result += recursEval(child);
+                result.append(recursEval(child));
             }
         } catch (Exception ex) {
             System.out.println("Something went wrong with evalTagContent");
             ex.printStackTrace();
         }
-        return result;
+        return result.toString();
     }
 
     private static String unevaluatedXML(String result, Node node) {
         String nodeName = node.getNodeName();
-        String attributes = "";
+        StringBuilder attributesBuilder = new StringBuilder();
         if (node.hasAttributes()) {
             NamedNodeMap XMLAttributes = node.getAttributes();
             for (int i = 0; i < XMLAttributes.getLength(); i++)
 
             {
-                attributes += " " + XMLAttributes.item(i).getNodeName() + "=\"" + XMLAttributes.item(i).getNodeValue() + "\"";
+                attributesBuilder.append(" ")
+                    .append(XMLAttributes.item(i).getNodeName())
+                    .append("=\"")
+                    .append(XMLAttributes.item(i).getNodeValue())
+                    .append("\"");
             }
         }
-        if (result.equals("")) {
+        String attributes = attributesBuilder.toString();
+        if (result.isEmpty()) {
             return " <" + nodeName + attributes + "/> ";
         } else {
             return " <" + nodeName + attributes + ">" + result + "</" + nodeName + "> ";   // add spaces

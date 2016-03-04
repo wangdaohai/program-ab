@@ -179,11 +179,11 @@ public class Chat {
         String normResponse = bot.preProcessor.normalize(response);
         //MagicBooleans.trace("in chat.respond(), normResponse: " + normResponse);
         if (MagicBooleans.jp_tokenize) { normResponse = JapaneseUtils.tokenizeSentence(normResponse); }
-        String sentences[] = bot.preProcessor.sentenceSplit(normResponse);
+        String[] sentences = bot.preProcessor.sentenceSplit(normResponse);
         for (String sentence : sentences) {
             that = sentence;
             //System.out.println("That "+i+" '"+that+"'");
-            if (that.trim().equals("")) { that = MagicStrings.default_that; }
+            if (that.trim().isEmpty()) { that = MagicStrings.default_that; }
             contextThatHistory.add(that);
         }
         String result = response.trim() + "  ";
@@ -219,7 +219,7 @@ public class Chat {
             String normalized = bot.preProcessor.normalize(request);
             normalized = JapaneseUtils.tokenizeSentence(normalized);
             //MagicBooleans.trace("in chat.multisentenceRespond(), normalized: " + normalized);
-            String sentences[] = bot.preProcessor.sentenceSplit(normalized);
+            String[] sentences = bot.preProcessor.sentenceSplit(normalized);
             History<String> contextThatHistory = new History<>("contextThat");
             for (String sentence : sentences) {
                 //System.out.println("Human: "+sentences[i]);

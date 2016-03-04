@@ -25,17 +25,17 @@ public class Contact {
         //System.out.println("Pattern='"+patternString+"'");
         Pattern pattern = Pattern.compile(patternString);
         Set<String> keys = nameIdMap.keySet();
-        String result = "";
+        StringBuilder result = new StringBuilder();
         int idCount = 0;
         for (String key : keys) {
             Matcher m = pattern.matcher(key);
             if (m.find()) {
-                result += nameIdMap.get(key.toUpperCase()) + " ";
+                result.append(nameIdMap.get(key.toUpperCase())).append(" ");
                 idCount++;
             }
         }
-        if (idCount <= 1) { result = "false"; }
-        return result.trim();
+        if (idCount <= 1) { return "false"; }
+        return result.toString().trim();
     }
 
     public static String contactId(String contactName) {

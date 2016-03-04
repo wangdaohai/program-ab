@@ -275,9 +275,9 @@ public class AB {
                     if (strLine.startsWith("Human: ")) {
                         strLine = strLine.substring("Human: ".length(), strLine.length());
                     }
-                    String sentences[] = bot.preProcessor.sentenceSplit(strLine);
+                    String[] sentences = bot.preProcessor.sentenceSplit(strLine);
                     for (String sentence : sentences) {
-                        if (sentence.length() > 0) {
+                        if (!sentence.isEmpty()) {
                             Nodemapper match = patternGraph.match(sentence, "unknown", "unknown");
 
                             if (match == null) {
@@ -482,7 +482,7 @@ public class AB {
                System.out.println("Wrote passed test cases");
            }*/
             System.exit(0);
-        } else if (textLine.equals("skip") || textLine.equals("")) { // skip this one for now
+        } else if (textLine.equals("skip") || textLine.isEmpty()) { // skip this one for now
             skipCategory(c);
         } else if (textLine.equals("s") || textLine.equals("pass")) { //
             passed.add(request);
@@ -526,7 +526,7 @@ public class AB {
             template = textLine;
             template += botThinks;
             saveCategory(c.getPattern(), template, MagicStrings.oob_aiml_file);
-        } else if (textLine.contains("<set name") || botThinks.length() > 0) {
+        } else if (textLine.contains("<set name") || !botThinks.isEmpty()) {
             template = textLine;
             template += botThinks;
             saveCategory(c.getPattern(), template, MagicStrings.predicates_aiml_file);

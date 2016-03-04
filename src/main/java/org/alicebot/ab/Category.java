@@ -31,7 +31,7 @@ public class Category {
     private String template;
     private String filename;
     private int activationCnt;
-    private int categoryNumber; // for loading order
+    private final int categoryNumber; // for loading order
     public static int categoryCnt = 0;
     private AIMLSet matches;
 
@@ -211,7 +211,7 @@ public class Category {
      * @return original multi-line template
      */
     private static String lineToTemplate(String line) {
-        String result = line.replaceAll("\\#Newline", "\n");
+        String result = line.replaceAll("#Newline", "\n");
         result = result.replaceAll(MagicStrings.aimlif_split_char_name, MagicStrings.aimlif_split_char);
         return result;
     }
@@ -250,12 +250,12 @@ public class Category {
         String pattern = category.getPattern();
         if (pattern.contains("<SET>") || pattern.contains("<BOT")) {
             String[] splitPattern = pattern.split(" ");
-            String rpattern = "";
+            StringBuilder rpattern = new StringBuilder();
             for (String w : splitPattern) {
                 if (w.startsWith("<SET>") || w.startsWith("<BOT") || w.startsWith("NAME=")) {w = w.toLowerCase();}
-                rpattern = rpattern + " " + w;
+                rpattern.append(" ").append(w);
             }
-            pattern = rpattern.trim();
+            pattern = rpattern.toString().trim();
         }
         //if (pattern.contains("set")) System.out.println("Rebuilt pattern "+pattern);
 
@@ -383,6 +383,7 @@ public class Category {
      * compare two categories for sorting purposes based on activation count
      */
     public static Comparator<Category> ACTIVATION_COMPARATOR = new Comparator<Category>() {
+        @Override
         public int compare(Category c1, Category c2) {
             return c2.getActivationCnt() - c1.getActivationCnt();
         }
@@ -391,6 +392,7 @@ public class Category {
      * compare two categories for sorting purposes based on alphabetical order of patterns
      */
     public static Comparator<Category> PATTERN_COMPARATOR = new Comparator<Category>() {
+        @Override
         public int compare(Category c1, Category c2) {
             return String.CASE_INSENSITIVE_ORDER.compare(c1.inputThatTopic(), c2.inputThatTopic());
         }
@@ -399,6 +401,7 @@ public class Category {
      * compare two categories for sorting purposes based on category index number
      */
     public static Comparator<Category> CATEGORY_NUMBER_COMPARATOR = new Comparator<Category>() {
+        @Override
         public int compare(Category c1, Category c2) {
             return c1.getCategoryNumber() - c2.getCategoryNumber();
         }

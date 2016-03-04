@@ -29,12 +29,12 @@ import java.util.Map;
 public class Nodemapper {
     /*    public static int idCnt=0;
         public int id;*/
-    public Category category = null;
+    public Category category;
     public int height = MagicNumbers.max_graph_height;
-    public StarBindings starBindings = null;
-    public Map<String, Nodemapper> map = null;
-    public String key = null;
-    public Nodemapper value = null;
+    public StarBindings starBindings;
+    public Map<String, Nodemapper> map;
+    public String key;
+    public Nodemapper value;
     public boolean shortCut = false;
     public List<String> sets;
 /*    public Nodemapper () {

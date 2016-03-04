@@ -42,7 +42,6 @@ public class AIMLMap extends HashMap<String, String> {
      * @param name the name of the map
      */
     public AIMLMap(String name, Bot bot) {
-        super();
         this.bot = bot;
         this.mapName = name;
     }
@@ -94,6 +93,7 @@ public class AIMLMap extends HashMap<String, String> {
      * @param value the range element
      * @return the value
      */
+    @Override
     public String put(String key, String value) {
         //System.out.println("AIMLMap put "+key+"="+value);
         return super.put(key, value);
@@ -124,7 +124,7 @@ public class AIMLMap extends HashMap<String, String> {
         //Read File Line By Line
         try {
             String strLine;
-            while ((strLine = br.readLine()) != null && strLine.length() > 0) {
+            while ((strLine = br.readLine()) != null && !strLine.isEmpty()) {
                 String[] splitLine = strLine.split(":");
                 //System.out.println("AIMLMap line="+strLine);
                 if (splitLine.length >= 2) {

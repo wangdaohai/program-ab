@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
  * The AIML Pattern matching algorithm and data structure.
  */
 public class Graphmaster {
-    private static boolean DEBUG = false;
+    private static final boolean DEBUG = false;
 
     public Bot bot;
     public String name;
@@ -671,17 +671,15 @@ public class Graphmaster {
     void getCategories(Nodemapper node, ArrayList<Category> categories) {
         if (node == null) {
             return;
-        } else {
-            //String template = "";
-            if (NodemapperOperator.isLeaf(node) || node.shortCut) {
-                if (node.category != null) {
-                    categories.add(node.category);   // node.category == null when the category is deleted.
-                }
+        }
+        if (NodemapperOperator.isLeaf(node) || node.shortCut) {
+            if (node.category != null) {
+                categories.add(node.category);   // node.category == null when the category is deleted.
             }
-            for (String key : NodemapperOperator.keySet(node)) {
-                //System.out.println(key);
-                getCategories(NodemapperOperator.get(node, key), categories);
-            }
+        }
+        for (String key : NodemapperOperator.keySet(node)) {
+            //System.out.println(key);
+            getCategories(NodemapperOperator.get(node, key), categories);
         }
     }
 

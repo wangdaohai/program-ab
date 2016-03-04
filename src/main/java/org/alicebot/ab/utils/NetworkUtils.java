@@ -22,8 +22,8 @@ public final class NetworkUtils {
                 for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
                     InetAddress inetAddress = enumIpAddr.nextElement();
                     if (!inetAddress.isLoopbackAddress()) {
-                        String ipAddress = inetAddress.getHostAddress().toString();
-                        int p = ipAddress.indexOf("%");
+                        String ipAddress = inetAddress.getHostAddress();
+                        int p = ipAddress.indexOf('%');
                         if (p > 0) { ipAddress = ipAddress.substring(0, p); }
                         //if (MagicBooleans.trace_mode) System.out.println("--> localIPAddress = "+ipAddress);
                         return ipAddress;

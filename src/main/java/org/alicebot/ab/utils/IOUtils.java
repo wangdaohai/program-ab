@@ -85,13 +85,13 @@ public class IOUtils {
             InputStream istrm = p.getInputStream();
             InputStreamReader istrmrdr = new InputStreamReader(istrm);
             BufferedReader buffrdr = new BufferedReader(istrmrdr);
-            String result = "";
-            String data = "";
+            StringBuilder result = new StringBuilder();
+            String data;
             while ((data = buffrdr.readLine()) != null) {
-                result += data + "\n";
+                result.append(data).append("\n");
             }
             //System.out.println("Result = "+result);
-            return result;
+            return result.toString();
         } catch (Exception ex) {
             ex.printStackTrace();
             return failedString;

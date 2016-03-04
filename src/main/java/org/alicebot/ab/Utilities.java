@@ -22,6 +22,7 @@ package org.alicebot.ab;
 import org.alicebot.ab.utils.CalendarUtils;
 
 import java.io.*;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -56,25 +57,25 @@ public final class Utilities {
 
     public static Set<String> stringSet(String... strings) {
         Set<String> set = new HashSet<>();
-        for (String s : strings) { set.add(s); }
+        Collections.addAll(set, strings);
         return set;
     }
 
     public static String getFileFromInputStream(InputStream in) {
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
         //Read File Line By Line
-        String contents = "";
+        StringBuilder contents = new StringBuilder();
         try {
             String strLine;
             while ((strLine = br.readLine()) != null) {
                 if (!strLine.startsWith(MagicStrings.text_comment_mark)) {
-                    contents += (strLine.length() == 0) ? "\n" : (strLine + "\n");
+                    contents.append(strLine + "\n");
                 }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        return contents.trim();
+        return contents.toString().trim();
     }
 
     public static String getFile(String filename) {
@@ -98,16 +99,16 @@ public final class Utilities {
     public static String getCopyrightFromInputStream(InputStream in) {
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
         //Read File Line By Line
-        String copyright = "";
+        StringBuilder copyright = new StringBuilder();
         try {
             String strLine;
             while ((strLine = br.readLine()) != null) {
-                copyright += (strLine.length() == 0) ? "\n" : ("<!-- " + strLine + " -->\n");
+                copyright.append((strLine.isEmpty()) ? "\n" : ("<!-- " + strLine + " -->\n"));
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        return copyright;
+        return copyright.toString();
     }
 
     public static String getCopyright(Bot bot, String AIMLFilename) {
@@ -139,13 +140,13 @@ public final class Utilities {
 
     public static String getPannousAPIKey(Bot bot) {
         String apiKey = getFile(bot.config_path + "/pannous-apikey.txt");
-        if (apiKey.equals("")) { apiKey = MagicStrings.pannous_api_key; }
+        if (apiKey.isEmpty()) { apiKey = MagicStrings.pannous_api_key; }
         return apiKey;
     }
 
     public static String getPannousLogin(Bot bot) {
         String login = getFile(bot.config_path + "/pannous-login.txt");
-        if (login.equals("")) { login = MagicStrings.pannous_login; }
+        if (login.isEmpty()) { login = MagicStrings.pannous_login; }
         return login;
     }
 
@@ -156,17 +157,14 @@ public final class Utilities {
      * @return true if CJK, false otherwise
      */
     public static boolean isCharCJK(final char c) {
-        if ((Character.UnicodeBlock.of(c) == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS)
+        return (Character.UnicodeBlock.of(c) == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS)
             || (Character.UnicodeBlock.of(c) == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A)
             || (Character.UnicodeBlock.of(c) == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B)
             || (Character.UnicodeBlock.of(c) == Character.UnicodeBlock.CJK_COMPATIBILITY_FORMS)
             || (Character.UnicodeBlock.of(c) == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS)
             || (Character.UnicodeBlock.of(c) == Character.UnicodeBlock.CJK_RADICALS_SUPPLEMENT)
             || (Character.UnicodeBlock.of(c) == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION)
-            || (Character.UnicodeBlock.of(c) == Character.UnicodeBlock.ENCLOSED_CJK_LETTERS_AND_MONTHS)) {
-            return true;
-        }
-        return false;
+            || (Character.UnicodeBlock.of(c) == Character.UnicodeBlock.ENCLOSED_CJK_LETTERS_AND_MONTHS);
     }
 
 }

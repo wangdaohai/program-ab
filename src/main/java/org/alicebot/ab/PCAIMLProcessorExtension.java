@@ -31,6 +31,7 @@ import java.util.Set;
 public class PCAIMLProcessorExtension implements AIMLProcessorExtension {
     public Set<String> extensionTagNames = Utilities.stringSet("contactid", "multipleids", "displayname", "dialnumber", "emailaddress", "contactbirthday", "addinfo");
 
+    @Override
     public Set<String> extensionTagSet() {
         return extensionTagNames;
     }
@@ -130,6 +131,7 @@ public class PCAIMLProcessorExtension implements AIMLProcessorExtension {
         return result;
     }
 
+    @Override
     public String recursEval(Node node, ParseState ps) {
         try {
             String nodeName = node.getNodeName();

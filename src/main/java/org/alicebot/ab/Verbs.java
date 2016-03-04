@@ -1,9 +1,6 @@
 package org.alicebot.ab;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public final class Verbs {
 
@@ -101,9 +98,7 @@ public final class Verbs {
         getIrregulars();
         String verbFile = Utilities.getFile("c:/ab/data/verb300.txt");
         String[] verbs = verbFile.split("\n");
-        for (String verb : verbs) {
-            allVerbs.add(verb);
-        }
+        Collections.addAll(allVerbs, verbs);
         AIMLSet be = new AIMLSet("be", bot);
         AIMLSet is = new AIMLSet("is", bot);
         AIMLSet was = new AIMLSet("was", bot);

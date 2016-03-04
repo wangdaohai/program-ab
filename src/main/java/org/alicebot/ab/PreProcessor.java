@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
  * AIML Preprocessor and substitutions
  */
 public class PreProcessor {
-    static private boolean DEBUG = false;
+    private static final boolean DEBUG = false;
 
     public int normalCount = 0;
     public int denormalCount = 0;
@@ -231,7 +231,7 @@ public class PreProcessor {
         line = line.replace("？", "?");
         line = line.replace("！", "!");
         //System.out.println("Sentence split "+line);
-        String result[] = line.split("[\\.!\\?]");
+        String[] result = line.split("[\\.!\\?]");
         for (int i = 0; i < result.length; i++) { result[i] = result[i].trim(); }
         return result;
     }
@@ -251,22 +251,20 @@ public class PreProcessor {
             //Read File Line By Line
             while ((strLine = br.readLine()) != null) {
                 strLine = strLine.trim();
-                if (strLine.length() > 0) {
+                if (!strLine.isEmpty()) {
                     String norm = normalize(strLine).toUpperCase();
-                    String sentences[] = sentenceSplit(norm);
-                    {
-                        if (sentences.length > 1) {
-                            for (String s : sentences) {
-                                System.out.println(norm + "-->" + s);
-                            }
+                    String[] sentences = sentenceSplit(norm);
+                    if (sentences.length > 1) {
+                        for (String s : sentences) {
+                            System.out.println(norm + "-->" + s);
                         }
-                        for (String sentence : sentences) {
-                            sentence = sentence.trim();
-                            if (sentence.length() > 0) {
-                                //System.out.println("'"+strLine+"'-->'"+norm+"'");
-                                bw.write(sentence);
-                                bw.newLine();
-                            }
+                    }
+                    for (String sentence : sentences) {
+                        sentence = sentence.trim();
+                        if (!sentence.isEmpty()) {
+                            //System.out.println("'"+strLine+"'-->'"+norm+"'");
+                            bw.write(sentence);
+                            bw.newLine();
                         }
                     }
                 }
