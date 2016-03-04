@@ -32,11 +32,11 @@ public class Chat {
     public Bot bot;
     public boolean doWrites;
     public String customerId = MagicStrings.default_Customer_id;
-    public History<History> thatHistory = new History<>("that");
-    public History<String> requestHistory = new History<>("request");
-    public History<String> responseHistory = new History<>("response");
-    // public History<String> repetitionHistory = new History<>("repetition");
-    public History<String> inputHistory = new History<>("input");
+    public History<History<String>> thatHistory = History.ofHistory("that");
+    public History<String> requestHistory = History.ofString("request");
+    public History<String> responseHistory = History.ofString("response");
+    // public History<String> repetitionHistory = History.ofString("repetition");
+    public History<String> inputHistory = History.ofString("input");
     public Predicates predicates = new Predicates();
     public static String matchTrace = "";
     public static boolean locationKnown = false;
@@ -67,7 +67,7 @@ public class Chat {
         this.customerId = customerId;
         this.bot = bot;
         this.doWrites = doWrites;
-        History<String> contextThatHistory = new History<>();
+        History<String> contextThatHistory = History.ofString("unknown");
         contextThatHistory.add(MagicStrings.default_that);
         thatHistory.add(contextThatHistory);
         addPredicates();
@@ -199,8 +199,8 @@ public class Chat {
      * @return bot's reply
      */
     String respond(String input, History<String> contextThatHistory) {
-        History hist = thatHistory.get(0);
-        String that = hist == null ? MagicStrings.default_that : hist.getString(0);
+        History<String> hist = thatHistory.get(0);
+        String that = hist == null ? MagicStrings.default_that : hist.get(0);
         return respond(input, that, predicates.get("topic"), contextThatHistory);
     }
 
@@ -219,7 +219,7 @@ public class Chat {
             normalized = JapaneseUtils.tokenizeSentence(normalized);
             //MagicBooleans.trace("in chat.multisentenceRespond(), normalized: " + normalized);
             String[] sentences = bot.preProcessor.sentenceSplit(normalized);
-            History<String> contextThatHistory = new History<>("contextThat");
+            History<String> contextThatHistory = History.ofString("contextThat");
             for (String sentence : sentences) {
                 //System.out.println("Human: "+sentences[i]);
                 AIMLProcessor.trace_count = 0;

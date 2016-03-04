@@ -708,8 +708,8 @@ public final class AIMLProcessor {
             } catch (Exception ex) { ex.printStackTrace(); }
         }
         String that = MagicStrings.unknown_history_item;
-        History hist = ps.chatSession.thatHistory.get(index);
-        if (hist != null) { that = (String) hist.get(jndex); }
+        History<String> hist = ps.chatSession.thatHistory.get(index);
+        if (hist != null) { that = hist.get(jndex); }
         return that.trim();
     }
 
@@ -723,7 +723,7 @@ public final class AIMLProcessor {
 
     private static String input(Node node, ParseState ps) {
         int index = getIndexValue(node, ps);
-        return ps.chatSession.inputHistory.getString(index);
+        return ps.chatSession.inputHistory.get(index);
     }
 
     /**
@@ -735,7 +735,7 @@ public final class AIMLProcessor {
      */
     private static String request(Node node, ParseState ps) {             // AIML 2.0
         int index = getIndexValue(node, ps);
-        return ps.chatSession.requestHistory.getString(index).trim();
+        return ps.chatSession.requestHistory.get(index).trim();
     }
 
     /**
@@ -747,7 +747,7 @@ public final class AIMLProcessor {
      */
     private static String response(Node node, ParseState ps) {            // AIML 2.0
         int index = getIndexValue(node, ps);
-        return ps.chatSession.responseHistory.getString(index).trim();
+        return ps.chatSession.responseHistory.get(index).trim();
     }
 
     /**
