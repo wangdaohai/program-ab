@@ -8,8 +8,12 @@ import org.joda.time.chrono.GregorianChronology;
 import org.joda.time.chrono.LenientChronology;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class IntervalUtils {
+
+    private static final Logger logger = LoggerFactory.getLogger(IntervalUtils.class);
 
     private IntervalUtils() {}
 
@@ -18,12 +22,12 @@ public final class IntervalUtils {
         String date2 = "12:00:00.00";
         String format = "HH:mm:ss.SS";
         int hours = getHoursBetween(date2, date1, format);
-        System.out.println("Hours = " + hours);
+        logger.info("Hours = {}", hours);
         date1 = "January 30, 2013";
         date2 = "August 2, 1960";
         format = "MMMMMMMMM dd, yyyy";
         int years = getYearsBetween(date2, date1, format);
-        System.out.println("Years = " + years);
+        logger.info("Years = {}", years);
     }
 
     // http://docs.oracle.com/javase/1.4.2/docs/api/java/text/SimpleDateFormat.html
@@ -40,7 +44,7 @@ public final class IntervalUtils {
                 fmt.parseDateTime(date2)
             ).getHours();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error("getHoursBetween error", ex);
             return 0;
         }
     }
@@ -58,7 +62,7 @@ public final class IntervalUtils {
                 fmt.parseDateTime(date2)
             ).getYears();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error("getYearsBetween error", ex);
             return 0;
         }
     }
@@ -76,7 +80,7 @@ public final class IntervalUtils {
                 fmt.parseDateTime(date2)
             ).getMonths();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error("getMonthsBetween error", ex);
             return 0;
         }
     }
@@ -94,7 +98,7 @@ public final class IntervalUtils {
                 fmt.parseDateTime(date2)
             ).getDays();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error("getDaysBetween error", ex);
             return 0;
         }
     }

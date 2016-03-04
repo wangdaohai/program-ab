@@ -1,11 +1,17 @@
 package org.alicebot.ab;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class Tuple extends HashMap<String, String> {
+
+    private static final Logger logger = LoggerFactory.getLogger(Tuple.class);
+
     public static int index = 0;
     public static Map<String, Tuple> tupleMap = new HashMap<>();
     public HashSet<String> visibleVars = new HashSet<>();
@@ -16,7 +22,6 @@ public class Tuple extends HashMap<String, String> {
         //System.out.println("Calling equals");
         if (this == o) { return true; }
         if (o == null || getClass() != o.getClass()) {
-            System.out.println("unequal 1");
             return false;
         }
         /*if (!super.equals(o)) {
@@ -109,14 +114,15 @@ public class Tuple extends HashMap<String, String> {
 
     public void bind(String var, String value) {
         if (get(var) != null && !get(var).equals(MagicStrings.unbound_variable)) {
-            System.out.println(var + " already bound to " + get(var));
+            logger.warn("{} already bound to {}", var, get(var));
         } else {
             put(var, value);
         }
 
     }
 
-    public String printTuple() {
+    @Override
+    public String toString() {
         StringBuilder result = new StringBuilder().append("\n");
         for (String x : keySet()) {
             result.append(x).append("=").append(get(x)).append("\n");

@@ -19,6 +19,9 @@ package org.alicebot.ab;
         Boston, MA  02110-1301, USA.
 */
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,7 +30,8 @@ import java.util.regex.Pattern;
  * AIML Preprocessor and substitutions
  */
 public class PreProcessor {
-    private static final boolean DEBUG = false;
+
+    private static final Logger logger = LoggerFactory.getLogger(PreProcessor.class);
 
     public int normalCount = 0;
     public int denormalCount = 0;
@@ -57,9 +61,7 @@ public class PreProcessor {
         personCount = readSubstitutions(bot.config_path + "/person.txt", personPatterns, personSubs);
         person2Count = readSubstitutions(bot.config_path + "/person2.txt", person2Patterns, person2Subs);
         genderCount = readSubstitutions(bot.config_path + "/gender.txt", genderPatterns, genderSubs);
-        if (MagicBooleans.trace_mode) {
-            System.out.println("Preprocessor: " + normalCount + " norms " + personCount + " persons " + person2Count + " person2 ");
-        }
+        logger.debug("Preprocessor: {} norms {} persons {} person2 ", normalCount, personCount, person2Count);
     }
 
     /**
@@ -69,10 +71,10 @@ public class PreProcessor {
      * @return normalized client input
      */
     public String normalize(String request) {
-        if (DEBUG) { System.out.println("PreProcessor.normalize(request: " + request + ")"); }
+        logger.trace("PreProcessor.normalize(request: {})", request);
         String result = substitute(request, normalPatterns, normalSubs, normalCount);
         result = result.replaceAll("(\r\n|\n\r|\r|\n)", " ");
-        if (DEBUG) { System.out.println("PreProcessor.normalize() returning: " + result); }
+        logger.trace("PreProcessor.normalize() returning: {}", result);
         return result;
     }
 
@@ -150,8 +152,7 @@ public class PreProcessor {
             result = result.trim();
             //System.out.println("Normalized: "+result);
         } catch (Exception ex) {
-            ex.printStackTrace();
-            System.out.println("Request " + request + " Result " + result + " at " + index + " " + patterns[index] + " " + subs[index]);
+            logger.error("Request {} Result {} at {} {} {}", request, result, index, patterns[index], subs[index], ex);
         }
         return result.trim();
     }
@@ -187,7 +188,7 @@ public class PreProcessor {
 
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error("readSubstitutionsFromInputStream error", ex);
         }
         return subCount;
     }
@@ -214,8 +215,8 @@ public class PreProcessor {
                 //Close the input stream
                 fstream.close();
             }
-        } catch (Exception e) {//Catch exception if any
-            System.err.println("Error: " + e.getMessage());
+        } catch (Exception e) {
+            logger.error("readSubstitutions error", e);
         }
         return (subCount);
     }
@@ -256,7 +257,7 @@ public class PreProcessor {
                     String[] sentences = sentenceSplit(norm);
                     if (sentences.length > 1) {
                         for (String s : sentences) {
-                            System.out.println(norm + "-->" + s);
+                            logger.info("{}-->{}", norm, s);
                         }
                     }
                     for (String sentence : sentences) {
@@ -272,7 +273,7 @@ public class PreProcessor {
             bw.close();
             br.close();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error("normalizeFile error", ex);
         }
     }
 }

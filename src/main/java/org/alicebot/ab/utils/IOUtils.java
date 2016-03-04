@@ -1,10 +1,15 @@
 package org.alicebot.ab.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import java.io.*;
 
 public class IOUtils {
+
+    private static final Logger logger = LoggerFactory.getLogger(IOUtils.class);
 
     BufferedReader reader;
     BufferedWriter writer;
@@ -18,7 +23,7 @@ public class IOUtils {
                 writer = new BufferedWriter(new FileWriter(filePath, true));
             }
         } catch (IOException e) {
-            System.err.println("error: " + e);
+            logger.error("IOUtils error", e);
         }
     }
 
@@ -27,7 +32,7 @@ public class IOUtils {
         try {
             result = reader.readLine();
         } catch (IOException e) {
-            System.err.println("error: " + e);
+            logger.error("readLine error ", e);
         }
         return result;
     }
@@ -37,7 +42,7 @@ public class IOUtils {
             writer.write(line);
             writer.newLine();
         } catch (IOException e) {
-            System.err.println("error: " + e);
+            logger.error("writeLine error ", e);
         }
     }
 
@@ -46,11 +51,12 @@ public class IOUtils {
             if (reader != null) { reader.close(); }
             if (writer != null) { writer.close(); }
         } catch (IOException e) {
-            System.err.println("error: " + e);
+            logger.error("close error ", e);
         }
 
     }
 
+    @SuppressWarnings("UseOfSystemOutOrSystemErr")
     public static void writeOutputTextLine(String prompt, String text) {
         System.out.println(prompt + ": " + text);
     }
@@ -59,6 +65,7 @@ public class IOUtils {
         return readInputTextLine(null);
     }
 
+    @SuppressWarnings("UseOfSystemOutOrSystemErr")
     public static String readInputTextLine(String prompt) {
         if (prompt != null) {
             System.out.print(prompt + ": ");
@@ -68,7 +75,7 @@ public class IOUtils {
         try {
             textLine = lineOfText.readLine();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("readInputTextLine error ", e);
         }
         return textLine;
     }
@@ -93,7 +100,7 @@ public class IOUtils {
             //System.out.println("Result = "+result);
             return result.toString();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error("system error ", ex);
             return failedString;
 
         }

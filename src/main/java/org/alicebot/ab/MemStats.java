@@ -1,6 +1,8 @@
 package org.alicebot.ab;
 
 import org.alicebot.ab.utils.MemoryUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /* Program AB Reference AIML 2.0 implementation
@@ -28,6 +30,8 @@ import org.alicebot.ab.utils.MemoryUtils;
  */
 public final class MemStats {
 
+    private static final Logger logger = LoggerFactory.getLogger(MemStats.class);
+
     private MemStats() {}
 
     public static long prevHeapSize = 0;
@@ -48,7 +52,7 @@ public final class MemStats {
         long heapFreeSize = MemoryUtils.freeMemory();
         long diff = heapSize - prevHeapSize;
         prevHeapSize = heapSize;
-        System.out.println("Heap " + heapSize + " MaxSize " + heapMaxSize + " Free " + heapFreeSize + " Diff " + diff);
+        logger.info("Heap {} MaxSize {} Free {} Diff {}", heapSize, heapMaxSize, heapFreeSize, diff);
 
     }
 

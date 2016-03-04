@@ -1,5 +1,8 @@
 package org.alicebot.ab.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -7,6 +10,8 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 public final class CalendarUtils {
+
+    private static final Logger logger = LoggerFactory.getLogger(CalendarUtils.class);
 
     private CalendarUtils() {}
 
@@ -47,8 +52,7 @@ public final class CalendarUtils {
                 new SimpleDateFormat(jformat);
             dateAsString = simpleDateFormat.format(new Date());
         } catch (Exception ex) {
-            System.out.println("CalendarUtils.date Bad date: Format = " + jformat + " Locale = " + locale + " Timezone = " + timezone);
-            ex.printStackTrace();
+            logger.error("CalendarUtils.date Bad date: Format = {} Locale = {} Timezone = {}", jformat, locale, timezone, ex);
         }
         //MagicBooleans.trace("CalendarUtils.date: "+dateAsString);
         return dateAsString;

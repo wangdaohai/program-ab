@@ -9,6 +9,7 @@ import java.text.DecimalFormat;
  *         <p>
  *         Mail Id : manojdunna@gmail.com
  **/
+@SuppressWarnings("UseOfSystemOutOrSystemErr")
 public final class EnglishNumberToWords {
     private static final String[] tensNames = {
         "",

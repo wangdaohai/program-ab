@@ -115,13 +115,14 @@ public final class Path extends ArrayList<String> {
     /**
      * print a Path
      */
-    public void print() {
-        String result = "";
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
         for (Path p = this; p != null; p = p.next) {
-            result += p.word + ",";
+            result.append(p.word).append(",");
         }
-        if (result.endsWith(",")) { result = result.substring(0, result.length() - 1); }
-        System.out.println(result);
+        if (result.length() != 0) {result.deleteCharAt(result.length() - 1);}
+        return result.toString();
     }
 
 }

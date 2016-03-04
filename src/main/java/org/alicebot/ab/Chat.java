@@ -2,6 +2,8 @@ package org.alicebot.ab;
 
 import org.alicebot.ab.utils.IOUtils;
 import org.alicebot.ab.utils.JapaneseUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 
@@ -29,6 +31,9 @@ import java.io.*;
  * Class encapsulating a chat session between a bot and a client
  */
 public class Chat {
+
+    private static final Logger logger = LoggerFactory.getLogger(Chat.class);
+
     public Bot bot;
     public boolean doWrites;
     public String customerId = MagicStrings.default_Customer_id;
@@ -74,7 +79,7 @@ public class Chat {
         addTriples();
         predicates.put("topic", MagicStrings.default_topic);
         predicates.put("jsenabled", MagicStrings.js_enabled);
-        if (MagicBooleans.trace_mode) { System.out.println("Chat Session Created for bot " + bot.name); }
+        logger.debug("Chat Session Created for bot {}", bot.name);
     }
 
     /**
@@ -84,7 +89,7 @@ public class Chat {
         try {
             predicates.getPredicateDefaults(bot.config_path + "/predicates.txt");
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error("addPredicates error", ex);
         }
     }
 
@@ -93,10 +98,8 @@ public class Chat {
      */
 
     int addTriples() {
-        if (MagicBooleans.trace_mode) {
-            System.out.println("Loading Triples from " + bot.config_path + "/triples.txt");
-        }
-        File f = new File(bot.config_path + "/triples.txt");
+        File f = new File(bot.config_path, "triples.txt");
+        logger.debug("Loading Triples from {}", f);
         int tripleCnt = 0;
         if (f.exists()) {
             try {
@@ -117,10 +120,10 @@ public class Chat {
                 }
                 is.close();
             } catch (Exception ex) {
-                ex.printStackTrace();
+                logger.error("addTriples error", ex);
             }
         }
-        if (MagicBooleans.trace_mode) { System.out.println("Loaded " + tripleCnt + " triples"); }
+        logger.debug("Loaded {} triples", tripleCnt);
         return tripleCnt;
     }
 
@@ -135,9 +138,11 @@ public class Chat {
             String request = "SET PREDICATES";
             String response = multisentenceRespond(request);
             while (!request.equals("quit")) {
+                //noinspection UseOfSystemOutOrSystemErr
                 System.out.print("Human: ");
                 request = IOUtils.readInputTextLine();
                 response = multisentenceRespond(request);
+                //noinspection UseOfSystemOutOrSystemErr
                 System.out.println("Robot: " + response);
                 bw.write("Human: " + request);
                 bw.newLine();
@@ -147,7 +152,7 @@ public class Chat {
             }
             bw.close();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error("chat error", ex);
         }
     }
 
@@ -186,9 +191,7 @@ public class Chat {
             if (that.trim().isEmpty()) { that = MagicStrings.default_that; }
             contextThatHistory.add(that);
         }
-        String result = response.trim() + "  ";
-        //MagicBooleans.trace("in chat.respond(), returning: " + result);
-        return result;
+        return response.trim() + "  ";
     }
 
     /**
@@ -233,7 +236,7 @@ public class Chat {
             response = response.replaceAll("[\n]+", "\n");
             response = response.trim();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error("multisentenceRespond error", ex);
             return MagicStrings.error_bot_response;
         }
 

@@ -20,6 +20,9 @@ package org.alicebot.ab;
 */
 
 import org.alicebot.ab.utils.IOUtils;
+import org.alicebot.ab.utils.LogUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -30,6 +33,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public final class AB {
+
+    private static final Logger logger = LoggerFactory.getLogger(AB.class);
+
     /**
      * Experimental class that analyzes log data and suggests
      * new AIML patterns.
@@ -57,7 +63,7 @@ public final class AB {
     public AB(Bot bot, String sampleFile) {
         MagicStrings.ab_sample_file = sampleFile;
         logfile = MagicStrings.root_path + "/data/" + MagicStrings.ab_sample_file;
-        System.out.println("AB with sample file " + logfile);
+        logger.info("AB with sample file {}", logfile);
         this.bot = bot;
         this.inputGraph = new Graphmaster(bot, "input");
         this.deletedGraph = new Graphmaster(bot, "deleted");
@@ -79,20 +85,19 @@ public final class AB {
 
     public void productivity(int runCompletedCnt, Timer timer) {
         float time = timer.elapsedTimeMins();
-        System.out.println("Completed " + runCompletedCnt + " in " + time + " min. Productivity " + (float) runCompletedCnt / time + " cat/min");
+        logger.info("Completed {} in {} min. Productivity {} cat/min",
+            runCompletedCnt, time, (float) runCompletedCnt / time);
     }
 
     public void readDeletedIFCategories() {
         bot.readCertainIFCategories(deletedGraph, MagicStrings.deleted_aiml_file);
-        if (MagicBooleans.trace_mode) {
-            System.out.println("--- DELETED CATEGORIES -- read " + deletedGraph.getCategories().size() + " deleted categories");
-        }
+        logger.debug("--- DELETED CATEGORIES -- read {} deleted categories", deletedGraph.getCategories().size());
     }
 
     public void writeDeletedIFCategories() {
-        System.out.println("--- DELETED CATEGORIES -- write");
+        logger.info("--- DELETED CATEGORIES -- write");
         bot.writeCertainIFCategories(deletedGraph, MagicStrings.deleted_aiml_file);
-        System.out.println("--- DELETED CATEGORIES -- write " + deletedGraph.getCategories().size() + " deleted categories");
+        logger.info("--- DELETED CATEGORIES -- write {} deleted categories", deletedGraph.getCategories().size());
 
     }
 
@@ -114,7 +119,7 @@ public final class AB {
             bot.writeAIMLIFFiles();
             runCompletedCnt++;
         } else {
-            System.out.println("Invalid Category " + c.validationMessage);
+            logger.info("Invalid Category {}", c.validationMessage);
         }
     }
 
@@ -127,7 +132,7 @@ public final class AB {
         c.setFilename(MagicStrings.deleted_aiml_file);
         c.setTemplate(MagicStrings.deleted_template);
         deletedGraph.addCategory(c);
-        System.out.println("--- bot.writeDeletedIFCategories()");
+        logger.info("--- bot.writeDeletedIFCategories()");
         writeDeletedIFCategories();
     }
 
@@ -148,7 +153,7 @@ public final class AB {
         Timer timer = new Timer();
         timer.start();
         classifyInputs(logfile);
-        System.out.println(timer.elapsedTimeSecs() + " classifying inputs");
+        logger.info("{} classifying inputs", timer.elapsedTimeSecs());
         bot.writeQuit();
     }
 
@@ -184,7 +189,7 @@ public final class AB {
             //Close the input stream
             br.close();
         } catch (Exception e) {//Catch exception if any
-            System.err.println("Error: " + e.getMessage());
+            logger.error("graphInputs error", e);
         }
     }
 
@@ -196,7 +201,7 @@ public final class AB {
      */
     public void findPatterns() {
         findPatterns(inputGraph.root, "");
-        System.out.println(leafPatternCnt + " Leaf Patterns " + starPatternCnt + " Star Patterns");
+        logger.info("{} Leaf Patterns {} Star Patterns", leafPatternCnt, starPatternCnt);
     }
 
     /**
@@ -212,7 +217,7 @@ public final class AB {
                 //System.out.println("LEAF: "+node.category.getActivationCnt()+". "+partialPatternThatTopic+" "+node.shortCut);    //Start writing to the output stream
                 leafPatternCnt++;
                 try {
-                    String categoryPatternThatTopic = "";
+                    String categoryPatternThatTopic;
                     if (node.shortCut) {
                         //System.out.println("Partial patternThatTopic = "+partialPatternThatTopic);
                         categoryPatternThatTopic = partialPatternThatTopic + " <THAT> * <TOPIC> *";
@@ -227,7 +232,7 @@ public final class AB {
                         suggestedCategories.add(c);
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("findPatterns error", e);
                 }
             }
         }
@@ -243,7 +248,7 @@ public final class AB {
                     suggestedCategories.add(c);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("findPatterns error", e);
             }
         }
         for (String key : NodemapperOperator.keySet(node)) {
@@ -281,23 +286,22 @@ public final class AB {
                             Nodemapper match = patternGraph.match(sentence, "unknown", "unknown");
 
                             if (match == null) {
-                                System.out.println(sentence + " null match");
+                                logger.info("{} null match", sentence);
                             } else {
                                 match.category.incrementActivationCnt();
                                 //System.out.println(count+". "+sentence+" matched "+match.category.inputThatTopic());
                             }
                             count += 1;
-                            if (count % 10000 == 0) { System.out.println(count); }
+                            if (count % 10000 == 0) { logger.info(String.valueOf(count)); }
                         }
                     }
                 }
             }
-            System.out.println("Finished classifying " + count + " inputs");
+            logger.info("Finished classifying {} inputs", count);
             //Close the input stream
             br.close();
-        } catch (Exception e) {//Catch exception if any
-            System.err.println("Error: " + e.getMessage());
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("classifyInputs error", e);
         }
     }
 
@@ -310,30 +314,30 @@ public final class AB {
      */
     public void ab() {
         String logFile = logfile;
-        MagicBooleans.trace_mode = false;
+        LogUtil.activateDebug(false);
         MagicBooleans.enable_external_sets = false;
         if (offer_alice_responses) { alice = new Bot("alice"); }
         Timer timer = new Timer();
         bot.brain.nodeStats();
         if (bot.brain.getCategories().size() < MagicNumbers.brain_print_size) { bot.brain.printgraph(); }
         timer.start();
-        System.out.println("Graphing inputs");
+        logger.info("Graphing inputs");
         graphInputs(logFile);
-        System.out.println(timer.elapsedTimeSecs() + " seconds Graphing inputs");
+        logger.info("{} seconds Graphing inputs", timer.elapsedTimeSecs());
         inputGraph.nodeStats();
         if (inputGraph.getCategories().size() < MagicNumbers.brain_print_size) { inputGraph.printgraph(); }
         //bot.inputGraph.printgraph();
         timer.start();
-        System.out.println("Finding Patterns");
+        logger.info("Finding Patterns");
         findPatterns();
-        System.out.println(suggestedCategories.size() + " suggested categories");
-        System.out.println(timer.elapsedTimeSecs() + " seconds finding patterns");
+        logger.info("{} suggested categories", suggestedCategories.size());
+        logger.info("{} seconds finding patterns", timer.elapsedTimeSecs());
         timer.start();
         patternGraph.nodeStats();
         if (patternGraph.getCategories().size() < MagicNumbers.brain_print_size) { patternGraph.printgraph(); }
-        System.out.println("Classifying Inputs from " + logFile);
+        logger.info("Classifying Inputs from {}", logFile);
         classifyInputs(logFile);
-        System.out.println(timer.elapsedTimeSecs() + " classifying inputs");
+        logger.info("{} classifying inputs", timer.elapsedTimeSecs());
     }
 
     public List<Category> nonZeroActivationCount(List<Category> suggestedCategories) {
@@ -382,8 +386,8 @@ public final class AB {
                 List<String> samples = new ArrayList<>(c.getMatches(bot));
                 Collections.shuffle(samples);
                 int sampleSize = Math.min(MagicNumbers.displayed_input_sample_size, samples.size());
-                samples.stream().limit(sampleSize).forEach(System.out::println);
-                System.out.println("[" + c.getActivationCnt() + "] " + c.inputThatTopic());
+                samples.stream().limit(sampleSize).forEach(logger::info);
+                logger.info("[{}] {}", c.getActivationCnt(), c.inputThatTopic());
                 if (offer_alice_responses) {
                     Nodemapper node = alice.brain.findNode(c);
                     if (node != null) {
@@ -393,7 +397,7 @@ public final class AB {
                         if (displayAliceTemplate.length() > 200) {
                             displayAliceTemplate = displayAliceTemplate.substring(0, 200);
                         }
-                        System.out.println("ALICE: " + displayAliceTemplate);
+                        logger.info("ALICE: {}", displayAliceTemplate);
                     } else {
                         alicetemplate = null;
                     }
@@ -407,11 +411,11 @@ public final class AB {
                 productivity(runCompletedCnt, timer);
                 terminalInteractionStep(bot, "", textLine, c, alicetemplate);
             } catch (Exception ex) {
-                ex.printStackTrace();
-                System.out.println("Returning to Category Browser");
+                logger.error("terminalInteraction error", ex);
+                logger.info("Returning to Category Browser");
             }
         }
-        System.out.println("No more samples");
+        logger.info("No more samples");
         bot.writeAIMLFiles();
         bot.writeAIMLIFFiles();
     }
@@ -433,7 +437,7 @@ public final class AB {
                 String pattern = textLine.substring(index, jndex);
                 c.setPattern(pattern);
                 textLine = textLine.substring(kndex, textLine.length());
-                System.out.println("Got pattern = " + pattern + " template = " + textLine);
+                logger.info("Got pattern = {} template = {}", pattern, textLine);
             }
         }
         String botThinks = "";
@@ -444,7 +448,7 @@ public final class AB {
                 botThinks = "<think><set name=\"" + p + "\"><set name=\"topic\"><star/></set></set></think>";
             }
         }
-        String template = null;
+        String template;
         if (textLine.equals("q")) {
             System.exit(0);       // Quit program
         } else if (textLine.equals("wq")) {   // Write AIML Files and quit program

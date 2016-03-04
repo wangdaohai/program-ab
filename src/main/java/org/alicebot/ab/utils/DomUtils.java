@@ -1,5 +1,7 @@
 package org.alicebot.ab.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -17,6 +19,8 @@ import java.io.InputStream;
 import java.io.StringWriter;
 
 public final class DomUtils {
+
+    private static final Logger logger = LoggerFactory.getLogger(DomUtils.class);
 
     private DomUtils() {}
 
@@ -59,7 +63,7 @@ public final class DomUtils {
             t.setOutputProperty(OutputKeys.INDENT, "no");
             t.transform(new DOMSource(node), new StreamResult(sw));
         } catch (TransformerException te) {
-            System.out.println("nodeToString Transformer Exception");
+            logger.error("nodeToString Transformer Exception", te);
         }
         String result = sw.toString();
         //MagicBooleans.trace("nodeToString() returning: " + result);

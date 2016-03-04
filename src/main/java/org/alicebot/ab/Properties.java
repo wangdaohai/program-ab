@@ -19,6 +19,9 @@ package org.alicebot.ab;
         Boston, MA  02110-1301, USA.
 */
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.*;
 import java.util.HashMap;
 
@@ -27,6 +30,9 @@ import java.util.HashMap;
  */
 
 public class Properties extends HashMap<String, String> {
+
+    private static final Logger logger = LoggerFactory.getLogger(Properties.class);
+
     /**
      * get the value of a bot property.
      *
@@ -58,7 +64,7 @@ public class Properties extends HashMap<String, String> {
                 }
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error("getPropertiesFromInputStream error", ex);
         }
         return cnt;
     }
@@ -69,23 +75,20 @@ public class Properties extends HashMap<String, String> {
      * @param filename file containing bot properties
      */
     public int getProperties(String filename) {
-        int cnt = 0;
-        if (MagicBooleans.trace_mode) { System.out.println("Get Properties: " + filename); }
+        logger.debug("Get Properties: {}", filename);
         try {
             // Open the file that is the first
             // command line parameter
             File file = new File(filename);
             if (file.exists()) {
-                if (MagicBooleans.trace_mode) { System.out.println("Exists: " + filename); }
-                FileInputStream fstream = new FileInputStream(filename);
-                // Get the object
-                cnt = getPropertiesFromInputStream(fstream);
-                //Close the input stream
-                fstream.close();
+                logger.debug("Exists: {}", filename);
+                try (FileInputStream fstream = new FileInputStream(filename)) {
+                    return getPropertiesFromInputStream(fstream);
+                }
             }
-        } catch (Exception e) {//Catch exception if any
-            System.err.println("Error: " + e.getMessage());
+        } catch (Exception e) {
+            logger.error("getProperties error", e);
         }
-        return cnt;
+        return 0;
     }
 }

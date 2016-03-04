@@ -4,6 +4,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -12,6 +14,8 @@ import java.net.*;
 import java.util.Enumeration;
 
 public final class NetworkUtils {
+
+    private static final Logger logger = LoggerFactory.getLogger(NetworkUtils.class);
 
     private NetworkUtils() {}
 
@@ -25,13 +29,12 @@ public final class NetworkUtils {
                         String ipAddress = inetAddress.getHostAddress();
                         int p = ipAddress.indexOf('%');
                         if (p > 0) { ipAddress = ipAddress.substring(0, p); }
-                        //if (MagicBooleans.trace_mode) System.out.println("--> localIPAddress = "+ipAddress);
                         return ipAddress;
                     }
                 }
             }
         } catch (SocketException ex) {
-            ex.printStackTrace();
+            logger.error("localIPAddress error", ex);
         }
         return "127.0.0.1";
     }
@@ -165,9 +168,9 @@ public final class NetworkUtils {
                         URLEncoder.encode(input, "UTF-8"));
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error("responseContentUri error", ex);
         }
-        System.out.println(spec);
+        logger.info(spec);
         return spec;
     }
 

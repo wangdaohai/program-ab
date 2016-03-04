@@ -1,6 +1,12 @@
 package org.alicebot.ab;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ChatTest {
+
+    private final Logger logger = LoggerFactory.getLogger(ChatTest.class);
+
     Bot bot;
     Chat chatSession;
     String[][] pairs = {
@@ -257,7 +263,7 @@ public class ChatTest {
         this.chatSession = new Chat(bot);
     }
 
-    public void testMultisentenceRespond() throws IllegalStateException {
+    public void testMultisentenceRespond() {
 
         for (String[] pair : pairs) {
             String request = pair[0];
@@ -267,6 +273,6 @@ public class ChatTest {
                 throw new IllegalStateException(actual + " should contain" + expected);
             }
         }
-        System.out.println("Passed " + pairs.length + " test cases.");
+        logger.info("Passed {} test cases.", pairs.length);
     }
 }

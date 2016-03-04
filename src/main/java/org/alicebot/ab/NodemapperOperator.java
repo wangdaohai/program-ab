@@ -91,15 +91,6 @@ public final class NodemapperOperator {
     }
 
     /**
-     * print all node keys
-     *
-     * @param node Nodemapper object
-     */
-    public static void printKeys(Nodemapper node) {
-        keySet(node).forEach(System.out::println);
-    }
-
-    /**
      * get key set of a node
      *
      * @param node Nodemapper object

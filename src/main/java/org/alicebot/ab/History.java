@@ -19,12 +19,18 @@ package org.alicebot.ab;
         Boston, MA  02110-1301, USA.
 */
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * History object to maintain history of input, that request and response
  *
  * @param <T> type of history object
  */
 public final class History<T> {
+
+    private static final Logger logger = LoggerFactory.getLogger(History.class);
+
     private final Object[] history = new Object[MagicNumbers.max_history];
     private final String name;
     private final T defaultValue;
@@ -75,8 +81,8 @@ public final class History<T> {
     public void printHistory() {
         //noinspection ObjectEquality
         for (int i = 0; get(i) != null && get(i) != defaultValue; i++) {
-            System.out.println(name + "History " + (i + 1) + " = " + get(i));
-            System.out.println(String.valueOf(get(i).getClass()).contains("History"));
+            logger.info("{}History {} = {}", name, i + 1, get(i));
+            logger.info(String.valueOf(String.valueOf(get(i).getClass()).contains("History")));
             if (String.valueOf(get(i).getClass()).contains("History")) { ((History<?>) get(i)).printHistory(); }
         }
     }

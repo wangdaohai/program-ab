@@ -20,6 +20,8 @@ package org.alicebot.ab;
 */
 
 import org.alicebot.ab.utils.JapaneseUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.HashMap;
@@ -28,6 +30,9 @@ import java.util.HashMap;
  * Manage client predicates
  */
 public class Predicates extends HashMap<String, String> {
+
+    private static final Logger logger = LoggerFactory.getLogger(Predicates.class);
+
     /**
      * save a predicate value
      *
@@ -43,10 +48,7 @@ public class Predicates extends HashMap<String, String> {
         }
         if (key.equals("topic") && value.isEmpty()) { value = MagicStrings.default_get; }
         if (value.equals(MagicStrings.too_much_recursion)) { value = MagicStrings.default_list_item; }
-        // MagicBooleans.trace("Setting predicate key: " + key + " to value: " + value);
-        String result = super.put(key, value);
-        //MagicBooleans.trace("in predicates.put, returning: " + result);
-        return result;
+        return super.put(key, value);
     }
 
     /**
@@ -81,7 +83,7 @@ public class Predicates extends HashMap<String, String> {
                 }
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error("getPredicateDefaultsFromInputStream error", ex);
         }
     }
 
@@ -101,8 +103,8 @@ public class Predicates extends HashMap<String, String> {
                 getPredicateDefaultsFromInputStream(fstream);
                 fstream.close();
             }
-        } catch (Exception e) {//Catch exception if any
-            System.err.println("Error: " + e.getMessage());
+        } catch (Exception e) {
+            logger.error("getPredicateDefaults error", e);
         }
     }
 }

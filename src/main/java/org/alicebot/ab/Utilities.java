@@ -20,11 +20,15 @@ package org.alicebot.ab;
 */
 
 import org.alicebot.ab.utils.CalendarUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.*;
 
 public final class Utilities {
+
+    private static final Logger logger = LoggerFactory.getLogger(Utilities.class);
 
     private Utilities() {}
 
@@ -71,7 +75,7 @@ public final class Utilities {
                 }
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error("getFileFromInputStream error", ex);
         }
         return contents.toString().trim();
     }
@@ -87,8 +91,8 @@ public final class Utilities {
                 contents = getFileFromInputStream(fstream);
                 fstream.close();
             }
-        } catch (Exception e) {//Catch exception if any
-            System.err.println("Error: " + e.getMessage());
+        } catch (Exception e) {
+            logger.error("getFile error", e);
         }
         //System.out.println("getFile: "+contents);
         return contents;
@@ -104,7 +108,7 @@ public final class Utilities {
                 copyright.append((strLine.isEmpty()) ? "\n" : ("<!-- " + strLine + " -->\n"));
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error("getCopyrightFromInputStream error", ex);
         }
         return copyright.toString();
     }
@@ -128,8 +132,8 @@ public final class Utilities {
             copyright = copyright.replace("[filename]", AIMLFilename);
             copyright = copyright.replace("[botmaster]", bot.properties.get("botmaster"));
             copyright = copyright.replace("[organization]", bot.properties.get("organization"));
-        } catch (Exception e) {//Catch exception if any
-            System.err.println("Error: " + e.getMessage());
+        } catch (Exception e) {
+            logger.error("getCopyright error", e);
         }
         copyright += "<!--  -->\n";
         //System.out.println("Copyright: "+copyright);

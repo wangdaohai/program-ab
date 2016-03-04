@@ -5,11 +5,15 @@ import net.reduls.sanmoku.Tagger;
 import org.alicebot.ab.AIMLProcessor;
 import org.alicebot.ab.MagicBooleans;
 import org.alicebot.ab.MagicStrings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public final class JapaneseUtils {
+
+    private static final Logger logger = LoggerFactory.getLogger(JapaneseUtils.class);
 
     private JapaneseUtils() {}
 
@@ -44,9 +48,7 @@ public final class JapaneseUtils {
         while (result.contains("anon ")) {
             result = result.replace("anon ", "anon"); // for Triple Store
         }
-        result = result.trim();
-        //if (MagicBooleans.trace_mode) System.out.println("tokenizeSentence '"+sentence+"'-->'"+result+"'");
-        return result;
+        return result.trim();
     }
 
     public static String tokenizeXML(String xmlExpression) {
@@ -57,7 +59,7 @@ public final class JapaneseUtils {
             Node root = DomUtils.parseString(xmlExpression);
             response = recursEval(root);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("tokenizeXML error ", e);
         }
         return AIMLProcessor.trimTag(response, "sentence");
     }
@@ -76,7 +78,7 @@ public final class JapaneseUtils {
                     return (genericXML(node));
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error("recursEval error ", ex);
         }
         return "JP Morph Error";
     }
@@ -97,8 +99,7 @@ public final class JapaneseUtils {
                 result.append(recursEval(child));
             }
         } catch (Exception ex) {
-            System.out.println("Something went wrong with evalTagContent");
-            ex.printStackTrace();
+            logger.error("Something went wrong with evalTagContent", ex);
         }
         return result.toString();
     }

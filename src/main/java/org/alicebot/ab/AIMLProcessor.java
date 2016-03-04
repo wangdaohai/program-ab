@@ -20,6 +20,8 @@ package org.alicebot.ab;
 */
 
 import org.alicebot.ab.utils.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -37,7 +39,7 @@ import java.util.Set;
  */
 public final class AIMLProcessor {
 
-    private static final boolean DEBUG = false;
+    private static final Logger logger = LoggerFactory.getLogger(AIMLProcessor.class);
 
     public static AIMLProcessorExtension extension;
 
@@ -71,7 +73,7 @@ public final class AIMLProcessor {
             } else if (mName.equals("template")) {
                 template = DomUtils.nodeToString(m);
             } else {
-                System.out.println("categoryProcessor: unexpected " + mName + " in " + DomUtils.nodeToString(m));
+                logger.info("categoryProcessor: unexpected {} in {}", mName, DomUtils.nodeToString(m));
             }
         }
         //System.out.println("categoryProcessor: pattern="+pattern);
@@ -84,18 +86,15 @@ public final class AIMLProcessor {
 
         template = trimTag(template, "template");
         if (MagicBooleans.jp_tokenize) {
-            String morphPattern = JapaneseUtils.tokenizeSentence(pattern);
-            pattern = morphPattern;
-            String morphThatPattern = JapaneseUtils.tokenizeSentence(that);
-            that = morphThatPattern;
-            String morphTopicPattern = JapaneseUtils.tokenizeSentence(topic);
-            topic = morphTopicPattern;
+            pattern = JapaneseUtils.tokenizeSentence(pattern);
+            that = JapaneseUtils.tokenizeSentence(that);
+            topic = JapaneseUtils.tokenizeSentence(topic);
         }
         Category c = new Category(0, pattern, that, topic, template, aimlFile);
         /*if (template == null) System.out.println("Template is null");
         if (template.length()==0) System.out.println("Template is zero length");*/
         if (template == null || template.isEmpty()) {
-            System.out.println("Category " + c.inputThatTopic() + " discarded due to blank or missing <template>.");
+            logger.info("Category {} discarded due to blank or missing <template>.", c.inputThatTopic());
         } else {
             categories.add(c);
         }
@@ -158,8 +157,7 @@ public final class AIMLProcessor {
             }
             return categories;
         } catch (Exception ex) {
-            System.out.println("AIMLToCategories: " + ex);
-            ex.printStackTrace();
+            logger.error("AIMLToCategories error", ex);
             return null;
         }
     }
@@ -200,7 +198,8 @@ public final class AIMLProcessor {
      * @return bot's reply.
      */
     public static String respond(String input, String that, String topic, Chat chatSession, int srCnt) {
-        MagicBooleans.trace("input: " + input + ", that: " + that + ", topic: " + topic + ", chatSession: " + chatSession + ", srCnt: " + srCnt);
+        logger.debug("input: {}, that: {}, topic: {}, chatSession: {}, srCnt: {}",
+            input, that, topic, chatSession, srCnt);
         if (input == null || input.isEmpty()) { input = MagicStrings.null_input; }
         sraiCount = srCnt;
         String response = MagicStrings.default_bot_response;
@@ -214,7 +213,7 @@ public final class AIMLProcessor {
             response = evalTemplate(template, ps);
             //System.out.println("That="+that);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error("respond error", ex);
         }
         return response;
     }
@@ -280,8 +279,7 @@ public final class AIMLProcessor {
                 //MagicBooleans.trace("in AIMLProcessor.evalTagContent(), result: " + result);
             }
         } catch (Exception ex) {
-            System.out.println("Something went wrong with evalTagContent");
-            ex.printStackTrace();
+            logger.error("Something went wrong with evalTagContent", ex);
         }
         //MagicBooleans.trace("AIMLProcessor.evalTagContent() returning: " + result);
         return result.toString();
@@ -360,9 +358,9 @@ public final class AIMLProcessor {
             result = ps.chatSession.bot.preProcessor.normalize(result);
             result = JapaneseUtils.tokenizeSentence(result);
             String topic = ps.chatSession.predicates.get("topic");     // the that stays the same, but the topic may have changed
-            if (MagicBooleans.trace_mode) {
-                System.out.println(trace_count + ". <srai>" + result + "</srai> from " + ps.leaf.category.inputThatTopic() + " topic=" + topic + ") ");
-                trace_count++;
+            if (logger.isDebugEnabled()) {
+                logger.debug("{}. <srai>{}</srai> from {} topic={}) ",
+                    trace_count++, result, ps.leaf.category.inputThatTopic(), topic);
             }
             Nodemapper leaf = ps.chatSession.bot.brain.match(result, ps.that, topic);
             if (leaf == null) {return (response);}
@@ -370,11 +368,9 @@ public final class AIMLProcessor {
             response = evalTemplate(leaf.category.getTemplate(), new ParseState(ps.depth + 1, ps.chatSession, ps.input, ps.that, topic, leaf));
             //System.out.println("That="+that);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error("srai error", ex);
         }
-        String result = response.trim();
-        //MagicBooleans.trace("in AIMLProcessor.srai(), returning: " + result);
-        return result;
+        return response.trim();
     }
 
     /**
@@ -406,7 +402,7 @@ public final class AIMLProcessor {
         } else {
             result = m.getNodeValue();
         }
-        //MagicBooleans.trace("in AIMLProcessor.getAttributeOrTagValue (), returning: " + result);
+        logger.trace("in AIMLProcessor.getAttributeOrTagValue (), returning: {}");
         return result;
     }
 
@@ -450,7 +446,7 @@ public final class AIMLProcessor {
         } else {
             AIMLMap map = ps.chatSession.bot.mapMap.get(mapName);
             if (map != null) { result = map.get(contents.toUpperCase()); }
-            //System.out.println("AIMLProcessor map "+contents+" "+result);
+            logger.trace("AIMLProcessor map {} {}", contents, result);
             if (result == null) { result = MagicStrings.default_map; }
             result = result.trim();
         }
@@ -475,16 +471,16 @@ public final class AIMLProcessor {
         String value = result.trim();
         if (predicateName != null) {
             ps.chatSession.predicates.put(predicateName, result);
-            MagicBooleans.trace("Set predicate " + predicateName + " to " + result + " in " + ps.leaf.category.inputThatTopic());
+            logger.debug("Set predicate {} to {} in {}", predicateName, result, ps.leaf.category.inputThatTopic());
         }
         if (varName != null) {
             ps.vars.put(varName, result);
-            MagicBooleans.trace("Set var " + varName + " to " + value + " in " + ps.leaf.category.inputThatTopic());
+            logger.debug("Set var {} to {} in {}", varName, value, ps.leaf.category.inputThatTopic());
         }
         if (ps.chatSession.bot.pronounSet.contains(predicateName)) {
             result = predicateName;
         }
-        //MagicBooleans.trace("in AIMLProcessor.set, returning: " + result);
+        logger.trace("in AIMLProcessor.set, returning: {}", result);
         return result;
     }
 
@@ -497,7 +493,7 @@ public final class AIMLProcessor {
      * @return the result of the <get> operation
      */
     private static String get(Node node, ParseState ps) {
-        //MagicBooleans.trace("AIMLProcessor.get(node: " + node + ", ps: " + ps + ")");
+        logger.trace("AIMLProcessor.get(node: {}, ps: {})", node, ps);
         String result = MagicStrings.default_get;
         String predicateName = getAttributeOrTagValue(node, ps, "name");
         String varName = getAttributeOrTagValue(node, ps, "var");
@@ -510,13 +506,13 @@ public final class AIMLProcessor {
         } else if (varName != null) {
             result = ps.vars.get(varName).trim();
         }
-        //MagicBooleans.trace("in AIMLProcessor.get, returning: " + result);
+        logger.trace("in AIMLProcessor.get, returning: {}", result);
         return result;
     }
 
     public static String tupleGet(String tupleName, String varName) {
         Tuple tuple = Tuple.tupleMap.get(tupleName);
-        //System.out.println("Tuple = "+tuple.printTuple());
+        //System.out.println("Tuple = "+tuple.toString());
         //System.out.println("Value = "+tuple.getValue(varName));
         return tuple == null ? MagicStrings.default_get : tuple.getValue(varName);
     }
@@ -534,7 +530,6 @@ public final class AIMLProcessor {
         //HashSet<String> attributeNames = Utilities.stringSet("name");
         String propertyName = getAttributeOrTagValue(node, ps, "name");
         if (propertyName != null) { result = ps.chatSession.bot.properties.get(propertyName).trim(); }
-        //System.out.println("BOT: "+m.getNodeValue()+"="+result);
         return result;
     }
 
@@ -546,14 +541,10 @@ public final class AIMLProcessor {
      * @return the formatted date
      */
     private static String date(Node node, ParseState ps) {
-        //HashSet<String> attributeNames = Utilities.stringSet("jformat","format","locale","timezone");
         String jformat = getAttributeOrTagValue(node, ps, "jformat");      // AIML 2.0
         String locale = getAttributeOrTagValue(node, ps, "locale");
         String timezone = getAttributeOrTagValue(node, ps, "timezone");
-        //System.out.println("Format = "+format+" Locale = "+locale+" Timezone = "+timezone);
-        String dateAsString = CalendarUtils.date(jformat, locale, timezone);
-        //System.out.println(dateAsString);
-        return dateAsString;
+        return CalendarUtils.date(jformat, locale, timezone);
     }
 
     /**
@@ -589,10 +580,15 @@ public final class AIMLProcessor {
      * @return the the integer intex value
      */
     private static int getIndexValue(Node node, ParseState ps) {
-        int index = 0;
         String value = getAttributeOrTagValue(node, ps, "index");
-        if (value != null) { try {index = Integer.parseInt(value) - 1;} catch (Exception ex) {ex.printStackTrace();} }
-        return index;
+        if (value != null) {
+            try {
+                return Integer.parseInt(value) - 1;
+            } catch (Exception ex) {
+                logger.error("getIndexValue error", ex);
+            }
+        }
+        return 0;
     }
 
     /**
@@ -605,7 +601,6 @@ public final class AIMLProcessor {
      */
     private static String inputStar(Node node, ParseState ps) {
         int index = getIndexValue(node, ps);
-        //System.out.println("inputStar: ps depth="+ps.depth+" index="+index+" star="+result);
         return ps.starBindings.inputStars.star(index) == null ? "" : ps.starBindings.inputStars.star(index).trim();
     }
 
@@ -700,12 +695,13 @@ public final class AIMLProcessor {
         String value = getAttributeOrTagValue(node, ps, "index");
         if (value != null) {
             try {
-                String pair = value;
-                String[] spair = pair.split(",");
+                String[] spair = value.split(",");
                 index = Integer.parseInt(spair[0]) - 1;
                 jndex = Integer.parseInt(spair[1]) - 1;
-                System.out.println("That index=" + index + "," + jndex);
-            } catch (Exception ex) { ex.printStackTrace(); }
+                logger.info("That index={},{}", index, jndex);
+            } catch (Exception ex) {
+                logger.error("that error", ex);
+            }
         }
         String that = MagicStrings.unknown_history_item;
         History<String> hist = ps.chatSession.thatHistory.get(index);
@@ -808,11 +804,8 @@ public final class AIMLProcessor {
      * @return normalized string
      */
     private static String normalize(Node node, ParseState ps) {            // AIML 2.0
-        //MagicBooleans.trace("AIMLPreprocessor.normalize(node: " + node + ", ps: " + ")");
         String result = evalTagContent(node, ps, null);
-        //MagicBooleans.trace("in AIMLPreprocessor.normalize(), result: " + result);
         String returning = ps.chatSession.bot.preProcessor.normalize(result);
-        //MagicBooleans.trace("in AIMLPreprocessor.normalize(), returning: " + returning);
         return returning;
     }
 
@@ -1002,7 +995,7 @@ public final class AIMLProcessor {
                     }
                 }
                 pattern = pattern.substring("<pattern>".length(), pattern.length() - "</pattern>".length());
-                if (MagicBooleans.trace_mode) { System.out.println("Learn Pattern = " + pattern); }
+                logger.debug("Learn Pattern = {}", pattern);
                 if (template.length() >= "<template></template>".length()) {
                     template = template.substring("<template>".length(), template.length() - "</template>".length());
                 }
@@ -1015,18 +1008,14 @@ public final class AIMLProcessor {
                 that = that.toUpperCase();
                 that = that.replaceAll("\n", " ");
                 that = that.replaceAll("[ ]+", " ");
-                if (MagicBooleans.trace_mode) {
-                    System.out.println("Learn Pattern = " + pattern);
-                    System.out.println("Learn That = " + that);
-                    System.out.println("Learn Template = " + template);
-                }
+                logger.debug("Learn Pattern = {}", pattern);
+                logger.debug("Learn That = {}", that);
+                logger.debug("Learn Template = {}", template);
                 Category c;
                 if (node.getNodeName().equals("learn")) {
-                    //System.out.println("node is <learn>");
                     c = new Category(0, pattern, that, "*", template, MagicStrings.null_aiml_file);
                     ps.chatSession.bot.learnGraph.addCategory(c);
                 } else {// learnf
-                    //System.out.println("node is <learnf>");
                     c = new Category(0, pattern, that, "*", template, MagicStrings.learnf_aiml_file);
                     ps.chatSession.bot.learnfGraph.addCategory(c);
                 }
@@ -1302,9 +1291,9 @@ public final class AIMLProcessor {
         try {
             result = IOUtils.evalScript("JavaScript", script);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error("javascript error", ex);
         }
-        MagicBooleans.trace("in AIMLProcessor.javascript, returning result: " + result);
+        logger.debug("in AIMLProcessor.javascript, returning result: {}", result);
         return result;
     }
 
@@ -1473,7 +1462,7 @@ public final class AIMLProcessor {
                 return (genericXML(node, ps));
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error("recursEval error", ex);
             return "";
         }
     }
@@ -1493,7 +1482,7 @@ public final class AIMLProcessor {
             Node root = DomUtils.parseString(template);
             response = recursEval(root, ps);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("evalTemplate error", e);
         }
         //MagicBooleans.trace("in AIMLProcessor.evalTemplate() returning: " + response);
         return response;
@@ -1506,14 +1495,13 @@ public final class AIMLProcessor {
      * @return true or false.
      */
     public static boolean validTemplate(String template) {
-        MagicBooleans.trace("AIMLProcessor.validTemplate(template: " + template + ")");
+        logger.debug("AIMLProcessor.validTemplate(template: {})", template);
         try {
             template = "<template>" + template + "</template>";
             DomUtils.parseString(template);
             return true;
         } catch (Exception e) {
-            //e.printStackTrace();
-            System.out.println("Invalid Template " + template);
+            logger.error("Invalid Template {}", template, e);
             return false;
         }
 

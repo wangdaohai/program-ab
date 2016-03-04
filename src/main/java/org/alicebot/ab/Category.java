@@ -19,12 +19,18 @@ package org.alicebot.ab;
         Boston, MA  02110-1301, USA.
 */
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Comparator;
 
 /**
  * structure representing an AIML category and operations on Category
  */
 public class Category {
+
+    private static final Logger logger = LoggerFactory.getLogger(Category.class);
+
     private String pattern;
     private String that;
     private String topic;
@@ -273,7 +279,7 @@ public class Category {
                 "<template>" + category.getTemplate() + "</template>" + NL +
                 "</category>" + topicEnd;
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error("categoryToAIML error", ex);
         }
         return result;
     }

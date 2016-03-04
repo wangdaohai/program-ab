@@ -19,6 +19,9 @@ package org.alicebot.ab;
         Boston, MA  02110-1301, USA.
 */
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.*;
 import java.util.HashMap;
 
@@ -29,6 +32,9 @@ import java.util.HashMap;
  * Elements of the domain are called keys and elements of the range are called values.
  */
 public class AIMLMap extends HashMap<String, String> {
+
+    private static final Logger logger = LoggerFactory.getLogger(AIMLMap.class);
+
     public String mapName;
     String host; // for external maps
     String botid; // for external maps
@@ -76,7 +82,7 @@ public class AIMLMap extends HashMap<String, String> {
             //String[] split = key.split(" ");
             String query = mapName.toUpperCase() + " " + key;
             String response = Sraix.sraix(null, query, MagicStrings.default_map, null, host, botid, null, "0");
-            System.out.println("External " + mapName + "(" + key + ")=" + response);
+            logger.info("External {}({})={}", mapName, key, response);
             value = response;
         } else {
             value = super.get(key);
@@ -100,7 +106,7 @@ public class AIMLMap extends HashMap<String, String> {
     }
 
     public void writeAIMLMap() {
-        System.out.println("Writing AIML Map " + mapName);
+        logger.info("Writing AIML Map {}", mapName);
         try {
             // Create file
             FileWriter fstream = new FileWriter(bot.maps_path + "/" + mapName + ".txt");
@@ -113,8 +119,8 @@ public class AIMLMap extends HashMap<String, String> {
             }
             //Close the output stream
             out.close();
-        } catch (Exception e) {//Catch exception if any
-            System.err.println("Error: " + e.getMessage());
+        } catch (Exception e) {
+            logger.error("writeAIMLMap error", e);
         }
     }
 
@@ -134,7 +140,7 @@ public class AIMLMap extends HashMap<String, String> {
                             host = splitLine[1];
                             botid = splitLine[2];
                             isExternal = true;
-                            System.out.println("Created external map at " + host + " " + botid);
+                            logger.info("Created external map at {} {}", host, botid);
                         }
                     } else {
                         String key = splitLine[0].toUpperCase();
@@ -146,7 +152,7 @@ public class AIMLMap extends HashMap<String, String> {
                 }
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error("readAIMLMapFromInputStream error", ex);
         }
         return cnt;
     }
@@ -157,26 +163,22 @@ public class AIMLMap extends HashMap<String, String> {
      * @param bot the bot associated with this map.
      */
     public int readAIMLMap(Bot bot) {
-        if (MagicBooleans.trace_mode) {
-            System.out.println("Reading AIML Map " + bot.maps_path + "/" + mapName + ".txt");
-        }
-        int cnt = 0;
         try {
             // Open the file that is the first
             // command line parameter
-            File file = new File(bot.maps_path + "/" + mapName + ".txt");
+            File file = new File(bot.maps_path, mapName + ".txt");
+            logger.debug("Reading AIML Map {}", file);
             if (file.exists()) {
-                FileInputStream fstream = new FileInputStream(bot.maps_path + "/" + mapName + ".txt");
-                // Get the object
-                cnt = readAIMLMapFromInputStream(fstream, bot);
-                fstream.close();
+                try (FileInputStream fstream = new FileInputStream(file)) {
+                    return readAIMLMapFromInputStream(fstream, bot);
+                }
             } else {
-                System.out.println(bot.maps_path + "/" + mapName + ".txt not found");
+                logger.info("{} not found", file);
             }
-        } catch (Exception e) {//Catch exception if any
-            System.err.println("Error: " + e.getMessage());
+        } catch (Exception e) {
+            logger.error("readAIMLMap error", e);
         }
-        return cnt;
+        return 0;
 
     }
 

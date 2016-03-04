@@ -1,8 +1,13 @@
 package org.alicebot.ab;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.*;
 
 public final class Verbs {
+
+    private static final Logger logger = LoggerFactory.getLogger(Verbs.class);
 
     private Verbs() {}
 
@@ -114,25 +119,24 @@ public final class Verbs {
         AIMLMap being2be = new AIMLMap("being2be", bot);
 
         for (String verb : allVerbs) {
-            String beForm = verb;
             String isForm = is(verb);
             String wasForm = was(verb);
             String beenForm = been(verb);
             String beingForm = being(verb);
-            System.out.println(verb + "," + isForm + "," + wasForm + "," + beingForm + "," + beenForm);
-            be.add(beForm);
+            logger.info("{},{},{},{},{}", verb, isForm, wasForm, beingForm, beenForm);
+            be.add(verb);
             is.add(isForm);
             was.add(wasForm);
             been.add(beenForm);
             being.add(beingForm);
-            be2is.put(beForm, isForm);
-            is2be.put(isForm, beForm);
-            be2was.put(beForm, wasForm);
-            was2be.put(wasForm, beForm);
-            be2been.put(beForm, beenForm);
-            been2be.put(beenForm, beForm);
-            be2being.put(beForm, beingForm);
-            being2be.put(beingForm, beForm);
+            be2is.put(verb, isForm);
+            is2be.put(isForm, verb);
+            be2was.put(verb, wasForm);
+            was2be.put(wasForm, verb);
+            be2been.put(verb, beenForm);
+            been2be.put(beenForm, verb);
+            be2being.put(verb, beingForm);
+            being2be.put(beingForm, verb);
 
         }
         be.writeAIMLSet();

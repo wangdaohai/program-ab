@@ -20,12 +20,17 @@
 */
 
 import org.alicebot.ab.*;
+import org.alicebot.ab.utils.LogUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
 public final class Main {
+
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
     private Main() {}
 
@@ -40,27 +45,27 @@ public final class Main {
     public static void mainFunction(String[] args) {
         String botName = "alice2";
         MagicBooleans.jp_tokenize = false;
-        MagicBooleans.trace_mode = true;
+        LogUtil.activateDebug(true);
         String action = "chat";
-        System.out.println(MagicStrings.program_name_version);
+        logger.info(MagicStrings.program_name_version);
         for (String s : args) {
             //System.out.println(s);
             String[] splitArg = s.split("=");
             if (splitArg.length >= 2) {
                 String option = splitArg[0];
                 String value = splitArg[1];
-                //if (MagicBooleans.trace_mode) System.out.println(option+"='"+value+"'");
+                logger.trace("{}='{}'", option, value);
                 if (option.equals("bot")) { botName = value; }
                 if (option.equals("action")) { action = value; }
                 if (option.equals("trace")) {
-                    MagicBooleans.trace_mode = value.equals("true");
+                    LogUtil.activateDebug("true".equals(value));
                 }
                 if (option.equals("morph")) {
                     MagicBooleans.jp_tokenize = value.equals("true");
                 }
             }
         }
-        if (MagicBooleans.trace_mode) { System.out.println("Working Directory = " + MagicStrings.root_path); }
+        logger.debug("Working Directory = {}", MagicStrings.root_path);
         Graphmaster.enableShortCuts = true;
         //Timer timer = new Timer();
         Bot bot = new Bot(botName, MagicStrings.root_path, action); //
@@ -70,10 +75,10 @@ public final class Main {
         //bot.preProcessor.normalizeFile("c:/ab/data/log2.txt", "c:/ab/data/log2normal.txt");
         //System.exit(0);
         if (bot.brain.getCategories().size() < MagicNumbers.brain_print_size) { bot.brain.printgraph(); }
-        if (MagicBooleans.trace_mode) { System.out.println("Action = '" + action + "'"); }
+        logger.debug("Action = '" + action + "'");
         if (action.equals("chat") || action.equals("chat-app")) {
             boolean doWrites = !action.equals("chat-app");
-            TestAB.testChat(bot, doWrites, MagicBooleans.trace_mode);
+            TestAB.testChat(bot, doWrites);
         }
         //else if (action.equals("test")) testSuite(bot, MagicStrings.root_path+"/data/find.txt");
         else if (action.equals("ab")) {
@@ -84,17 +89,19 @@ public final class Main {
             AB ab = new AB(bot, TestAB.sample_file);
             ab.abwq();
         } else if (action.equals("test")) {
-            TestAB.runTests(bot, MagicBooleans.trace_mode);
+            TestAB.runTests(bot);
         } else if (action.equals("shadow")) {
-            MagicBooleans.trace_mode = false;
+            LogUtil.activateDebug(false);
             bot.shadowChecker();
         } else if (action.equals("iqtest")) {
             ChatTest ct = new ChatTest(bot);
             try {
                 ct.testMultisentenceRespond();
-            } catch (Exception ex) { ex.printStackTrace(); }
+            } catch (Exception ex) {
+                logger.error("testMultisentenceRespond", ex);
+            }
         } else {
-            System.out.println("Unrecognized action " + action);
+            logger.warn("Unrecognized action {}", action);
         }
     }
 
@@ -107,7 +114,7 @@ public final class Main {
     }
 
     public static void getGloss(Bot bot, String filename) {
-        System.out.println("getGloss");
+        logger.info("getGloss");
         try {
             // Open the file that is the first
             // command line parameter
@@ -119,12 +126,12 @@ public final class Main {
                 fstream.close();
             }
         } catch (Exception e) {//Catch exception if any
-            System.err.println("Error: " + e.getMessage());
+            logger.error("getGloss error", e);
         }
     }
 
     public static void getGlossFromInputStream(Bot bot, InputStream in) {
-        System.out.println("getGlossFromInputStream");
+        logger.info("getGlossFromInputStream");
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
         Map<String, String> def = new HashMap<>();
         try {
@@ -141,13 +148,13 @@ public final class Main {
 
                     word = strLine.substring(start, end);
                     word = word.replaceAll("_", " ");
-                    System.out.println(word);
+                    logger.info(word);
 
                 } else if (strLine.contains("<gloss>")) {
                     gloss = strLine.replaceAll("<gloss>", "");
                     gloss = gloss.replaceAll("</gloss>", "");
                     gloss = gloss.trim();
-                    System.out.println(gloss);
+                    logger.info(gloss);
 
                 }
 
@@ -179,7 +186,7 @@ public final class Main {
                 if (cnt % 5000 == 0) { filecnt++; }
 
                 Category c = new Category(0, "WNDEF " + word, "*", "*", gloss, "wndefs" + filecnt + ".aiml");
-                System.out.println(cnt + " " + filecnt + " " + c.inputThatTopic() + ":" + c.getTemplate() + ":" + c.getFilename());
+                logger.info("{} {} {}:{}:{}", cnt, filecnt, c.inputThatTopic(), c.getTemplate(), c.getFilename());
                 Nodemapper node;
                 if ((node = bot.brain.findNode(c)) != null) {
                     node.category.setTemplate(node.category.getTemplate() + "," + gloss);
@@ -188,7 +195,7 @@ public final class Main {
 
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error("getGlossFromInputStream error", ex);
         }
     }
 
@@ -202,13 +209,13 @@ public final class Main {
             int count = 0;
             int limit = 1000;
             while ((strLine = br.readLine()) != null && count++ < limit) {
-                System.out.println("Human: " + strLine);
+                logger.info("Human: {}", strLine);
 
                 String response = chatSession.multisentenceRespond(strLine);
-                System.out.println("Robot: " + response);
+                logger.info("Robot: {}", response);
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.error("sraixCache error", ex);
         }
     }
 

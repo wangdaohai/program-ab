@@ -1,8 +1,14 @@
 package org.alicebot.ab;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.*;
 
 public class TripleStore {
+
+    private static final Logger logger = LoggerFactory.getLogger(TripleStore.class);
+
     public int idCnt = 0;
     public String name = "unknown";
     public Chat chatSession;
@@ -45,7 +51,7 @@ public class TripleStore {
 
         @Override
         public String toString() {
-            return "Triple(id="+id+",subject="+subject+",predicate="+predicate+",object="+object;
+            return "Triple(id=" + id + ",subject=" + subject + ",predicate=" + predicate + ",object=" + object;
         }
     }
 
@@ -110,12 +116,12 @@ public class TripleStore {
 
         String tripleString = s + ":" + p + ":" + o;
 
-        System.out.println("unMapTriple " + tripleString);
+        logger.info("unMapTriple {}", tripleString);
         tripleString = tripleString.toUpperCase();
 
         triple = idTriple.get(tripleStringId.get(tripleString));
 
-        System.out.println("unMapTriple " + triple);
+        logger.info("unMapTriple {}", triple);
         String id;
         if (triple != null) {
             id = triple.id;
@@ -166,15 +172,15 @@ public class TripleStore {
 
     public String deleteTriple(String subject, String predicate, String object) {
         if (subject == null || predicate == null || object == null) { return MagicStrings.undefined_triple; }
-        if (MagicBooleans.trace_mode) { System.out.println("Deleting " + subject + " " + predicate + " " + object); }
+        logger.debug("Deleting {} {} {}", subject, predicate, object);
         Triple triple = new Triple(subject, predicate, object);
         return unMapTriple(triple);
     }
 
     public void printTriples() {
-        for (Map.Entry<String, Triple> stringTripleEntry : idTriple.entrySet()) {
-            Triple triple = stringTripleEntry.getValue();
-            System.out.println(stringTripleEntry.getKey() + ":" + triple.subject + ":" + triple.predicate + ":" + triple.object);
+        for (Map.Entry<String, Triple> entry : idTriple.entrySet()) {
+            Triple triple = entry.getValue();
+            logger.info("{}:{}:{}:{}", entry.getKey(), triple.subject, triple.predicate, triple.object);
         }
     }
 
@@ -183,9 +189,7 @@ public class TripleStore {
     }
 
     public Set<String> getTriples(String s, String p, String o) {
-        if (MagicBooleans.trace_mode) {
-            System.out.println("TripleStore: getTriples [" + idTriple.size() + "] " + s + ":" + p + ":" + o);
-        }
+        logger.debug("TripleStore: getTriples [{}] {}:{}:{}", idTriple.size(), s, p, o);
         //printAllTriples();
         Set<String> subjectSet;
         if (s == null || s.startsWith("?")) {
@@ -283,9 +287,7 @@ public class TripleStore {
     }
 
     public void printAllTriples() {
-        for (String id : idTriple.keySet()) {
-            System.out.println(stringTriple(id));
-        }
+        idTriple.keySet().stream().map(this::stringTriple).forEach(logger::info);
     }
 
     public Set<Tuple> select(HashSet<String> vars, Set<String> visibleVars, List<Clause> clauses) {
@@ -295,16 +297,12 @@ public class TripleStore {
             Tuple tuple = new Tuple(vars, visibleVars);
             //System.out.println("TripleStore: select vars = "+tuple.printVars());
             result = selectFromRemainingClauses(tuple, clauses);
-            if (MagicBooleans.trace_mode) {
-                for (Tuple t : result) {
-                    System.out.println(t.printTuple());
-                }
+            if (logger.isDebugEnabled()) {
+                result.stream().map(Tuple::toString).forEach(logger::info);
             }
 
         } catch (Exception ex) {
-            System.out.println("Something went wrong with select " + visibleVars);
-            ex.printStackTrace();
-
+            logger.error("Something went wrong with select {}", visibleVars, ex);
         }
         return result;
     }
@@ -361,7 +359,7 @@ public class TripleStore {
     }
 
     public Set<Tuple> selectFromRemainingClauses(Tuple partial, List<Clause> clauses) {
-        //System.out.println("TripleStore: partial = "+partial.printTuple()+" clauses.size()=="+clauses.size());
+        //System.out.println("TripleStore: partial = "+partial.toString()+" clauses.size()=="+clauses.size());
         Set<Tuple> result = new HashSet<>();
         Clause clause = clauses.get(0);
         clause = adjustClause(partial, clause);
