@@ -62,7 +62,9 @@ public final class AIMLProcessor {
             Node m = children.item(j);
             String mName = m.getNodeName();
             //System.out.println("mName: " + mName);
-            if (mName.equals("#text")) {/*skip*/} else if (mName.equals("pattern")) {
+            if (mName.equals("#text")) {
+                /*skip*/
+            } else if (mName.equals("pattern")) {
                 pattern = DomUtils.nodeToString(m);
             } else if (mName.equals("that")) { that = DomUtils.nodeToString(m); } else if (mName.equals("topic")) {
                 topic = DomUtils.nodeToString(m);
@@ -962,11 +964,14 @@ public final class AIMLProcessor {
 
     private static String recursLearn(Node node, ParseState ps) {
         String nodeName = node.getNodeName();
-        if (nodeName.equals("#text")) {
-            return node.getNodeValue();
-        } else if (nodeName.equals("eval")) {
-            return evalTagContent(node, ps, null);                // AIML 2.0
-        } else { return unevaluatedAIML(node, ps); }
+        switch (nodeName) {
+            case "#text":
+                return node.getNodeValue();
+            case "eval":
+                return evalTagContent(node, ps, null);                // AIML 2.0
+            default:
+                return unevaluatedAIML(node, ps);
+        }
     }
 
     private static String learnEvalTagContent(Node node, ParseState ps) {

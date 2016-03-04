@@ -323,7 +323,7 @@ public class Bot {
         if (file.exists()) {
             try {
                 List<Category> certainCategories = readIFCategories(aimlif_path + "/" + fileName + MagicStrings.aimlif_file_suffix);
-                for (Category d : certainCategories) { graph.addCategory(d); }
+                certainCategories.forEach(graph::addCategory);
                 cnt = certainCategories.size();
                 System.out.println("readCertainIFCategories " + cnt + " categories from " + fileName + MagicStrings.aimlif_file_suffix);
             } catch (Exception iex) {

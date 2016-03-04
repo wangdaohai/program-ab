@@ -67,12 +67,13 @@ public final class JapaneseUtils {
 
             String nodeName = node.getNodeName();
             //System.out.println("recursEval "+nodeName);
-            if (nodeName.equals("#text")) {
-                return tokenizeFragment(node.getNodeValue());
-            } else if (nodeName.equals("sentence")) {
-                return evalTagContent(node);
-            } else {
-                return (genericXML(node));
+            switch (nodeName) {
+                case "#text":
+                    return tokenizeFragment(node.getNodeValue());
+                case "sentence":
+                    return evalTagContent(node);
+                default:
+                    return (genericXML(node));
             }
         } catch (Exception ex) {
             ex.printStackTrace();

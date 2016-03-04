@@ -27,6 +27,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AB {
     /**
@@ -61,7 +62,7 @@ public class AB {
         this.inputGraph = new Graphmaster(bot, "input");
         this.deletedGraph = new Graphmaster(bot, "deleted");
         this.patternGraph = new Graphmaster(bot, "pattern");
-        for (Category c : bot.brain.getCategories()) { patternGraph.addCategory(c); }
+        bot.brain.getCategories().forEach(patternGraph::addCategory);
         this.suggestedCategories = new ArrayList<>();
         passed = new AIMLSet("passed", bot);
         testSet = new AIMLSet("1000", bot);
@@ -336,13 +337,9 @@ public class AB {
     }
 
     public List<Category> nonZeroActivationCount(List<Category> suggestedCategories) {
-        List<Category> result = new ArrayList<>();
-        for (Category c : suggestedCategories) {
-            if (c.getActivationCnt() > 0) { result.add(c); }
-            // else     System.out.println("["+c.getActivationCnt()+"] "+c.inputThatTopic());
-        }
-
-        return result;
+        return suggestedCategories.stream()
+            .filter(c -> c.getActivationCnt() > 0)
+            .collect(Collectors.toList());
     }
 
     /**

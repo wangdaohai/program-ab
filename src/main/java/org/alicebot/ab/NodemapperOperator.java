@@ -96,9 +96,7 @@ public final class NodemapperOperator {
      * @param node Nodemapper object
      */
     public static void printKeys(Nodemapper node) {
-        for (String aSet : keySet(node)) {
-            System.out.println(aSet);
-        }
+        keySet(node).forEach(System.out::println);
     }
 
     /**
