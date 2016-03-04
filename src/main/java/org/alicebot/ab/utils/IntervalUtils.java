@@ -17,28 +17,10 @@ public final class IntervalUtils {
 
     private IntervalUtils() {}
 
-    public static void test() {
-        String date1 = "23:59:59.00";
-        String date2 = "12:00:00.00";
-        String format = "HH:mm:ss.SS";
-        int hours = getHoursBetween(date2, date1, format);
-        logger.info("Hours = {}", hours);
-        date1 = "January 30, 2013";
-        date2 = "August 2, 1960";
-        format = "MMMMMMMMM dd, yyyy";
-        int years = getYearsBetween(date2, date1, format);
-        logger.info("Years = {}", years);
-    }
-
     // http://docs.oracle.com/javase/1.4.2/docs/api/java/text/SimpleDateFormat.html
     public static int getHoursBetween(final String date1, final String date2, String format) {
         try {
-            final DateTimeFormatter fmt =
-                DateTimeFormat
-                    .forPattern(format)
-                    .withChronology(
-                        LenientChronology.getInstance(
-                            GregorianChronology.getInstance()));
+            final DateTimeFormatter fmt = getDateTimeFormatter(format);
             return Hours.hoursBetween(
                 fmt.parseDateTime(date1),
                 fmt.parseDateTime(date2)
@@ -51,12 +33,7 @@ public final class IntervalUtils {
 
     public static int getYearsBetween(final String date1, final String date2, String format) {
         try {
-            final DateTimeFormatter fmt =
-                DateTimeFormat
-                    .forPattern(format)
-                    .withChronology(
-                        LenientChronology.getInstance(
-                            GregorianChronology.getInstance()));
+            final DateTimeFormatter fmt = getDateTimeFormatter(format);
             return Years.yearsBetween(
                 fmt.parseDateTime(date1),
                 fmt.parseDateTime(date2)
@@ -69,12 +46,7 @@ public final class IntervalUtils {
 
     public static int getMonthsBetween(final String date1, final String date2, String format) {
         try {
-            final DateTimeFormatter fmt =
-                DateTimeFormat
-                    .forPattern(format)
-                    .withChronology(
-                        LenientChronology.getInstance(
-                            GregorianChronology.getInstance()));
+            final DateTimeFormatter fmt = getDateTimeFormatter(format);
             return Months.monthsBetween(
                 fmt.parseDateTime(date1),
                 fmt.parseDateTime(date2)
@@ -87,12 +59,7 @@ public final class IntervalUtils {
 
     public static int getDaysBetween(final String date1, final String date2, String format) {
         try {
-            final DateTimeFormatter fmt =
-                DateTimeFormat
-                    .forPattern(format)
-                    .withChronology(
-                        LenientChronology.getInstance(
-                            GregorianChronology.getInstance()));
+            final DateTimeFormatter fmt = getDateTimeFormatter(format);
             return Days.daysBetween(
                 fmt.parseDateTime(date1),
                 fmt.parseDateTime(date2)
@@ -101,5 +68,10 @@ public final class IntervalUtils {
             logger.error("getDaysBetween error", ex);
             return 0;
         }
+    }
+
+    private static DateTimeFormatter getDateTimeFormatter(String format) {
+        return DateTimeFormat.forPattern(format)
+            .withChronology(LenientChronology.getInstance(GregorianChronology.getInstance()));
     }
 }

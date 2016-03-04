@@ -140,7 +140,7 @@ public class AIMLSet extends HashSet<String> {
         try {
             // Open the file that is the first
             // command line parameter
-            File file = new File(bot.sets_path + "/" + setName + ".txt");
+            File file = new File(bot.sets_path, setName + ".txt");
             logger.debug("Reading AIML Set {}", file);
             if (file.exists()) {
                 try (FileInputStream fStream = new FileInputStream(file)) {

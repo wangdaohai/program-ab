@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.time.Instant;
 import java.util.*;
 
 /**
@@ -140,8 +141,8 @@ public final class Bot {
         AIMLMap plural = new AIMLMap(MagicStrings.map_plural, this);
         mapMap.put(MagicStrings.map_plural, plural);
         //System.out.println("setMap = "+setMap);
-        Date aimlDate = new Date(new File(aiml_path).lastModified());
-        Date aimlIFDate = new Date(new File(aimlif_path).lastModified());
+        Instant aimlDate = Instant.ofEpochMilli(new File(aiml_path).lastModified());
+        Instant aimlIFDate = Instant.ofEpochMilli(new File(aimlif_path).lastModified());
         logger.debug("AIML modified {} AIMLIF modified {}", aimlDate, aimlIFDate);
         //readUnfinishedIFCategories();
         MagicStrings.pannous_api_key = Utilities.getPannousAPIKey(this);
@@ -153,7 +154,7 @@ public final class Bot {
         } else if ("chat-app".equals(action)) {
             logger.debug("Loading only AIMLIF files");
             cnt = addCategoriesFromAIMLIF();
-        } else if (aimlDate.after(aimlIFDate)) {
+        } else if (aimlDate.isAfter(aimlIFDate)) {
             logger.debug("AIML modified after AIMLIF");
             cnt = addCategoriesFromAIML();
             writeAIMLIFFiles();

@@ -4,7 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -15,29 +18,17 @@ public final class CalendarUtils {
 
     private CalendarUtils() {}
 
-    public static String formatTime(String formatString, long msSinceEpoch) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat(formatString);
-        Calendar cal = Calendar.getInstance();
-        dateFormat.setCalendar(cal);
-        return dateFormat.format(new Date(msSinceEpoch));
-    }
-
     public static int timeZoneOffset() {
-        Calendar cal = Calendar.getInstance();
-        return (cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET)) / (60 * 1000);
+        return LocalDateTime.now().atZone(ZoneId.systemDefault())
+            .getOffset().getTotalSeconds() / 60;
     }
 
     public static String year() {
-        Calendar cal = Calendar.getInstance();
-        return String.valueOf(cal.get(Calendar.YEAR));
+        return String.valueOf(LocalDate.now().getYear());
     }
 
     public static String date() {
-        Calendar cal = Calendar.getInstance();
-        int year = cal.get(Calendar.YEAR);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MMMMMMMMM dd, yyyy");
-        dateFormat.setCalendar(cal);
-        return dateFormat.format(cal.getTime());
+        return LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM dd, yyyy"));
     }
 
     public static String date(String jformat, String locale, String timezone) {
