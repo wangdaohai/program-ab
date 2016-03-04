@@ -123,7 +123,6 @@ public class Inflector {
      * Returns the plural form of the word in the string.
      * <p>
      * Examples:
-     * <p>
      * <pre>
      *   inflector.pluralize(&quot;post&quot;)               #=&gt; &quot;posts&quot;
      *   inflector.pluralize(&quot;octopus&quot;)            #=&gt; &quot;octopi&quot;
@@ -132,8 +131,6 @@ public class Inflector {
      *   inflector.pluralize(&quot;the blue mailman&quot;)   #=&gt; &quot;the blue mailmen&quot;
      *   inflector.pluralize(&quot;CamelOctopus&quot;)       #=&gt; &quot;CamelOctopi&quot;
      * </pre>
-     * <p>
-     * <p>
      * <p>
      * Note that if the {@link Object#toString()} is called on the supplied object, so this method works for non-strings, too.
      *
@@ -166,7 +163,6 @@ public class Inflector {
      * Returns the singular form of the word in the string.
      * <p>
      * Examples:
-     * <p>
      * <pre>
      *   inflector.singularize(&quot;posts&quot;)             #=&gt; &quot;post&quot;
      *   inflector.singularize(&quot;octopi&quot;)            #=&gt; &quot;octopus&quot;
@@ -175,8 +171,6 @@ public class Inflector {
      *   inflector.singularize(&quot;the blue mailmen&quot;)  #=&gt; &quot;the blue mailman&quot;
      *   inflector.singularize(&quot;CamelOctopi&quot;)       #=&gt; &quot;CamelOctopus&quot;
      * </pre>
-     * <p>
-     * <p>
      * <p>
      * Note that if the {@link Object#toString()} is called on the supplied object, so this method works for non-strings, too.
      *
@@ -200,7 +194,6 @@ public class Inflector {
      * Converts strings to lowerCamelCase. This method will also use any extra delimiter characters to identify word boundaries.
      * <p>
      * Examples:
-     * <p>
      * <pre>
      *   inflector.lowerCamelCase(&quot;active_record&quot;)       #=&gt; &quot;activeRecord&quot;
      *   inflector.lowerCamelCase(&quot;first_name&quot;)          #=&gt; &quot;firstName&quot;
@@ -224,7 +217,6 @@ public class Inflector {
      * Converts strings to UpperCamelCase. This method will also use any extra delimiter characters to identify word boundaries.
      * <p>
      * Examples:
-     * <p>
      * <pre>
      *   inflector.upperCamelCase(&quot;active_record&quot;)       #=&gt; &quot;SctiveRecord&quot;
      *   inflector.upperCamelCase(&quot;first_name&quot;)          #=&gt; &quot;FirstName&quot;
@@ -245,12 +237,11 @@ public class Inflector {
     }
 
     /**
-     * By default, this method converts strings to UpperCamelCase. If the <code>uppercaseFirstLetter</code> argument to false,
+     * By default, this method converts strings to UpperCamelCase. If the {@code uppercaseFirstLetter} argument to false,
      * then this method produces lowerCamelCase. This method will also use any extra delimiter characters to identify word
      * boundaries.
      * <p>
      * Examples:
-     * <p>
      * <pre>
      *   inflector.camelCase(&quot;active_record&quot;,false)    #=&gt; &quot;activeRecord&quot;
      *   inflector.camelCase(&quot;active_record&quot;,true)     #=&gt; &quot;ActiveRecord&quot;
@@ -297,7 +288,6 @@ public class Inflector {
      * camelCase} method. Also changes any characters that match the supplied delimiters into underscore.
      * <p>
      * Examples:
-     * <p>
      * <pre>
      *   inflector.underscore(&quot;activeRecord&quot;)     #=&gt; &quot;active_record&quot;
      *   inflector.underscore(&quot;ActiveRecord&quot;)     #=&gt; &quot;active_record&quot;
@@ -346,7 +336,6 @@ public class Inflector {
      * Like {@link #titleCase(String, String[])}, this is meant for creating pretty output.
      * <p>
      * Examples:
-     * <p>
      * <pre>
      *   inflector.humanize(&quot;employee_salary&quot;)       #=&gt; &quot;Employee salary&quot;
      *   inflector.humanize(&quot;author_id&quot;)             #=&gt; &quot;Author&quot;
@@ -474,14 +463,11 @@ public class Inflector {
      * Utility method to replace all occurrences given by the specific backreference with its uppercased form, and remove all
      * other backreferences.
      * <p>
-     * The Java {@link Pattern regular expression processing} does not use the preprocessing directives <code>\l</code>,
-     * <code>&#92;u</code>, <code>\L</code>, and <code>\U</code>. If so, such directives could be used in the replacement string
-     * to uppercase or lowercase the backreferences. For example, <code>\L1</code> would lowercase the first backreference, and
-     * <code>&#92;u3</code> would uppercase the 3rd backreference.
+     * The Java {@link Pattern regular expression processing} does not use the preprocessing directives {@code \l},
+     * {@code &#92;u}, {@code \L}, and {@code \U}. If so, such directives could be used in the replacement string
+     * to uppercase or lowercase the backreferences. For example, {@code \L1} would lowercase the first backreference, and
+     * {@code &#92;u3} would uppercase the 3rd backreference.
      *
-     * @param input
-     * @param regex
-     * @param groupNumberToUppercase
      * @return the input string with the appropriate characters converted to upper-case
      */
     protected static String replaceAllWithUppercase(String input,

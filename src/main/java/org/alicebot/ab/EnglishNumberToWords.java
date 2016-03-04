@@ -1,14 +1,14 @@
 package org.alicebot.ab;
+
+import java.text.DecimalFormat;
+
 /**
  * This Program will display the given number in words from 0 to 999999999
  *
  * @author Manoj Kumar Dunna
- * <p>
- * Mail Id : manojdunna@gmail.com
+ *         <p>
+ *         Mail Id : manojdunna@gmail.com
  **/
-
-import java.text.DecimalFormat;
-
 public final class EnglishNumberToWords {
     private static final String[] tensNames = {
         "",

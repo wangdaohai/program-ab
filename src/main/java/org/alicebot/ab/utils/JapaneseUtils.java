@@ -33,7 +33,6 @@ public final class JapaneseUtils {
     /**
      * Morphological analysis of an input sentence that contains an AIML pattern.
      *
-     * @param sentence
      * @return morphed sentence with one space between words, preserving XML markup and AIML $ operation
      */
     public static String tokenizeSentence(String sentence) {

@@ -64,17 +64,11 @@ public class Graphmaster {
      * @param input input (or input pattern)
      * @param that  that (or that pattern)
      * @param topic topic (or topic pattern)
-     * @return
      */
     public static String inputThatTopic(String input, String that, String topic) {
         return input.trim() + " <THAT> " + that.trim() + " <TOPIC> " + topic.trim();
     }
 
-    /**
-     * add an AIML category to this graph.
-     *
-     * @param category            AIML Category
-     */
     String botPropRegex = "<bot name=\"(.*?)\"/>";
     Pattern botPropPattern = Pattern.compile(botPropRegex, Pattern.CASE_INSENSITIVE);
 
@@ -93,6 +87,11 @@ public class Graphmaster {
         return pattern;
     }
 
+    /**
+     * add an AIML category to this graph.
+     *
+     * @param category AIML Category
+     */
     public void addCategory(Category category) {
         String inputThatTopic = inputThatTopic(category.getPattern(), category.getThat(), category.getTopic());
         //System.out.println("addCategory: "+inputThatTopic);
@@ -289,8 +288,6 @@ public class Graphmaster {
     /**
      * Find the matching leaf node given a path of the form "{@code input <THAT> that <TOPIC> topic}"
      *
-     * @param path
-     * @param inputThatTopic
      * @return matching leaf node or null if no match is found
      */
     final Nodemapper match(Path path, String inputThatTopic) {

@@ -90,8 +90,6 @@ public class Bot {
 
     /**
      * Constructor (default action, default path)
-     *
-     * @param name
      */
     public Bot(String name) {
         this(name, MagicStrings.root_path);
@@ -99,9 +97,6 @@ public class Bot {
 
     /**
      * Constructor (default action)
-     *
-     * @param name
-     * @param path
      */
     public Bot(String name, String path) {
         this(name, path, "auto");
@@ -355,10 +350,6 @@ public class Bot {
         File dir = new File(aimlif_path);
         dir.setLastModified(new Date().getTime());
     }
-
-    /**
-     * write deleted categories to AIMLIF file
-     */
 
     /**
      * write learned categories to AIMLIF file
@@ -649,8 +640,6 @@ public class Bot {
 
     /**
      * traverse graph and test all categories found in leaf nodes for shadows
-     *
-     * @param node
      */
     void shadowChecker(Nodemapper node) {
         if (NodemapperOperator.isLeaf(node)) {

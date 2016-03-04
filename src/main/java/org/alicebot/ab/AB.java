@@ -74,7 +74,6 @@ public class AB {
      *
      * @param runCompletedCnt number of categories completed in this run
      * @param timer           tells elapsed time in ms
-     * @see AB
      */
 
     public void productivity(int runCompletedCnt, Timer timer) {
