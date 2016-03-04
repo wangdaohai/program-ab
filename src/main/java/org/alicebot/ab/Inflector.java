@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
  *
  * @author Randall Hauch
  */
-public class Inflector {
+public final class Inflector {
 
     protected static final Inflector INSTANCE = new Inflector();
 
@@ -279,7 +279,7 @@ public class Inflector {
             return replaceAllWithUppercase(result, "(^|_)(.)", 2);
         }
         if (lowerCaseAndUnderscoredWord.length() < 2) { return lowerCaseAndUnderscoredWord; }
-        return "" + Character.toLowerCase(lowerCaseAndUnderscoredWord.charAt(0))
+        return Character.toLowerCase(lowerCaseAndUnderscoredWord.charAt(0))
             + camelCase(lowerCaseAndUnderscoredWord, true, delimiterChars).substring(1);
     }
 
@@ -328,7 +328,7 @@ public class Inflector {
         String result = words.trim();
         if (result.isEmpty()) { return ""; }
         if (result.length() == 1) { return result.toUpperCase(); }
-        return "" + Character.toUpperCase(result.charAt(0)) + result.substring(1).toLowerCase();
+        return Character.toUpperCase(result.charAt(0)) + result.substring(1).toLowerCase();
     }
 
     /**

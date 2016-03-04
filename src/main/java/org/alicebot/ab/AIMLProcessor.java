@@ -573,10 +573,10 @@ public final class AIMLProcessor {
             to = CalendarUtils.date(jformat, null, null);
         }
         String result = "unknown";
-        if (style.equals("years")) { result = "" + IntervalUtils.getYearsBetween(from, to, jformat); }
-        if (style.equals("months")) { result = "" + IntervalUtils.getMonthsBetween(from, to, jformat); }
-        if (style.equals("days")) { result = "" + IntervalUtils.getDaysBetween(from, to, jformat); }
-        if (style.equals("hours")) { result = "" + IntervalUtils.getHoursBetween(from, to, jformat); }
+        if (style.equals("years")) { result = String.valueOf(IntervalUtils.getYearsBetween(from, to, jformat)); }
+        if (style.equals("months")) { result = String.valueOf(IntervalUtils.getMonthsBetween(from, to, jformat)); }
+        if (style.equals("days")) { result = String.valueOf(IntervalUtils.getDaysBetween(from, to, jformat)); }
+        if (style.equals("hours")) { result = String.valueOf(IntervalUtils.getHoursBetween(from, to, jformat)); }
         return result;
     }
 

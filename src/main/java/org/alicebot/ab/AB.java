@@ -29,7 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class AB {
+public final class AB {
     /**
      * Experimental class that analyzes log data and suggests
      * new AIML patterns.
@@ -381,10 +381,8 @@ public class AB {
             try {
                 List<String> samples = new ArrayList<>(c.getMatches(bot));
                 Collections.shuffle(samples);
-                int sampleSize = Math.min(MagicNumbers.displayed_input_sample_size, c.getMatches(bot).size());
-                for (int i = 0; i < sampleSize; i++) {
-                    System.out.println("" + samples.get(i));
-                }
+                int sampleSize = Math.min(MagicNumbers.displayed_input_sample_size, samples.size());
+                samples.stream().limit(sampleSize).forEach(System.out::println);
                 System.out.println("[" + c.getActivationCnt() + "] " + c.inputThatTopic());
                 if (offer_alice_responses) {
                     Nodemapper node = alice.brain.findNode(c);
@@ -401,7 +399,7 @@ public class AB {
                     }
                 }
 
-                String textLine = "" + IOUtils.readInputTextLine();
+                String textLine = IOUtils.readInputTextLine();
                 if (firstInteraction) {
                     timer.start();
                     firstInteraction = false;

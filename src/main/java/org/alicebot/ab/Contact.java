@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 /**
  * This class is here to simulate a Contacts database for the purpose of testing contactaction.aiml
  */
-public class Contact {
+public final class Contact {
     public static int contactCount = 0;
     public static Map<String, Contact> idContactMap = new HashMap<>();
     public static Map<String, String> nameIdMap = new HashMap<>();

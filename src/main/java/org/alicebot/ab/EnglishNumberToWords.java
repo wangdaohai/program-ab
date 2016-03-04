@@ -141,7 +141,7 @@ public final class EnglishNumberToWords {
 
         for (int i = 0; i < 10000; i++) {
             String name = convert(i).trim();
-            String number = "" + i;
+            String number = String.valueOf(i);
             numberName.add(name);
             name2number.put(name, number);
             if (i == 1000) { System.out.println("Name2number(" + name + ")=" + number); }

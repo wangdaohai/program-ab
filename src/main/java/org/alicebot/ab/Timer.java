@@ -22,7 +22,7 @@ package org.alicebot.ab;
 /**
  * Specialized timer function for program instrumentation
  */
-public class Timer {
+public final class Timer {
     private long startTimeMillis;
 
     public Timer() {

@@ -42,6 +42,11 @@ public class TripleStore {
 
             }
         }
+
+        @Override
+        public String toString() {
+            return "Triple(id="+id+",subject="+subject+",predicate="+predicate+",object="+object;
+        }
     }
 
     public String mapTriple(Triple triple) {

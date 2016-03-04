@@ -28,7 +28,7 @@ import java.util.*;
 /**
  * Class representing the AIML bot
  */
-public class Bot {
+public final class Bot {
     public final Properties properties = new Properties();
     public final PreProcessor preProcessor;
     public final Graphmaster brain;
@@ -652,8 +652,8 @@ public class Bot {
             input = instantiateSets(input);
             System.out.println("shadowChecker: input=" + input);
             Nodemapper match = brain.match(input, that, topic);
-            if (match != node) {
-                System.out.println("" + Graphmaster.inputThatTopic(input, that, topic));
+            if (!Objects.equals(match, node)) {
+                System.out.println(Graphmaster.inputThatTopic(input, that, topic));
                 System.out.println("MATCHED:     " + match.category.inputThatTopic());
                 System.out.println("SHOULD MATCH:" + node.category.inputThatTopic());
             }

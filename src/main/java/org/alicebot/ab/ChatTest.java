@@ -257,7 +257,7 @@ public class ChatTest {
         this.chatSession = new Chat(bot);
     }
 
-    public void testMultisentenceRespond() throws Exception {
+    public void testMultisentenceRespond() throws IllegalStateException {
 
         for (String[] pair : pairs) {
             String request = pair[0];

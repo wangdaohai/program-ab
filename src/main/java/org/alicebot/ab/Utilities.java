@@ -22,9 +22,7 @@ package org.alicebot.ab;
 import org.alicebot.ab.utils.CalendarUtils;
 
 import java.io.*;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public final class Utilities {
 
@@ -69,7 +67,7 @@ public final class Utilities {
             String strLine;
             while ((strLine = br.readLine()) != null) {
                 if (!strLine.startsWith(MagicStrings.text_comment_mark)) {
-                    contents.append(strLine + "\n");
+                    contents.append(strLine).append("\n");
                 }
             }
         } catch (Exception ex) {
@@ -150,6 +148,17 @@ public final class Utilities {
         return login;
     }
 
+    private static final Collection<Character.UnicodeBlock> CJK_CHARS = Arrays.asList(
+        Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS,
+        Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A,
+        Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B,
+        Character.UnicodeBlock.CJK_COMPATIBILITY_FORMS,
+        Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS,
+        Character.UnicodeBlock.CJK_RADICALS_SUPPLEMENT,
+        Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION,
+        Character.UnicodeBlock.ENCLOSED_CJK_LETTERS_AND_MONTHS
+    );
+
     /**
      * Returns if a character is one of Chinese-Japanese-Korean characters.
      *
@@ -157,14 +166,7 @@ public final class Utilities {
      * @return true if CJK, false otherwise
      */
     public static boolean isCharCJK(final char c) {
-        return (Character.UnicodeBlock.of(c) == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS)
-            || (Character.UnicodeBlock.of(c) == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A)
-            || (Character.UnicodeBlock.of(c) == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B)
-            || (Character.UnicodeBlock.of(c) == Character.UnicodeBlock.CJK_COMPATIBILITY_FORMS)
-            || (Character.UnicodeBlock.of(c) == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS)
-            || (Character.UnicodeBlock.of(c) == Character.UnicodeBlock.CJK_RADICALS_SUPPLEMENT)
-            || (Character.UnicodeBlock.of(c) == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION)
-            || (Character.UnicodeBlock.of(c) == Character.UnicodeBlock.ENCLOSED_CJK_LETTERS_AND_MONTHS);
+        return CJK_CHARS.contains(Character.UnicodeBlock.of(c));
     }
 
 }

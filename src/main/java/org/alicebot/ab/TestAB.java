@@ -7,7 +7,7 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 
 /**
- * Created by User on 5/13/2014.
+ * @since 5/13/2014.
  */
 public final class TestAB {
 

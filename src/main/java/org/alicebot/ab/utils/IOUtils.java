@@ -103,7 +103,7 @@ public class IOUtils {
         //System.out.println("evaluating "+script);
         ScriptEngineManager mgr = new ScriptEngineManager();
         ScriptEngine engine = mgr.getEngineByName("JavaScript");
-        return "" + engine.eval(script);
+        return String.valueOf(engine.eval(script));
     }
 
 }

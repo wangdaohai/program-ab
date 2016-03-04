@@ -14,16 +14,16 @@ public class Tuple extends HashMap<String, String> {
     @Override
     public boolean equals(Object o) {
         //System.out.println("Calling equals");
-        //if (this == o) return true;
-        /*if (o == null || getClass() != o.getClass()) {
+        if (this == o) { return true; }
+        if (o == null || getClass() != o.getClass()) {
             System.out.println("unequal 1");
             return false;
         }
-        if (!super.equals(o)) {
+        /*if (!super.equals(o)) {
             System.out.println("unequal 2");
             return false;
-        }
-*/
+        }*/
+
         Tuple tuple = (Tuple) o;
 
         // if (!visibleVars.equals(tuple.visibleVars)) return false;
