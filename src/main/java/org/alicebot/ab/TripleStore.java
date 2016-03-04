@@ -1,20 +1,17 @@
 package org.alicebot.ab;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class TripleStore {
     public int idCnt = 0;
     public String name = "unknown";
     public Chat chatSession;
     public Bot bot;
-    public HashMap<String, Triple> idTriple = new HashMap<String, Triple>();
-    public HashMap<String, String> tripleStringId = new HashMap<String, String>();
-    public HashMap<String, HashSet<String>> subjectTriples = new HashMap<String, HashSet<String>>();
-    public HashMap<String, HashSet<String>> predicateTriples = new HashMap<String, HashSet<String>>();
-    public HashMap<String, HashSet<String>> objectTriples = new HashMap<String, HashSet<String>>();
+    public Map<String, Triple> idTriple = new HashMap<>();
+    public Map<String, String> tripleStringId = new HashMap<>();
+    public Map<String, HashSet<String>> subjectTriples = new HashMap<>();
+    public Map<String, HashSet<String>> predicateTriples = new HashMap<>();
+    public Map<String, HashSet<String>> objectTriples = new HashMap<>();
 
     public TripleStore(String name, Chat chatSession) {
         this.name = name;
@@ -50,10 +47,9 @@ public class TripleStore {
     public String mapTriple(Triple triple) {
         String id = triple.id;
         idTriple.put(id, triple);
-        String s, p, o;
-        s = triple.subject;
-        p = triple.predicate;
-        o = triple.object;
+        String s = triple.subject;
+        String p = triple.predicate;
+        String o = triple.object;
 
         s = s.toUpperCase();
         p = p.toUpperCase();
@@ -73,7 +69,7 @@ public class TripleStore {
             if (subjectTriples.containsKey(s)) {
                 existingTriples = subjectTriples.get(s);
             } else {
-                existingTriples = new HashSet<String>();
+                existingTriples = new HashSet<>();
             }
             existingTriples.add(id);
             subjectTriples.put(s, existingTriples);
@@ -81,7 +77,7 @@ public class TripleStore {
             if (predicateTriples.containsKey(p)) {
                 existingTriples = predicateTriples.get(p);
             } else {
-                existingTriples = new HashSet<String>();
+                existingTriples = new HashSet<>();
             }
             existingTriples.add(id);
             predicateTriples.put(p, existingTriples);
@@ -89,7 +85,7 @@ public class TripleStore {
             if (objectTriples.containsKey(o)) {
                 existingTriples = objectTriples.get(o);
             } else {
-                existingTriples = new HashSet<String>();
+                existingTriples = new HashSet<>();
             }
             existingTriples.add(id);
             objectTriples.put(o, existingTriples);
@@ -99,11 +95,9 @@ public class TripleStore {
     }
 
     public String unMapTriple(Triple triple) {
-        String id = MagicStrings.undefined_triple;
-        String s, p, o;
-        s = triple.subject;
-        p = triple.predicate;
-        o = triple.object;
+        String s = triple.subject;
+        String p = triple.predicate;
+        String o = triple.object;
 
         s = s.toUpperCase();
         p = p.toUpperCase();
@@ -117,6 +111,7 @@ public class TripleStore {
         triple = idTriple.get(tripleStringId.get(tripleString));
 
         System.out.println("unMapTriple " + triple);
+        String id;
         if (triple != null) {
             id = triple.id;
             idTriple.remove(id);
@@ -126,7 +121,7 @@ public class TripleStore {
             if (subjectTriples.containsKey(s)) {
                 existingTriples = subjectTriples.get(s);
             } else {
-                existingTriples = new HashSet<String>();
+                existingTriples = new HashSet<>();
             }
             existingTriples.remove(id);
             subjectTriples.put(s, existingTriples);
@@ -134,7 +129,7 @@ public class TripleStore {
             if (predicateTriples.containsKey(p)) {
                 existingTriples = predicateTriples.get(p);
             } else {
-                existingTriples = new HashSet<String>();
+                existingTriples = new HashSet<>();
             }
             existingTriples.remove(id);
             predicateTriples.put(p, existingTriples);
@@ -142,7 +137,7 @@ public class TripleStore {
             if (objectTriples.containsKey(o)) {
                 existingTriples = objectTriples.get(o);
             } else {
-                existingTriples = new HashSet<String>();
+                existingTriples = new HashSet<>();
             }
             existingTriples.remove(id);
             objectTriples.put(o, existingTriples);
@@ -155,7 +150,7 @@ public class TripleStore {
     }
 
     public Set<String> allTriples() {
-        return new HashSet<String>(idTriple.keySet());
+        return new HashSet<>(idTriple.keySet());
     }
 
     public String addTriple(String subject, String predicate, String object) {
@@ -178,19 +173,16 @@ public class TripleStore {
         }
     }
 
-    HashSet<String> emptySet() {
-        return new HashSet<String>();
+    Set<String> emptySet() {
+        return new HashSet<>();
     }
 
-    public HashSet<String> getTriples(String s, String p, String o) {
-        Set<String> subjectSet;
-        Set<String> predicateSet;
-        Set<String> objectSet;
-        Set<String> resultSet;
+    public Set<String> getTriples(String s, String p, String o) {
         if (MagicBooleans.trace_mode) {
             System.out.println("TripleStore: getTriples [" + idTriple.size() + "] " + s + ":" + p + ":" + o);
         }
         //printAllTriples();
+        Set<String> subjectSet;
         if (s == null || s.startsWith("?")) {
             subjectSet = allTriples();
         } else {
@@ -202,6 +194,7 @@ public class TripleStore {
         }
         // System.out.println("subjectSet="+subjectSet);
 
+        Set<String> predicateSet;
         if (p == null || p.startsWith("?")) {
             predicateSet = allTriples();
         } else {
@@ -209,6 +202,7 @@ public class TripleStore {
             predicateSet = predicateTriples.containsKey(p) ? predicateTriples.get(p) : emptySet();
         }
 
+        Set<String> objectSet;
         if (o == null || o.startsWith("?")) {
             objectSet = allTriples();
         } else {
@@ -216,11 +210,11 @@ public class TripleStore {
             objectSet = objectTriples.containsKey(o) ? objectTriples.get(o) : emptySet();
         }
 
-        resultSet = new HashSet(subjectSet);
+        Set<String> resultSet = new HashSet<>(subjectSet);
         resultSet.retainAll(predicateSet);
         resultSet.retainAll(objectSet);
 
-        HashSet<String> finalResultSet = new HashSet(resultSet);
+        Set<String> finalResultSet = new HashSet<>(resultSet);
 
         //System.out.println("TripleStore.getTriples: "+finalResultSet.size()+" results");
         /* System.out.println("getTriples subjectSet="+subjectSet);
@@ -231,8 +225,8 @@ public class TripleStore {
         return finalResultSet;
     }
 
-    public HashSet<String> getSubjects(HashSet<String> triples) {
-        HashSet<String> resultSet = new HashSet<String>();
+    public HashSet<String> getSubjects(Set<String> triples) {
+        HashSet<String> resultSet = new HashSet<>();
         for (String id : triples) {
             Triple triple = idTriple.get(id);
             resultSet.add(triple.subject);
@@ -240,8 +234,8 @@ public class TripleStore {
         return resultSet;
     }
 
-    public HashSet<String> getPredicates(HashSet<String> triples) {
-        HashSet<String> resultSet = new HashSet<String>();
+    public HashSet<String> getPredicates(Set<String> triples) {
+        HashSet<String> resultSet = new HashSet<>();
         for (String id : triples) {
             Triple triple = idTriple.get(id);
             resultSet.add(triple.predicate);
@@ -249,8 +243,8 @@ public class TripleStore {
         return resultSet;
     }
 
-    public HashSet<String> getObjects(HashSet<String> triples) {
-        HashSet<String> resultSet = new HashSet<String>();
+    public HashSet<String> getObjects(Set<String> triples) {
+        HashSet<String> resultSet = new HashSet<>();
         for (String id : triples) {
             Triple triple = idTriple.get(id);
             resultSet.add(triple.object);
@@ -258,7 +252,7 @@ public class TripleStore {
         return resultSet;
     }
 
-    public String formatAIMLTripleList(HashSet<String> triples) {
+    public String formatAIMLTripleList(Set<String> triples) {
         String result = MagicStrings.default_list_item;//"NIL"
         for (String x : triples) {
             result = x + " " + result;//"CONS "+x+" "+result;
@@ -289,8 +283,8 @@ public class TripleStore {
         }
     }
 
-    public HashSet<Tuple> select(HashSet<String> vars, HashSet<String> visibleVars, ArrayList<Clause> clauses) {
-        HashSet<Tuple> result = new HashSet<Tuple>();
+    public Set<Tuple> select(HashSet<String> vars, Set<String> visibleVars, List<Clause> clauses) {
+        Set<Tuple> result = new HashSet<>();
         try {
 
             Tuple tuple = new Tuple(vars, visibleVars);
@@ -346,9 +340,9 @@ public class TripleStore {
         return tuple;
     }
 
-    public HashSet<Tuple> selectFromSingleClause(Tuple partial, Clause clause, Boolean affirm) {
-        HashSet<Tuple> result = new HashSet<Tuple>();
-        HashSet<String> triples = getTriples(clause.subj, clause.pred, clause.obj);
+    public Set<Tuple> selectFromSingleClause(Tuple partial, Clause clause, Boolean affirm) {
+        Set<Tuple> result = new HashSet<>();
+        Set<String> triples = getTriples(clause.subj, clause.pred, clause.obj);
         //System.out.println("TripleStore: selected "+triples.size()+" from single clause "+clause.subj+" "+clause.pred+" "+clause.obj);
         if (affirm) {
             for (String triple : triples) {
@@ -361,14 +355,14 @@ public class TripleStore {
         return result;
     }
 
-    public HashSet<Tuple> selectFromRemainingClauses(Tuple partial, ArrayList<Clause> clauses) {
+    public Set<Tuple> selectFromRemainingClauses(Tuple partial, List<Clause> clauses) {
         //System.out.println("TripleStore: partial = "+partial.printTuple()+" clauses.size()=="+clauses.size());
-        HashSet<Tuple> result = new HashSet<Tuple>();
+        Set<Tuple> result = new HashSet<>();
         Clause clause = clauses.get(0);
         clause = adjustClause(partial, clause);
-        HashSet<Tuple> tuples = selectFromSingleClause(partial, clause, clause.affirm);
+        Set<Tuple> tuples = selectFromSingleClause(partial, clause, clause.affirm);
         if (clauses.size() > 1) {
-            ArrayList<Clause> remainingClauses = new ArrayList<Clause>(clauses);
+            List<Clause> remainingClauses = new ArrayList<>(clauses);
             remainingClauses.remove(0);
             for (Tuple tuple : tuples) {
                 result.addAll(selectFromRemainingClauses(tuple, remainingClauses));

@@ -1,6 +1,8 @@
 apply plugin: 'java'
 apply plugin: 'application'
 
+sourceCompatibility = 1.8
+
 repositories {
   mavenCentral()
 }
@@ -20,7 +22,7 @@ mainClassName = 'Main'
 distributions {
   main {
     contents {
-      into ('bots') { from ('bots') }
+      into('bots') { from('bots') }
     }
   }
 }

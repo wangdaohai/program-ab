@@ -26,6 +26,7 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class AB {
     /**
@@ -61,7 +62,7 @@ public class AB {
         this.deletedGraph = new Graphmaster(bot, "deleted");
         this.patternGraph = new Graphmaster(bot, "pattern");
         for (Category c : bot.brain.getCategories()) { patternGraph.addCategory(c); }
-        this.suggestedCategories = new ArrayList<Category>();
+        this.suggestedCategories = new ArrayList<>();
         passed = new AIMLSet("passed", bot);
         testSet = new AIMLSet("1000", bot);
         readDeletedIFCategories();
@@ -158,7 +159,6 @@ public class AB {
      * @param filename file containing sample inputs
      */
     public void graphInputs(String filename) {
-        int count = 0;
         try {
             // Open the file that is the first
             // command line parameter
@@ -167,6 +167,7 @@ public class AB {
             BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
             String strLine;
             //Read File Line By Line
+            int count = 0;
             while ((strLine = br.readLine()) != null && count < limit) {
                 //strLine = preProcessor.normalize(strLine);
                 Category c = new Category(0, strLine, "*", "*", "nothing", MagicStrings.unknown_aiml_file);
@@ -275,8 +276,7 @@ public class AB {
                         strLine = strLine.substring("Human: ".length(), strLine.length());
                     }
                     String sentences[] = bot.preProcessor.sentenceSplit(strLine);
-                    for (int i = 0; i < sentences.length; i++) {
-                        String sentence = sentences[i];
+                    for (String sentence : sentences) {
                         if (sentence.length() > 0) {
                             Nodemapper match = patternGraph.match(sentence, "unknown", "unknown");
 
@@ -336,8 +336,8 @@ public class AB {
         System.out.println(timer.elapsedTimeSecs() + " classifying inputs");
     }
 
-    public ArrayList<Category> nonZeroActivationCount(ArrayList<Category> suggestedCategories) {
-        ArrayList<Category> result = new ArrayList<Category>();
+    public List<Category> nonZeroActivationCount(List<Category> suggestedCategories) {
+        List<Category> result = new ArrayList<>();
         for (Category c : suggestedCategories) {
             if (c.getActivationCnt() > 0) { result.add(c); }
             // else     System.out.println("["+c.getActivationCnt()+"] "+c.inputThatTopic());
@@ -350,23 +350,20 @@ public class AB {
      * train the bot through a terminal interaction
      */
     public void terminalInteraction() {
-        boolean firstInteraction = true;
-        String alicetemplate = null;
-        Timer timer = new Timer();
         sort_mode = !shuffle_mode;
         // if (sort_mode)
         Collections.sort(suggestedCategories, Category.ACTIVATION_COMPARATOR);
-        ArrayList<Category> topSuggestCategories = new ArrayList<Category>();
+        ArrayList<Category> topSuggestCategories = new ArrayList<>();
         for (int i = 0; i < 10000 && i < suggestedCategories.size(); i++) {
             topSuggestCategories.add(suggestedCategories.get(i));
         }
         suggestedCategories = topSuggestCategories;
         if (shuffle_mode) { Collections.shuffle(suggestedCategories); }
-        timer = new Timer();
+        Timer timer = new Timer();
         timer.start();
         runCompletedCnt = 0;
-        ArrayList<Category> filteredAtomicCategories = new ArrayList<Category>();
-        ArrayList<Category> filteredWildCategories = new ArrayList<Category>();
+        List<Category> filteredAtomicCategories = new ArrayList<>();
+        List<Category> filteredWildCategories = new ArrayList<>();
         for (Category c : suggestedCategories) {
             if (!c.getPattern().contains("*")) {
                 filteredAtomicCategories.add(c);
@@ -374,7 +371,7 @@ public class AB {
                 filteredWildCategories.add(c);
             }
         }
-        ArrayList<Category> browserCategories;
+        List<Category> browserCategories;
         if (filter_atomic_mode) { browserCategories = filteredAtomicCategories; } else if (filter_wild_mode) {
             browserCategories = filteredWildCategories;
         } else {
@@ -382,18 +379,19 @@ public class AB {
         }
         // System.out.println(filteredAtomicCategories.size()+" filtered suggested categories");
         browserCategories = nonZeroActivationCount(browserCategories);
+        boolean firstInteraction = true;
+        String alicetemplate = null;
         for (Category c : browserCategories) {
             try {
-                ArrayList samples = new ArrayList(c.getMatches(bot));
+                List<String> samples = new ArrayList<>(c.getMatches(bot));
                 Collections.shuffle(samples);
                 int sampleSize = Math.min(MagicNumbers.displayed_input_sample_size, c.getMatches(bot).size());
                 for (int i = 0; i < sampleSize; i++) {
                     System.out.println("" + samples.get(i));
                 }
                 System.out.println("[" + c.getActivationCnt() + "] " + c.inputThatTopic());
-                Nodemapper node;
                 if (offer_alice_responses) {
-                    node = alice.brain.findNode(c);
+                    Nodemapper node = alice.brain.findNode(c);
                     if (node != null) {
                         alicetemplate = node.category.getTemplate();
                         String displayAliceTemplate = alicetemplate;
@@ -433,7 +431,6 @@ public class AB {
      * @param c        AIML category selected
      */
     public void terminalInteractionStep(Bot bot, String request, String textLine, Category c, String alicetemplate) {
-        String template = null;
         if (textLine.contains("<pattern>") && textLine.contains("</pattern>")) {
             int index = textLine.indexOf("<pattern>") + "<pattern>".length();
             int jndex = textLine.indexOf("</pattern>");
@@ -453,6 +450,7 @@ public class AB {
                 botThinks = "<think><set name=\"" + p + "\"><set name=\"topic\"><star/></set></set></think>";
             }
         }
+        String template = null;
         if (textLine.equals("q")) {
             System.exit(0);       // Quit program
         } else if (textLine.equals("wq")) {   // Write AIML Files and quit program

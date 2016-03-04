@@ -24,7 +24,7 @@ import java.util.HashMap;
 
 /**
  * implements AIML Map
- * <p/>
+ * <p>
  * A map is a function from one string set to another.
  * Elements of the domain are called keys and elements of the range are called values.
  */
@@ -121,9 +121,9 @@ public class AIMLMap extends HashMap<String, String> {
     public int readAIMLMapFromInputStream(InputStream in, Bot bot) {
         int cnt = 0;
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        String strLine;
         //Read File Line By Line
         try {
+            String strLine;
             while ((strLine = br.readLine()) != null && strLine.length() > 0) {
                 String[] splitLine = strLine.split(":");
                 //System.out.println("AIMLMap line="+strLine);
@@ -157,10 +157,10 @@ public class AIMLMap extends HashMap<String, String> {
      * @param bot the bot associated with this map.
      */
     public int readAIMLMap(Bot bot) {
-        int cnt = 0;
         if (MagicBooleans.trace_mode) {
             System.out.println("Reading AIML Map " + bot.maps_path + "/" + mapName + ".txt");
         }
+        int cnt = 0;
         try {
             // Open the file that is the first
             // command line parameter

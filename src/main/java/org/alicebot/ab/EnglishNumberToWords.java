@@ -3,7 +3,7 @@ package org.alicebot.ab;
  * This Program will display the given number in words from 0 to 999999999
  *
  * @author Manoj Kumar Dunna
- * <p/>
+ * <p>
  * Mail Id : manojdunna@gmail.com
  **/
 
@@ -113,7 +113,7 @@ public class EnglishNumberToWords {
                 tradMillions = convertLessThanOneThousand(millions)
                     + " million ";
         }
-        result = result + tradMillions;
+        result += tradMillions;
 
         String tradHundredThousands;
         switch (hundredThousands) {
@@ -127,11 +127,9 @@ public class EnglishNumberToWords {
                 tradHundredThousands = convertLessThanOneThousand(hundredThousands)
                     + " thousand ";
         }
-        result = result + tradHundredThousands;
+        result += tradHundredThousands;
 
-        String tradThousand;
-        tradThousand = convertLessThanOneThousand(thousands);
-        result = result + tradThousand;
+        result += convertLessThanOneThousand(thousands);
 
         // remove extra spaces!
         return result.replaceAll("^\\s+", "").replaceAll("\\b\\s{2,}\\b", " ");

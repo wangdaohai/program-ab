@@ -21,6 +21,7 @@ package org.alicebot.ab;
 
 import java.io.*;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,8 +35,8 @@ public class AIMLSet extends HashSet<String> {
     String botid; // for external sets
     boolean isExternal = false;
     Bot bot;
-    private HashSet<String> inCache = new HashSet<String>();
-    private HashSet<String> outCache = new HashSet<String>();
+    private Set<String> inCache = new HashSet<>();
+    private Set<String> outCache = new HashSet<>();
 
     /**
      * constructor
@@ -98,10 +99,10 @@ public class AIMLSet extends HashSet<String> {
 
     public int readAIMLSetFromInputStream(InputStream in, Bot bot) {
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        String strLine;
         int cnt = 0;
         //Read File Line By Line
         try {
+            String strLine;
             while ((strLine = br.readLine()) != null && strLine.length() > 0) {
                 cnt++;
                 //strLine = bot.preProcessor.normalize(strLine).toUpperCase();
@@ -133,10 +134,10 @@ public class AIMLSet extends HashSet<String> {
     }
 
     public int readAIMLSet(Bot bot) {
-        int cnt = 0;
         if (MagicBooleans.trace_mode) {
             System.out.println("Reading AIML Set " + bot.sets_path + "/" + setName + ".txt");
         }
+        int cnt = 0;
         try {
             // Open the file that is the first
             // command line parameter

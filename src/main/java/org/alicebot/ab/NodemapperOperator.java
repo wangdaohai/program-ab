@@ -21,7 +21,6 @@ package org.alicebot.ab;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 public class NodemapperOperator {
@@ -32,7 +31,7 @@ public class NodemapperOperator {
      * @return number of branches
      */
     public static int size(Nodemapper node) {
-        HashSet set = new HashSet();
+        Set<String> set = new HashSet<>();
         if (node.shortCut) { set.add("<THAT>"); }
         if (node.key != null) { set.add(node.key); }
         if (node.map != null) { set.addAll(node.map.keySet()); }
@@ -95,9 +94,8 @@ public class NodemapperOperator {
      */
     public static void printKeys(Nodemapper node) {
         Set set = keySet(node);
-        Iterator iter = set.iterator();
-        while (iter.hasNext()) {
-            System.out.println("" + iter.next());
+        for (Object aSet : set) {
+            System.out.println("" + aSet);
         }
     }
 
@@ -111,7 +109,7 @@ public class NodemapperOperator {
         if (node.map != null) {
             return node.map.keySet();
         } else {// node.type == unary_node_mapper
-            Set set = new HashSet<String>();
+            Set<String> set = new HashSet<>();
             if (node.key != null) { set.add(node.key); }
             return set;
         }
@@ -136,7 +134,7 @@ public class NodemapperOperator {
     public static void upgrade(Nodemapper node) {
         //System.out.println("Upgrading "+node.id);
         //node.type = MagicNumbers.hash_node_mapper;
-        node.map = new HashMap<String, Nodemapper>();
+        node.map = new HashMap<>();
         node.map.put(node.key, node.value);
         node.key = null;
         node.value = null;

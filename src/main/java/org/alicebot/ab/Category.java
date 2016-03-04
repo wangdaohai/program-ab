@@ -247,10 +247,6 @@ public class Category {
      * @return AIML Category
      */
     public static String categoryToAIML(Category category) {
-        String topicStart = "";
-        String topicEnd = "";
-        String thatStatement = "";
-        String result = "";
         String pattern = category.getPattern();
         if (pattern.contains("<SET>") || pattern.contains("<BOT")) {
             String[] splitPattern = pattern.split(" ");
@@ -265,11 +261,15 @@ public class Category {
 
         String NL = System.getProperty("line.separator");
         NL = "\n";
+        String result = "";
         try {
+            String topicStart = "";
+            String topicEnd = "";
             if (!category.getTopic().equals("*")) {
                 topicStart = "<topic name=\"" + category.getTopic() + "\">" + NL;
                 topicEnd = "</topic>" + NL;
             }
+            String thatStatement = "";
             if (!category.getThat().equals("*")) { thatStatement = "<that>" + category.getThat() + "</that>";}
             result = topicStart + "<category><pattern>" + pattern + "</pattern>" + thatStatement + NL +
                 "<template>" + category.getTemplate() + "</template>" + NL +
@@ -292,8 +292,7 @@ public class Category {
             return false;
         }
         String[] words = pattern.split(" ");
-        for (int i = 0; i < words.length; i++) {
-            //String word = words[i];
+        for (String word : words) {
             /*if (!(word.matches("[\\p{Hiragana}\\p{Katakana}\\p{Han}\\p{Latin}]*+") || word.equals("*") || word.equals("_"))) {
                 System.out.println("Invalid pattern word "+word);
                 return false;

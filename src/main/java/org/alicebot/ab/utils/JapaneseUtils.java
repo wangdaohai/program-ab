@@ -37,8 +37,7 @@ public class JapaneseUtils {
     public static String tokenizeSentence(String sentence) {
         //System.out.println("tokenizeSentence "+sentence);
         if (!MagicBooleans.jp_tokenize) { return sentence; }
-        String result = "";
-        result = tokenizeXML(sentence);
+        String result = tokenizeXML(sentence);
         while (result.contains("$ ")) { result = result.replace("$ ", "$"); }
         while (result.contains("  ")) { result = result.replace("  ", " "); }
         while (result.contains("anon ")) {

@@ -1,6 +1,7 @@
 package org.alicebot.ab;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -10,13 +11,13 @@ import java.util.regex.Pattern;
  */
 public class Contact {
     public static int contactCount = 0;
-    public static HashMap<String, Contact> idContactMap = new HashMap<String, Contact>();
-    public static HashMap<String, String> nameIdMap = new HashMap<String, String>();
+    public static Map<String, Contact> idContactMap = new HashMap<>();
+    public static Map<String, String> nameIdMap = new HashMap<>();
     public String contactId;
     public String displayName;
     public String birthday;
-    public HashMap<String, String> phones;
-    public HashMap<String, String> emails;
+    public Map<String, String> phones;
+    public Map<String, String> emails;
 
     public static String multipleIds(String contactName) {
         String patternString = " (" + contactName.toUpperCase() + ") ";
@@ -88,8 +89,8 @@ public class Contact {
     public Contact(String displayName, String phoneType, String dialNumber, String emailType, String emailAddress, String birthday) {
         contactId = "ID" + contactCount;
         contactCount++;
-        phones = new HashMap<String, String>();
-        emails = new HashMap<String, String>();
+        phones = new HashMap<>();
+        emails = new HashMap<>();
         idContactMap.put(contactId.toUpperCase(), this);
         addPhone(phoneType, dialNumber);
         addEmail(emailType, emailAddress);

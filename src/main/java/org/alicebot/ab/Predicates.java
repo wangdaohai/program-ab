@@ -69,9 +69,9 @@ public class Predicates extends HashMap<String, String> {
      */
     public void getPredicateDefaultsFromInputStream(InputStream in) {
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        String strLine;
         try {
             //Read File Line By Line
+            String strLine;
             while ((strLine = br.readLine()) != null) {
                 if (strLine.contains(":")) {
                     String property = strLine.substring(0, strLine.indexOf(":"));

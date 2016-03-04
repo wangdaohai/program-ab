@@ -46,9 +46,9 @@ public class Properties extends HashMap<String, String> {
     public int getPropertiesFromInputStream(InputStream in) {
         int cnt = 0;
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        String strLine;
         //Read File Line By Line
         try {
+            String strLine;
             while ((strLine = br.readLine()) != null) {
                 if (strLine.contains(":")) {
                     String property = strLine.substring(0, strLine.indexOf(":"));

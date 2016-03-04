@@ -21,6 +21,7 @@ package org.alicebot.ab;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,7 +36,7 @@ public class Graphmaster {
     public final Nodemapper root;
     public int matchCount = 0;
     public int upgradeCnt = 0;
-    public HashSet<String> vocabulary;
+    public Set<String> vocabulary;
     public String resultNote = "";
     public int categoryCnt = 0;
     public static boolean enableShortCuts = false;
@@ -53,7 +54,7 @@ public class Graphmaster {
         root = new Nodemapper();
         this.bot = bot;
         this.name = name;
-        vocabulary = new HashSet<String>();
+        vocabulary = new HashSet<>();
     }
 
     /**
@@ -123,7 +124,7 @@ public class Graphmaster {
         String setName = Utilities.tagTrim(type, "SET").toLowerCase();
         //AIMLSet aimlSet;
         if (bot.setMap.containsKey(setName)) {
-            if (node.sets == null) { node.sets = new ArrayList<String>(); }
+            if (node.sets == null) { node.sets = new ArrayList<>(); }
             if (!node.sets.contains(setName)) { node.sets.add(setName); }
             //System.out.println("sets = "+node.sets);
         } else {
@@ -419,7 +420,6 @@ public class Graphmaster {
     }
 
     final Nodemapper wordMatch(Path path, Nodemapper node, String inputThatTopic, String starState, int starIndex, String[] inputStars, String[] thatStars, String[] topicStars, String matchTrace) {
-        Nodemapper matchedNode;
         try {
             String uword = path.word.toUpperCase();
             if (uword.equals("<THAT>")) {
@@ -431,6 +431,7 @@ public class Graphmaster {
             }
             //System.out.println("path.next= "+path.next+" node.get="+node.get(uword));
             matchTrace += "[" + uword + "," + uword + "]";
+            Nodemapper matchedNode;
             if (path != null && NodemapperOperator.containsKey(node, uword) &&
                 (matchedNode = match(path.next, NodemapperOperator.get(node, uword), inputThatTopic, starState, starIndex, inputStars, thatStars, topicStars, matchTrace)) != null) {
                 return matchedNode;
@@ -465,8 +466,7 @@ public class Graphmaster {
     }
 
     final Nodemapper caretMatch(Path path, Nodemapper node, String input, String starState, int starIndex, String[] inputStars, String[] thatStars, String[] topicStars, String matchTrace) {
-        Nodemapper matchedNode;
-        matchedNode = zeroMatch(path, node, input, starState, starIndex, inputStars, thatStars, topicStars, "^", matchTrace);
+        Nodemapper matchedNode = zeroMatch(path, node, input, starState, starIndex, inputStars, thatStars, topicStars, "^", matchTrace);
         if (matchedNode != null) {
             return matchedNode;
         } else {
@@ -476,8 +476,7 @@ public class Graphmaster {
 
     final Nodemapper sharpMatch(Path path, Nodemapper node, String input, String starState, int starIndex, String[] inputStars, String[] thatStars, String[] topicStars, String matchTrace) {
         //System.out.println("Entering sharpMatch with path.word="+path.word); NodemapperOperator.printKeys(node);
-        Nodemapper matchedNode;
-        matchedNode = zeroMatch(path, node, input, starState, starIndex, inputStars, thatStars, topicStars, "#", matchTrace);
+        Nodemapper matchedNode = zeroMatch(path, node, input, starState, starIndex, inputStars, thatStars, topicStars, "#", matchTrace);
         if (matchedNode != null) {
             return matchedNode;
         } else {
@@ -503,7 +502,6 @@ public class Graphmaster {
 
     final Nodemapper wildMatch(Path path, Nodemapper node, String input, String starState, int starIndex,
                                String[] inputStars, String[] thatStars, String[] topicStars, String wildcard, String matchTrace) {
-        Nodemapper matchedNode;
         if (path.word.equals("<THAT>") || path.word.equals("<TOPIC>")) {
             fail("wild1 " + wildcard, matchTrace);
             return null;
@@ -511,13 +509,11 @@ public class Graphmaster {
         try {
             if (path != null && NodemapperOperator.containsKey(node, wildcard)) {
                 matchTrace += "[" + wildcard + "," + path.word + "]";
-                String currentWord;
-                String starWords;
-                Path pathStart;
-                currentWord = path.word;
-                starWords = currentWord + " ";
-                pathStart = path.next;
+                String currentWord = path.word;
+                String starWords = currentWord + " ";
+                Path pathStart = path.next;
                 Nodemapper nextNode = NodemapperOperator.get(node, wildcard);
+                Nodemapper matchedNode;
                 if (NodemapperOperator.isLeaf(nextNode) && !nextNode.shortCut) {
                     matchedNode = nextNode;
                     starWords = Path.pathToSentence(path);
@@ -557,19 +553,19 @@ public class Graphmaster {
             Nodemapper nextNode = NodemapperOperator.get(node, "<SET>" + setName.toUpperCase() + "</SET>");
             AIMLSet aimlSet = bot.setMap.get(setName);
             //System.out.println(aimlSet.setName + "="+ aimlSet);
-            Nodemapper matchedNode;
-            Nodemapper bestMatchedNode = null;
             String currentWord = path.word;
             String starWords = currentWord + " ";
             int length = 1;
             matchTrace += "[<set>" + setName + "</set>," + path.word + "]";
             if (DEBUG) { System.out.println("in Graphmaster.setMatch, setMatch starWords =\"" + starWords + "\""); }
+            Nodemapper bestMatchedNode = null;
             for (Path qath = path.next; qath != null && !currentWord.equals("<THAT>") && !currentWord.equals("<TOPIC>") && length <= aimlSet.maxLength; qath = qath.next) {
                 if (DEBUG) { System.out.println("in Graphmaster.setMatch, qath.word = " + qath.word); }
                 String phrase = bot.preProcessor.normalize(starWords.trim()).toUpperCase();
                 if (DEBUG) {
                     System.out.println("in Graphmaster.setMatch, setMatch trying \"" + phrase + "\" in " + setName);
                 }
+                Nodemapper matchedNode;
                 if (aimlSet.contains(phrase) && (matchedNode = match(qath, nextNode, input, starState, starIndex + 1, inputStars, thatStars, topicStars, matchTrace)) != null) {
                     setStars(starWords, starIndex, starState, inputStars, thatStars, topicStars);
                     if (DEBUG) {
@@ -579,7 +575,7 @@ public class Graphmaster {
                 }
                 //    else if (qath.word.equals("<THAT>") || qath.word.equals("<TOPIC>")) return null;
 
-                length = length + 1;
+                length += 1;
                 currentWord = qath.word;
                 starWords += currentWord + " ";
 
@@ -649,9 +645,8 @@ public class Graphmaster {
         if (node == null) {
             System.out.println("Null graph");
         } else {
-            String template = "";
             if (NodemapperOperator.isLeaf(node) || node.shortCut) {
-                template = Category.templateToLine(node.category.getTemplate());
+                String template = Category.templateToLine(node.category.getTemplate());
                 template = template.substring(0, Math.min(16, template.length()));
                 if (node.shortCut) {
                     System.out.println(partial + "(" + NodemapperOperator.size(node) + "[" + node.height + "])--<THAT>-->X(1)--*-->X(1)--<TOPIC>-->X(1)--*-->" + template + "...");
@@ -667,7 +662,7 @@ public class Graphmaster {
     }
 
     public ArrayList<Category> getCategories() {
-        ArrayList<Category> categories = new ArrayList<Category>();
+        ArrayList<Category> categories = new ArrayList<>();
         getCategories(root, categories);
         //for (Category c : categories) System.out.println("getCategories: "+c.inputThatTopic()+" "+c.getTemplate());
         return categories;
@@ -726,8 +721,8 @@ public class Graphmaster {
         }
     }
 
-    public HashSet<String> getVocabulary() {
-        vocabulary = new HashSet<String>();
+    public Set<String> getVocabulary() {
+        vocabulary = new HashSet<>();
         getBrainVocabulary(root);
         for (String set : bot.setMap.keySet()) { vocabulary.addAll(bot.setMap.get(set)); }
         return vocabulary;

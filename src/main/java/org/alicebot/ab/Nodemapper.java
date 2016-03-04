@@ -19,8 +19,8 @@ package org.alicebot.ab;
         Boston, MA  02110-1301, USA.
 */
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Nodemapper data structure.  In order to minimize memory overhead this class has no methods.
@@ -32,11 +32,11 @@ public class Nodemapper {
     public Category category = null;
     public int height = MagicNumbers.max_graph_height;
     public StarBindings starBindings = null;
-    public HashMap<String, Nodemapper> map = null;
+    public Map<String, Nodemapper> map = null;
     public String key = null;
     public Nodemapper value = null;
     public boolean shortCut = false;
-    public ArrayList<String> sets;
+    public List<String> sets;
 /*    public Nodemapper () {
         id = idCnt++;
     }*/

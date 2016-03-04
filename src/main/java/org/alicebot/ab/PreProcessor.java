@@ -166,10 +166,10 @@ public class PreProcessor {
      */
     public int readSubstitutionsFromInputStream(InputStream in, Pattern[] patterns, String[] subs) {
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        String strLine;
         //Read File Line By Line
         int subCount = 0;
         try {
+            String strLine;
             while ((strLine = br.readLine()) != null) {
                 //System.out.println(strLine);
                 strLine = strLine.trim();
@@ -244,10 +244,9 @@ public class PreProcessor {
      */
     public void normalizeFile(String infile, String outfile) {
         try {
-            BufferedWriter bw = null;
             FileInputStream fstream = new FileInputStream(infile);
             BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
-            bw = new BufferedWriter(new FileWriter(outfile));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(outfile));
             String strLine;
             //Read File Line By Line
             while ((strLine = br.readLine()) != null) {

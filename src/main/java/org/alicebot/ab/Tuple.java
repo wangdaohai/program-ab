@@ -2,12 +2,13 @@ package org.alicebot.ab;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class Tuple extends HashMap<String, String> {
     public static int index = 0;
-    public static HashMap<String, Tuple> tupleMap = new HashMap<String, Tuple>();
-    public HashSet<String> visibleVars = new HashSet<String>();
+    public static Map<String, Tuple> tupleMap = new HashMap<>();
+    public HashSet<String> visibleVars = new HashSet<>();
     String name;
 
     @Override
@@ -63,7 +64,7 @@ public class Tuple extends HashMap<String, String> {
         return result;
     }
 
-    public Tuple(HashSet<String> varSet, HashSet<String> visibleVars, Tuple tuple) {
+    public Tuple(Set<String> varSet, Set<String> visibleVars, Tuple tuple) {
         super();
         //System.out.println("varSet="+varSet);
         //System.out.println("visbileVars="+visibleVars);
@@ -84,7 +85,7 @@ public class Tuple extends HashMap<String, String> {
         this(null, null, tuple);
     }
 
-    public Tuple(HashSet<String> varSet, HashSet<String> visibleVars) {
+    public Tuple(Set<String> varSet, Set<String> visibleVars) {
         this(varSet, visibleVars, null);
     }
 

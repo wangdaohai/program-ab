@@ -97,8 +97,7 @@ public class History<T> {
      * print history
      */
     public void printHistory() {
-        int i;
-        for (i = 0; get(i) != null; i++) {
+        for (int i = 0; get(i) != null; i++) {
             System.out.println(name + "History " + (i + 1) + " = " + get(i));
             System.out.println(String.valueOf(get(i).getClass()).contains("History"));
             if (String.valueOf(get(i).getClass()).contains("History")) { ((History) get(i)).printHistory(); }

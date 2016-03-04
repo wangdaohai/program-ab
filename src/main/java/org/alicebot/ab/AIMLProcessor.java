@@ -26,6 +26,7 @@ import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -48,13 +49,12 @@ public class AIMLProcessor {
      * @param topic      value of topic in case this category is wrapped in a <topic> tag
      * @param aimlFile   name of AIML file being parsed.
      */
-    private static void categoryProcessor(Node n, ArrayList<Category> categories, String topic, String aimlFile, String language) {
-        String pattern, that, template;
+    private static void categoryProcessor(Node n, List<Category> categories, String topic, String aimlFile, String language) {
 
         NodeList children = n.getChildNodes();
-        pattern = "*";
-        that = "*";
-        template = "";
+        String pattern = "*";
+        String that = "*";
+        String template = "";
         for (int j = 0; j < children.getLength(); j++) {
             //System.out.println("CHILD: " + children.item(j).getNodeName());
             Node m = children.item(j);
@@ -120,9 +120,9 @@ public class AIMLProcessor {
      * @param aimlFile  AIML file name.
      * @return list of categories.
      */
-    public static ArrayList<Category> AIMLToCategories(String directory, String aimlFile) {
+    public static List<Category> AIMLToCategories(String directory, String aimlFile) {
         try {
-            ArrayList categories = new ArrayList<Category>();
+            List<Category> categories = new ArrayList<>();
             Node root = DomUtils.parseFile(directory + "/" + aimlFile);      // <aiml> tag
             String language = MagicStrings.default_language;
             if (root.hasAttributes()) {
@@ -197,10 +197,9 @@ public class AIMLProcessor {
      */
     public static String respond(String input, String that, String topic, Chat chatSession, int srCnt) {
         MagicBooleans.trace("input: " + input + ", that: " + that + ", topic: " + topic + ", chatSession: " + chatSession + ", srCnt: " + srCnt);
-        String response;
         if (input == null || input.length() == 0) { input = MagicStrings.null_input; }
         sraiCount = srCnt;
-        response = MagicStrings.default_bot_response;
+        String response = MagicStrings.default_bot_response;
         try {
             Nodemapper leaf = chatSession.bot.brain.match(input, that, topic);
             if (leaf == null) {return (response);}
@@ -414,7 +413,7 @@ public class AIMLProcessor {
      * @return response from remote service or string indicating failure.
      */
     private static String sraix(Node node, ParseState ps) {
-        HashSet<String> attributeNames = Utilities.stringSet("botid", "host");
+        Set<String> attributeNames = Utilities.stringSet("botid", "host");
         String host = getAttributeOrTagValue(node, ps, "host");
         String botid = getAttributeOrTagValue(node, ps, "botid");
         String hint = getAttributeOrTagValue(node, ps, "hint");
@@ -435,7 +434,7 @@ public class AIMLProcessor {
      */
     private static String map(Node node, ParseState ps) {
         String result = MagicStrings.default_map;
-        HashSet<String> attributeNames = Utilities.stringSet("name");
+        Set<String> attributeNames = Utilities.stringSet("name");
         String mapName = getAttributeOrTagValue(node, ps, "name");
         String contents = evalTagContent(node, ps, attributeNames);
         contents = contents.trim();
@@ -461,7 +460,7 @@ public class AIMLProcessor {
      */
     private static String set(Node node, ParseState ps) {                    // add pronoun check
         //MagicBooleans.trace("AIMLProcessor.set(node: " + node + ", ps: " + ps + ")");
-        HashSet<String> attributeNames = Utilities.stringSet("name", "var");
+        Set<String> attributeNames = Utilities.stringSet("name", "var");
         String predicateName = getAttributeOrTagValue(node, ps, "name");
         String varName = getAttributeOrTagValue(node, ps, "var");
         String result = evalTagContent(node, ps, attributeNames).trim();
@@ -749,7 +748,7 @@ public class AIMLProcessor {
      * Evaluate the contents, and try to execute the result as
      * a command in the underlying OS shell.
      * Read back and return the result of this command.
-     * <p/>
+     * <p>
      * The timeout parameter allows the botmaster to set a timeout
      * in ms, so that the <system></system>   command returns eventually.
      *
@@ -758,7 +757,7 @@ public class AIMLProcessor {
      * @return the result of executing the system command or a string indicating the command failed.
      */
     private static String system(Node node, ParseState ps) {
-        HashSet<String> attributeNames = Utilities.stringSet("timeout");
+        Set<String> attributeNames = Utilities.stringSet("timeout");
         //String stimeout = getAttributeOrTagValue(node, ps, "timeout");
         String evaluatedContents = evalTagContent(node, ps, attributeNames);
         return IOUtils.system(evaluatedContents, MagicStrings.system_failed);
@@ -766,7 +765,7 @@ public class AIMLProcessor {
 
     /**
      * implements {@code <think>} tag
-     * <p/>
+     * <p>
      * Evaluate the tag contents but return a blank.
      * "Think but don't speak."
      *
@@ -941,7 +940,7 @@ public class AIMLProcessor {
      */
     private static String random(Node node, ParseState ps) {
         NodeList childList = node.getChildNodes();
-        ArrayList<Node> liList = new ArrayList<Node>();
+        List<Node> liList = new ArrayList<>();
         String setName = getAttributeOrTagValue(node, ps, "set");
         for (int i = 0; i < childList.getLength(); i++) {
             if (childList.item(i).getNodeName().equals("li")) { liList.add(childList.item(i)); }
@@ -1064,20 +1063,19 @@ public class AIMLProcessor {
      * @return result of conditional expression
      */
     private static String condition(Node node, ParseState ps) {
-        String result = "";
         //boolean loop = true;
         NodeList childList = node.getChildNodes();
-        ArrayList<Node> liList = new ArrayList<Node>();
-        String predicate = null, varName = null, value = null; //Node p=null, v=null;
-        HashSet<String> attributeNames = Utilities.stringSet("name", "var", "value");
+        List<Node> liList = new ArrayList<>();
+        Set<String> attributeNames = Utilities.stringSet("name", "var", "value");
         // First check if the <condition> has an attribute "name".  If so, get the predicate name.
-        predicate = getAttributeOrTagValue(node, ps, "name");
-        varName = getAttributeOrTagValue(node, ps, "var");
+        String predicate = getAttributeOrTagValue(node, ps, "name");
+        String varName = getAttributeOrTagValue(node, ps, "var");
         // Make a list of all the <li> child nodes:
         for (int i = 0; i < childList.getLength(); i++) {
             if (childList.item(i).getNodeName().equals("li")) { liList.add(childList.item(i)); }
         }
         // if there are no <li> nodes, this is a one-shot condition.
+        String value;
         if (liList.size() == 0 && (value = getAttributeOrTagValue(node, ps, "value")) != null &&
             predicate != null &&
             ps.chatSession.predicates.get(predicate).equalsIgnoreCase(value)) {
@@ -1089,6 +1087,7 @@ public class AIMLProcessor {
         }
         // otherwise this is a <condition> with <li> items:
         else {
+            String result = "";
             for (int i = 0; i < liList.size() && result.equals(""); i++) {
                 Node n = liList.get(i);
                 String liPredicate = predicate;
@@ -1166,8 +1165,8 @@ public class AIMLProcessor {
      }
  */
     public static String uniq(Node node, ParseState ps) {
-        HashSet<String> vars = new HashSet<String>();
-        HashSet<String> visibleVars = new HashSet<String>();
+        HashSet<String> vars = new HashSet<>();
+        HashSet<String> visibleVars = new HashSet<>();
         String subj = "?subject";
         String pred = "?predicate";
         String obj = "?object";
@@ -1189,7 +1188,7 @@ public class AIMLProcessor {
         }
         Tuple partial = new Tuple(vars, visibleVars);
         Clause clause = new Clause(subj, pred, obj);
-        HashSet<Tuple> tuples = ps.chatSession.tripleStore.selectFromSingleClause(partial, clause, true);
+        Set<Tuple> tuples = ps.chatSession.tripleStore.selectFromSingleClause(partial, clause, true);
         String tupleList = "";
         for (Tuple tuple : tuples) {
             tupleList = tuple.name + " " + tupleList;
@@ -1205,11 +1204,11 @@ public class AIMLProcessor {
     }
 
     public static String select(Node node, ParseState ps) {
-        ArrayList<Clause> clauses = new ArrayList<Clause>();
+        List<Clause> clauses = new ArrayList<>();
         NodeList childList = node.getChildNodes();
         //String[] splitTuple;
-        HashSet<String> vars = new HashSet<String>();
-        HashSet<String> visibleVars = new HashSet<String>();
+        HashSet<String> vars = new HashSet<>();
+        Set<String> visibleVars = new HashSet<>();
         for (int i = 0; i < childList.getLength(); i++) {
             Node childNode = childList.item(i);
             if (childNode.getNodeName().equals("vars")) {
@@ -1245,7 +1244,7 @@ public class AIMLProcessor {
 
             }
         }
-        HashSet<Tuple> tuples = ps.chatSession.tripleStore.select(vars, visibleVars, clauses);
+        Set<Tuple> tuples = ps.chatSession.tripleStore.select(vars, visibleVars, clauses);
         String result = "";
         for (Tuple tuple : tuples) {
             result = tuple.name + " " + result;

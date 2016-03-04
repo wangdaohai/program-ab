@@ -23,6 +23,7 @@ import org.alicebot.ab.utils.CalendarUtils;
 
 import java.io.*;
 import java.util.HashSet;
+import java.util.Set;
 
 public class Utilities {
 
@@ -51,18 +52,18 @@ public class Utilities {
         return xmlExpression;
     }
 
-    public static HashSet<String> stringSet(String... strings) {
-        HashSet<String> set = new HashSet<String>();
+    public static Set<String> stringSet(String... strings) {
+        Set<String> set = new HashSet<>();
         for (String s : strings) { set.add(s); }
         return set;
     }
 
     public static String getFileFromInputStream(InputStream in) {
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        String strLine;
         //Read File Line By Line
         String contents = "";
         try {
+            String strLine;
             while ((strLine = br.readLine()) != null) {
                 if (!strLine.startsWith(MagicStrings.text_comment_mark)) {
                     contents += (strLine.length() == 0) ? "\n" : (strLine + "\n");
@@ -94,10 +95,10 @@ public class Utilities {
 
     public static String getCopyrightFromInputStream(InputStream in) {
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        String strLine;
         //Read File Line By Line
         String copyright = "";
         try {
+            String strLine;
             while ((strLine = br.readLine()) != null) {
                 copyright += (strLine.length() == 0) ? "\n" : ("<!-- " + strLine + " -->\n");
             }
@@ -115,8 +116,8 @@ public class Utilities {
             copyright = getFile(bot.config_path + "/copyright.txt");
             String[] splitCopyright = copyright.split("\n");
             copyright = "";
-            for (int i = 0; i < splitCopyright.length; i++) {
-                copyright += "<!-- " + splitCopyright[i] + " -->\n";
+            for (String aSplitCopyright : splitCopyright) {
+                copyright += "<!-- " + aSplitCopyright + " -->\n";
             }
             copyright = copyright.replace("[url]", bot.properties.get("url"));
             copyright = copyright.replace("[date]", date);

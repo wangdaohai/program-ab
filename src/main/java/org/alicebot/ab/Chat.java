@@ -32,11 +32,11 @@ public class Chat {
     public Bot bot;
     public boolean doWrites;
     public String customerId = MagicStrings.default_Customer_id;
-    public History<History> thatHistory = new History<History>("that");
-    public History<String> requestHistory = new History<String>("request");
-    public History<String> responseHistory = new History<String>("response");
-    // public History<String> repetitionHistory = new History<String>("repetition");
-    public History<String> inputHistory = new History<String>("input");
+    public History<History> thatHistory = new History<>("that");
+    public History<String> requestHistory = new History<>("request");
+    public History<String> responseHistory = new History<>("response");
+    // public History<String> repetitionHistory = new History<>("repetition");
+    public History<String> inputHistory = new History<>("input");
     public Predicates predicates = new Predicates();
     public static String matchTrace = "";
     public static boolean locationKnown = false;
@@ -67,7 +67,7 @@ public class Chat {
         this.customerId = customerId;
         this.bot = bot;
         this.doWrites = doWrites;
-        History<String> contextThatHistory = new History<String>();
+        History<String> contextThatHistory = new History<>();
         contextThatHistory.add(MagicStrings.default_that);
         thatHistory.add(contextThatHistory);
         addPredicates();
@@ -93,11 +93,11 @@ public class Chat {
      */
 
     int addTriples() {
-        int tripleCnt = 0;
         if (MagicBooleans.trace_mode) {
             System.out.println("Loading Triples from " + bot.config_path + "/triples.txt");
         }
         File f = new File(bot.config_path + "/triples.txt");
+        int tripleCnt = 0;
         if (f.exists()) {
             try {
                 InputStream is = new FileInputStream(f);
@@ -128,11 +128,10 @@ public class Chat {
      * Chat session terminal interaction
      */
     public void chat() {
-        BufferedWriter bw = null;
         String logFile = bot.log_path + "/log_" + customerId + ".txt";
         try {
             //Construct the bw object
-            bw = new BufferedWriter(new FileWriter(logFile, true));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true));
             String request = "SET PREDICATES";
             String response = multisentenceRespond(request);
             while (!request.equals("quit")) {
@@ -161,7 +160,7 @@ public class Chat {
      * @param contextThatHistory history of "that" values for this request/response interaction
      * @return bot's reply
      */
-    String respond(String input, String that, String topic, History contextThatHistory) {
+    String respond(String input, String that, String topic, History<String> contextThatHistory) {
         //MagicBooleans.trace("chat.respond(input: " + input + ", that: " + that + ", topic: " + topic + ", contextThatHistory: " + contextThatHistory + ")");
         boolean repetition = true;
         //inputHistory.printHistory();
@@ -175,16 +174,14 @@ public class Chat {
         inputHistory.add(input);
         if (repetition) {input = MagicStrings.repetition_detected;}
 
-        String response;
-
-        response = AIMLProcessor.respond(input, that, topic, this);
+        String response = AIMLProcessor.respond(input, that, topic, this);
         //MagicBooleans.trace("in chat.respond(), response: " + response);
         String normResponse = bot.preProcessor.normalize(response);
         //MagicBooleans.trace("in chat.respond(), normResponse: " + normResponse);
         if (MagicBooleans.jp_tokenize) { normResponse = JapaneseUtils.tokenizeSentence(normResponse); }
         String sentences[] = bot.preProcessor.sentenceSplit(normResponse);
-        for (int i = 0; i < sentences.length; i++) {
-            that = sentences[i];
+        for (String sentence : sentences) {
+            that = sentence;
             //System.out.println("That "+i+" '"+that+"'");
             if (that.trim().equals("")) { that = MagicStrings.default_that; }
             contextThatHistory.add(that);
@@ -223,11 +220,11 @@ public class Chat {
             normalized = JapaneseUtils.tokenizeSentence(normalized);
             //MagicBooleans.trace("in chat.multisentenceRespond(), normalized: " + normalized);
             String sentences[] = bot.preProcessor.sentenceSplit(normalized);
-            History<String> contextThatHistory = new History<String>("contextThat");
-            for (int i = 0; i < sentences.length; i++) {
+            History<String> contextThatHistory = new History<>("contextThat");
+            for (String sentence : sentences) {
                 //System.out.println("Human: "+sentences[i]);
                 AIMLProcessor.trace_count = 0;
-                String reply = respond(sentences[i], contextThatHistory);
+                String reply = respond(sentence, contextThatHistory);
                 response += "  " + reply;
                 //System.out.println("Robot: "+reply);
             }

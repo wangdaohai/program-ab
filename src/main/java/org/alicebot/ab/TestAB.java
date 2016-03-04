@@ -16,9 +16,8 @@ public class TestAB {
         Chat chatSession = new Chat(bot, doWrites);
         bot.brain.nodeStats();
         MagicBooleans.trace_mode = traceMode;
-        String textLine = "";
         while (true) {
-            textLine = IOUtils.readInputTextLine("Human");
+            String textLine = IOUtils.readInputTextLine("Human");
             if (textLine == null || textLine.length() < 1) {
                 textLine = MagicStrings.null_input;
             }
@@ -135,7 +134,6 @@ public class TestAB {
     }
 
     public static void sraixCache(String filename, Chat chatSession) {
-        int limit = 650000;
         MagicBooleans.cache_sraix = true;
         try {
             FileInputStream fstream = new FileInputStream(filename);
@@ -144,6 +142,7 @@ public class TestAB {
             String strLine;
             //Read File Line By Line
             int count = 0;
+            int limit = 650000;
             while ((strLine = br.readLine()) != null && count++ < limit) {
                 System.out.println("Human: " + strLine);
 

@@ -27,12 +27,13 @@ import org.json.JSONObject;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Sraix {
 
-    public static HashMap<String, String> custIdMap = new HashMap<String, String>();
+    public static Map<String, String> custIdMap = new HashMap<>();
 
     public static String custid = "1"; // customer ID number for Pandorabots
 
@@ -148,8 +149,8 @@ public class Sraix {
             int offset = CalendarUtils.timeZoneOffset();
             //System.out.println("OFFSET = "+offset);
             String locationString = "";
-            if (chatSession.locationKnown) {
-                locationString = "&location=" + chatSession.latitude + "," + chatSession.longitude;
+            if (Chat.locationKnown) {
+                locationString = "&location=" + Chat.latitude + "," + Chat.longitude;
             }
             // https://weannie.pannous.com/api?input=when+is+daylight+savings+time+in+the+us&locale=en_US&login=pandorabots&ip=169.254.178.212&botid=0&key=CKNgaaVLvNcLhDupiJ1R8vtPzHzWc8mhIQDFSYWj&exclude=Dialogues,ChatBot&out=json
             // exclude=Dialogues,ChatBot&out=json&clientFeatures=show-images,reminder,say&debug=true
@@ -158,13 +159,13 @@ public class Sraix {
             String page = NetworkUtils.responseContent(url);
             //MagicBooleans.trace("in Sraix.sraixPannous, page: " + page);
             String text = "";
-            String imgRef = "";
-            String urlRef = "";
             if (page == null || page.length() == 0) {
                 text = MagicStrings.sraix_failed;
             } else {
                 JSONArray outputJson = new JSONObject(page).getJSONArray("output");
                 //MagicBooleans.trace("in Sraix.sraixPannous, outputJson class: " + outputJson.getClass() + ", outputJson: " + outputJson);
+                String imgRef = "";
+                String urlRef = "";
                 if (outputJson.length() == 0) {
                     text = MagicStrings.sraix_failed;
                 } else {
@@ -186,14 +187,13 @@ public class Sraix {
 
                             Pattern datePattern = Pattern.compile("(.*)-(.*)-(.*)T(.*):(.*)");
                             Matcher m = datePattern.matcher(date);
-                            String year = "", month = "", day = "", hour = "", minute = "";
                             if (m.matches()) {
-                                year = m.group(1);
-                                month = String.valueOf(Integer.parseInt(m.group(2)) - 1);
-                                day = m.group(3);
+                                String year = m.group(1);
+                                String month = String.valueOf(Integer.parseInt(m.group(2)) - 1);
+                                String day = m.group(3);
 
-                                hour = m.group(4);
-                                minute = m.group(5);
+                                String hour = m.group(4);
+                                String minute = m.group(5);
                                 text = "<year>" + year + "</year>" +
                                     "<month>" + month + "</month>" +
                                     "<day>" + day + "</day>" +
@@ -249,8 +249,7 @@ public class Sraix {
                     text = text.replace("&#39;", "'");
                     text = text.replace("&apos;", "'");
                     text = text.replaceAll("\\[(.*)\\]", "");
-                    String[] sentences;
-                    sentences = text.split("\\. ");
+                    String[] sentences = text.split("\\. ");
                     //System.out.println("Sraix: text has "+sentences.length+" sentences:");
                     String clippedPage = sentences[0];
                     for (int i = 1; i < sentences.length; i++) {
