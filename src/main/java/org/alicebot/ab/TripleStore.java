@@ -223,15 +223,7 @@ public class TripleStore {
         resultSet.retainAll(predicateSet);
         resultSet.retainAll(objectSet);
 
-        Set<String> finalResultSet = new HashSet<>(resultSet);
-
-        //System.out.println("TripleStore.getTriples: "+finalResultSet.size()+" results");
-        /* System.out.println("getTriples subjectSet="+subjectSet);
-        System.out.println("getTriples predicateSet="+predicateSet);
-        System.out.println("getTriples objectSet="+objectSet);
-        System.out.println("getTriples result="+resultSet);*/
-
-        return finalResultSet;
+        return new HashSet<>(resultSet);
     }
 
     public HashSet<String> getSubjects(Set<String> triples) {

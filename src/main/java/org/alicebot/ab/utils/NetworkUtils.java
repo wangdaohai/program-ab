@@ -21,9 +21,11 @@ public final class NetworkUtils {
 
     public static String localIPAddress() {
         try {
-            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
+            Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
+            while (en.hasMoreElements()) {
                 NetworkInterface intf = en.nextElement();
-                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
+                Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses();
+                while (enumIpAddr.hasMoreElements()) {
                     InetAddress inetAddress = enumIpAddr.nextElement();
                     if (!inetAddress.isLoopbackAddress()) {
                         String ipAddress = inetAddress.getHostAddress();
@@ -154,7 +156,7 @@ public final class NetworkUtils {
         //System.out.println("--> custid = "+custid);
         String spec = "";
         try {
-            if (custid.equals("0")) {    // get custid on first transaction with Pandorabots
+            if ("0".equals(custid)) {    // get custid on first transaction with Pandorabots
                 spec = String.format("%s?botid=%s&input=%s",
                     "http://" + host + "/pandora/talk-xml",
                     botid,

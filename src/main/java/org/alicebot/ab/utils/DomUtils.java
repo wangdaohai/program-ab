@@ -65,8 +65,6 @@ public final class DomUtils {
         } catch (TransformerException te) {
             logger.error("nodeToString Transformer Exception", te);
         }
-        String result = sw.toString();
-        //MagicBooleans.trace("nodeToString() returning: " + result);
-        return result;
+        return sw.toString();
     }
 }

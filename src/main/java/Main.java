@@ -55,13 +55,13 @@ public final class Main {
                 String option = splitArg[0];
                 String value = splitArg[1];
                 logger.trace("{}='{}'", option, value);
-                if (option.equals("bot")) { botName = value; }
-                if (option.equals("action")) { action = value; }
-                if (option.equals("trace")) {
+                if ("bot".equals(option)) { botName = value; }
+                if ("action".equals(option)) { action = value; }
+                if ("trace".equals(option)) {
                     LogUtil.activateDebug("true".equals(value));
                 }
-                if (option.equals("morph")) {
-                    MagicBooleans.jp_tokenize = value.equals("true");
+                if ("morph".equals(option)) {
+                    MagicBooleans.jp_tokenize = "true".equals(value);
                 }
             }
         }
@@ -75,25 +75,25 @@ public final class Main {
         //bot.preProcessor.normalizeFile("c:/ab/data/log2.txt", "c:/ab/data/log2normal.txt");
         //System.exit(0);
         if (bot.brain.getCategories().size() < MagicNumbers.brain_print_size) { bot.brain.printgraph(); }
-        logger.debug("Action = '" + action + "'");
-        if (action.equals("chat") || action.equals("chat-app")) {
-            boolean doWrites = !action.equals("chat-app");
+        logger.debug("Action = '{}'", action);
+        if ("chat".equals(action) || "chat-app".equals(action)) {
+            boolean doWrites = !"chat-app".equals(action);
             TestAB.testChat(bot, doWrites);
         }
         //else if (action.equals("test")) testSuite(bot, MagicStrings.root_path+"/data/find.txt");
-        else if (action.equals("ab")) {
+        else if ("ab".equals(action)) {
             TestAB.testAB(bot, TestAB.sample_file);
-        } else if (action.equals("aiml2csv") || action.equals("csv2aiml")) {
+        } else if ("aiml2csv".equals(action) || "csv2aiml".equals(action)) {
             convert(bot, action);
-        } else if (action.equals("abwq")) {
+        } else if ("abwq".equals(action)) {
             AB ab = new AB(bot, TestAB.sample_file);
             ab.abwq();
-        } else if (action.equals("test")) {
+        } else if ("test".equals(action)) {
             TestAB.runTests(bot);
-        } else if (action.equals("shadow")) {
+        } else if ("shadow".equals(action)) {
             LogUtil.activateDebug(false);
             bot.shadowChecker();
-        } else if (action.equals("iqtest")) {
+        } else if ("iqtest".equals(action)) {
             ChatTest ct = new ChatTest(bot);
             try {
                 ct.testMultisentenceRespond();
@@ -106,9 +106,9 @@ public final class Main {
     }
 
     public static void convert(Bot bot, String action) {
-        if (action.equals("aiml2csv")) {
+        if ("aiml2csv".equals(action)) {
             bot.writeAIMLIFFiles();
-        } else if (action.equals("csv2aiml")) {
+        } else if ("csv2aiml".equals(action)) {
             bot.writeAIMLFiles();
         }
     }

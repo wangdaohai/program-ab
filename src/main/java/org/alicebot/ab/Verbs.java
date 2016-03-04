@@ -40,10 +40,10 @@ public final class Verbs {
     public static String was(String verb) {
         String ending;
         verb = verb.trim();
-        if (verb.equals("admit")) { return "admitted"; }
-        if (verb.equals("commit")) { return "committed"; }
-        if (verb.equals("die")) { return "died"; }
-        if (verb.equals("agree")) { return "agreed"; }
+        if ("admit".equals(verb)) { return "admitted"; }
+        if ("commit".equals(verb)) { return "committed"; }
+        if ("die".equals(verb)) { return "died"; }
+        if ("agree".equals(verb)) { return "agreed"; }
         if (verb.endsWith("efer")) { return verb + "red"; }
 
         if (irregular.contains(verb)) {return be2was.get(verb); }
@@ -58,11 +58,11 @@ public final class Verbs {
     public static String being(String verb) {
         String ending;
         if (irregular.contains(verb)) { return be2being.get(verb); }
-        if (verb.equals("admit")) { return "admitting"; }
-        if (verb.equals("commit")) { return "committing"; }
-        if (verb.equals("quit")) { return "quitting"; }
-        if (verb.equals("die")) { return "dying"; }
-        if (verb.equals("lie")) { return "lying"; }
+        if ("admit".equals(verb)) { return "admitting"; }
+        if ("commit".equals(verb)) { return "committing"; }
+        if ("quit".equals(verb)) { return "quitting"; }
+        if ("die".equals(verb)) { return "dying"; }
+        if ("lie".equals(verb)) { return "lying"; }
         if (verb.endsWith("efer")) { return verb + "ring"; }
         if (endsWith(verb, ring) != null) { return verb.substring(0, verb.length() - 1) + "ing";}
         if ((ending = endsWith(verb, bing)) != null && (null == endsWith(verb, notBing))) {

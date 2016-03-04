@@ -44,9 +44,9 @@ public class Predicates extends HashMap<String, String> {
     public String put(String key, String value) {
         //MagicBooleans.trace("predicates.put(key: " + key + ", value: " + value + ")");
         if (MagicBooleans.jp_tokenize) {
-            if (key.equals("topic")) { value = JapaneseUtils.tokenizeSentence(value); }
+            if ("topic".equals(key)) { value = JapaneseUtils.tokenizeSentence(value); }
         }
-        if (key.equals("topic") && value.isEmpty()) { value = MagicStrings.default_get; }
+        if ("topic".equals(key) && value.isEmpty()) { value = MagicStrings.default_get; }
         if (value.equals(MagicStrings.too_much_recursion)) { value = MagicStrings.default_list_item; }
         return super.put(key, value);
     }

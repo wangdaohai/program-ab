@@ -50,22 +50,22 @@ public class PCAIMLProcessorExtension implements AIMLProcessorExtension {
         String phoneType = "unknown";
         String birthday = "unknown";
         for (int i = 0; i < childList.getLength(); i++) {
-            if (childList.item(i).getNodeName().equals("birthday")) {
+            if ("birthday".equals(childList.item(i).getNodeName())) {
                 birthday = AIMLProcessor.evalTagContent(childList.item(i), ps, null);
             }
-            if (childList.item(i).getNodeName().equals("phonetype")) {
+            if ("phonetype".equals(childList.item(i).getNodeName())) {
                 phoneType = AIMLProcessor.evalTagContent(childList.item(i), ps, null);
             }
-            if (childList.item(i).getNodeName().equals("emailtype")) {
+            if ("emailtype".equals(childList.item(i).getNodeName())) {
                 emailType = AIMLProcessor.evalTagContent(childList.item(i), ps, null);
             }
-            if (childList.item(i).getNodeName().equals("dialnumber")) {
+            if ("dialnumber".equals(childList.item(i).getNodeName())) {
                 dialNumber = AIMLProcessor.evalTagContent(childList.item(i), ps, null);
             }
-            if (childList.item(i).getNodeName().equals("displayname")) {
+            if ("displayname".equals(childList.item(i).getNodeName())) {
                 displayName = AIMLProcessor.evalTagContent(childList.item(i), ps, null);
             }
-            if (childList.item(i).getNodeName().equals("emailaddress")) {
+            if ("emailaddress".equals(childList.item(i).getNodeName())) {
                 emailAddress = AIMLProcessor.evalTagContent(childList.item(i), ps, null);
             }
         }
@@ -95,10 +95,10 @@ public class PCAIMLProcessorExtension implements AIMLProcessorExtension {
         String id = "unknown";
         String type = "unknown";
         for (int i = 0; i < childList.getLength(); i++) {
-            if (childList.item(i).getNodeName().equals("id")) {
+            if ("id".equals(childList.item(i).getNodeName())) {
                 id = AIMLProcessor.evalTagContent(childList.item(i), ps, null);
             }
-            if (childList.item(i).getNodeName().equals("type")) {
+            if ("type".equals(childList.item(i).getNodeName())) {
                 type = AIMLProcessor.evalTagContent(childList.item(i), ps, null);
             }
         }
@@ -110,10 +110,10 @@ public class PCAIMLProcessorExtension implements AIMLProcessorExtension {
         String id = "unknown";
         String type = "unknown";
         for (int i = 0; i < childList.getLength(); i++) {
-            if (childList.item(i).getNodeName().equals("id")) {
+            if ("id".equals(childList.item(i).getNodeName())) {
                 id = AIMLProcessor.evalTagContent(childList.item(i), ps, null);
             }
-            if (childList.item(i).getNodeName().equals("type")) {
+            if ("type".equals(childList.item(i).getNodeName())) {
                 type = AIMLProcessor.evalTagContent(childList.item(i), ps, null);
             }
         }

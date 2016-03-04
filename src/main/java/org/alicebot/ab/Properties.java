@@ -49,8 +49,7 @@ public class Properties extends HashMap<String, String> {
      *
      * @param in Input stream
      */
-    public int getPropertiesFromInputStream(InputStream in) {
-        int cnt = 0;
+    public void getPropertiesFromInputStream(InputStream in) {
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
         //Read File Line By Line
         try {
@@ -60,13 +59,11 @@ public class Properties extends HashMap<String, String> {
                     String property = strLine.substring(0, strLine.indexOf(':'));
                     String value = strLine.substring(strLine.indexOf(':') + 1);
                     put(property, value);
-                    cnt++;
                 }
             }
         } catch (Exception ex) {
             logger.error("getPropertiesFromInputStream error", ex);
         }
-        return cnt;
     }
 
     /**
@@ -74,7 +71,7 @@ public class Properties extends HashMap<String, String> {
      *
      * @param filename file containing bot properties
      */
-    public int getProperties(String filename) {
+    public void getProperties(String filename) {
         logger.debug("Get Properties: {}", filename);
         try {
             // Open the file that is the first
@@ -83,12 +80,11 @@ public class Properties extends HashMap<String, String> {
             if (file.exists()) {
                 logger.debug("Exists: {}", filename);
                 try (FileInputStream fstream = new FileInputStream(filename)) {
-                    return getPropertiesFromInputStream(fstream);
+                    getPropertiesFromInputStream(fstream);
                 }
             }
         } catch (Exception e) {
             logger.error("getProperties error", e);
         }
-        return 0;
     }
 }

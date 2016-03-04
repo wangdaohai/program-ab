@@ -146,11 +146,11 @@ public final class Bot {
         //readUnfinishedIFCategories();
         MagicStrings.pannous_api_key = Utilities.getPannousAPIKey(this);
         MagicStrings.pannous_login = Utilities.getPannousLogin(this);
-        if (action.equals("aiml2csv")) {
+        if ("aiml2csv".equals(action)) {
             addCategoriesFromAIML();
-        } else if (action.equals("csv2aiml")) {
+        } else if ("csv2aiml".equals(action)) {
             addCategoriesFromAIMLIF();
-        } else if (action.equals("chat-app")) {
+        } else if ("chat-app".equals(action)) {
             logger.debug("Loading only AIMLIF files");
             cnt = addCategoriesFromAIMLIF();
         } else if (aimlDate.after(aimlIFDate)) {
@@ -312,22 +312,20 @@ public final class Bot {
      * @param graph    Graphmaster to store categories
      * @param fileName file name of AIMLIF file
      */
-    public int readCertainIFCategories(Graphmaster graph, String fileName) {
-        File file = new File(aimlif_path + "/" + fileName + MagicStrings.aimlif_file_suffix);
+    public void readCertainIFCategories(Graphmaster graph, String fileName) {
+        File file = new File(aimlif_path, fileName + MagicStrings.aimlif_file_suffix);
         if (file.exists()) {
             try {
                 List<Category> certainCategories = readIFCategories(aimlif_path + "/" + fileName + MagicStrings.aimlif_file_suffix);
                 certainCategories.forEach(graph::addCategory);
                 int cnt = certainCategories.size();
                 logger.info("readCertainIFCategories {} categories from {}", cnt, file);
-                return cnt;
             } catch (Exception iex) {
                 logger.error("Problem loading {}", file, iex);
             }
         } else {
             logger.warn("No {} file found", file);
         }
-        return 0;
     }
 
     /**
@@ -585,7 +583,7 @@ public final class Bot {
                         if (file.endsWith(".txt") || file.endsWith(".TXT")) {
                             logger.debug(file);
                             String mapName = file.substring(0, file.length() - ".txt".length());
-                            logger.debug("Read AIML Map " + mapName);
+                            logger.debug("Read AIML Map {}", mapName);
                             AIMLMap aimlMap = new AIMLMap(mapName, this);
                             cnt += aimlMap.readAIMLMap(this);
                             mapMap.put(mapName, aimlMap);

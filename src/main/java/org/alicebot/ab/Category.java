@@ -269,12 +269,12 @@ public class Category {
         try {
             String topicStart = "";
             String topicEnd = "";
-            if (!category.getTopic().equals("*")) {
+            if (!"*".equals(category.getTopic())) {
                 topicStart = "<topic name=\"" + category.getTopic() + "\">" + NL;
                 topicEnd = "</topic>" + NL;
             }
             String thatStatement = "";
-            if (!category.getThat().equals("*")) { thatStatement = "<that>" + category.getThat() + "</that>";}
+            if (!"*".equals(category.getThat())) { thatStatement = "<that>" + category.getThat() + "</that>";}
             result = topicStart + "<category><pattern>" + pattern + "</pattern>" + thatStatement + NL +
                 "<template>" + category.getTemplate() + "</template>" + NL +
                 "</category>" + topicEnd;

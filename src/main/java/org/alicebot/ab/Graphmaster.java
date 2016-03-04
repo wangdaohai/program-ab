@@ -121,7 +121,7 @@ public class Graphmaster {
     boolean thatStarTopicStar(Path path) {
         String tail = Path.pathToSentence(path).trim();
         //System.out.println("thatStarTopicStar "+tail+" "+tail.equals("<THAT> * <TOPIC> *"));
-        return tail.equals("<THAT> * <TOPIC> *");
+        return "<THAT> * <TOPIC> *".equals(tail);
     }
 
     void addSets(String type, Bot bot, Nodemapper node, String filename) {
@@ -170,7 +170,7 @@ public class Graphmaster {
             Nodemapper nextNode = NodemapperOperator.get(node, path.word);
             addPath(nextNode, path.next, category);
             int offset = 1;
-            if (path.word.equals("#") || path.word.equals("^")) { offset = 0; }
+            if ("#".equals(path.word) || "^".equals(path.word)) { offset = 0; }
             node.height = Math.min(offset + nextNode.height, node.height);
         } else {
             Nodemapper nextNode = new Nodemapper();
@@ -184,7 +184,7 @@ public class Graphmaster {
             NodemapperOperator.put(node, path.word, nextNode);
             addPath(nextNode, path.next, category);
             int offset = 1;
-            if (path.word.equals("#") || path.word.equals("^")) { offset = 0; }
+            if ("#".equals(path.word) || "^".equals(path.word)) { offset = 0; }
             node.height = Math.min(offset + nextNode.height, node.height);
         }
     }
@@ -236,7 +236,7 @@ public class Graphmaster {
                 logger.debug("findNode: path is null, returning node {}", node.category.inputThatTopic());
             }
             return node;
-        } else if (Path.pathToSentence(path).trim().equals("<THAT> * <TOPIC> *") && node.shortCut && path.word.equals("<THAT>")) {
+        } else if ("<THAT> * <TOPIC> *".equals(Path.pathToSentence(path).trim()) && node.shortCut && "<THAT>".equals(path.word)) {
             if (verbose) { logger.debug("findNode: shortcut, returning {}", node.category.inputThatTopic()); }
             return node;
         } else if (NodemapperOperator.containsKey(node, path.word)) {
@@ -403,7 +403,7 @@ public class Graphmaster {
     }
 
     final Nodemapper shortCutMatch(Path path, Nodemapper node, String inputThatTopic, String starState, int starIndex, String[] inputStars, String[] thatStars, String[] topicStars, String matchTrace) {
-        if (node != null && node.shortCut && path.word.equals("<THAT>") && node.category != null) {
+        if (node != null && node.shortCut && "<THAT>".equals(path.word) && node.category != null) {
             String tail = Path.pathToSentence(path).trim();
             //System.out.println("Shortcut tail = "+tail);
             String that = tail.substring(tail.indexOf("<THAT>") + "<THAT>".length(), tail.indexOf("<TOPIC>")).trim();
@@ -422,10 +422,10 @@ public class Graphmaster {
     final Nodemapper wordMatch(Path path, Nodemapper node, String inputThatTopic, String starState, int starIndex, String[] inputStars, String[] thatStars, String[] topicStars, String matchTrace) {
         try {
             String uword = path.word.toUpperCase();
-            if (uword.equals("<THAT>")) {
+            if ("<THAT>".equals(uword)) {
                 starIndex = 0;
                 starState = "thatStar";
-            } else if (uword.equals("<TOPIC>")) {
+            } else if ("<TOPIC>".equals(uword)) {
                 starIndex = 0;
                 starState = "topicStar";
             }
@@ -500,7 +500,7 @@ public class Graphmaster {
 
     final Nodemapper wildMatch(Path path, Nodemapper node, String input, String starState, int starIndex,
                                String[] inputStars, String[] thatStars, String[] topicStars, String wildcard, String matchTrace) {
-        if (path.word.equals("<THAT>") || path.word.equals("<TOPIC>")) {
+        if ("<THAT>".equals(path.word) || "<TOPIC>".equals(path.word)) {
             fail("wild1 " + wildcard, matchTrace);
             return null;
         }
@@ -519,7 +519,7 @@ public class Graphmaster {
                     setStars(starWords, starIndex, starState, inputStars, thatStars, topicStars);
                     return matchedNode;
                 } else {
-                    for (path = pathStart; path != null && !currentWord.equals("<THAT>") && !currentWord.equals("<TOPIC>"); path = path.next) {
+                    for (path = pathStart; path != null && !"<THAT>".equals(currentWord) && !"<TOPIC>".equals(currentWord); path = path.next) {
                         matchTrace += "[" + wildcard + "," + path.word + "]";
                         if ((matchedNode = match(path, nextNode, input, starState, starIndex + 1, inputStars, thatStars, topicStars, matchTrace)) != null) {
                             setStars(starWords, starIndex, starState, inputStars, thatStars, topicStars);
@@ -543,7 +543,7 @@ public class Graphmaster {
     final Nodemapper setMatch(Path path, Nodemapper node, String input, String starState, int starIndex, String[] inputStars, String[] thatStars, String[] topicStars, String matchTrace) {
         logger.debug("Graphmaster.setMatch(path: {}, node: {}, input: {}, starState: {}, starIndex: {}, inputStars, thatStars, topicStars, matchTrace: {}, )",
             path, node, input, starState, starIndex, matchTrace);
-        if (node.sets == null || path.word.equals("<THAT>") || path.word.equals("<TOPIC>")) { return null; }
+        if (node.sets == null || "<THAT>".equals(path.word) || "<TOPIC>".equals(path.word)) { return null; }
         logger.debug("in Graphmaster.setMatch, setMatch sets ={}", node.sets);
         for (String setName : node.sets) {
             logger.debug("in Graphmaster.setMatch, setMatch trying type {}", setName);
@@ -556,7 +556,7 @@ public class Graphmaster {
             matchTrace += "[<set>" + setName + "</set>," + path.word + "]";
             logger.debug("in Graphmaster.setMatch, setMatch starWords =\"{}\"", starWords);
             Nodemapper bestMatchedNode = null;
-            for (Path qath = path.next; qath != null && !currentWord.equals("<THAT>") && !currentWord.equals("<TOPIC>") && length <= aimlSet.maxLength; qath = qath.next) {
+            for (Path qath = path.next; qath != null && !"<THAT>".equals(currentWord) && !"<TOPIC>".equals(currentWord) && length <= aimlSet.maxLength; qath = qath.next) {
                 logger.debug("in Graphmaster.setMatch, qath.word = {}", qath.word);
                 String phrase = bot.preProcessor.normalize(starWords.trim()).toUpperCase();
                 logger.debug("in Graphmaster.setMatch, setMatch trying \"{}\" in {}", phrase, setName);
@@ -620,11 +620,11 @@ public class Graphmaster {
         if (starIndex < MagicNumbers.max_stars) {
             //System.out.println("starWords="+starWords);
             starWords = starWords.trim();
-            if (starState.equals("inputStar")) {
+            if ("inputStar".equals(starState)) {
                 inputStars[starIndex] = starWords;
-            } else if (starState.equals("thatStar")) {
+            } else if ("thatStar".equals(starState)) {
                 thatStars[starIndex] = starWords;
-            } else if (starState.equals("topicStar")) {
+            } else if ("topicStar".equals(starState)) {
                 topicStars[starIndex] = starWords;
             }
         }

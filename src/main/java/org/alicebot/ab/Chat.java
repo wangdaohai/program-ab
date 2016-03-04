@@ -96,8 +96,7 @@ public class Chat {
     /**
      * Load Triple Store knowledge base
      */
-
-    int addTriples() {
+    void addTriples() {
         File f = new File(bot.config_path, "triples.txt");
         logger.debug("Loading Triples from {}", f);
         int tripleCnt = 0;
@@ -124,7 +123,6 @@ public class Chat {
             }
         }
         logger.debug("Loaded {} triples", tripleCnt);
-        return tripleCnt;
     }
 
     /**
@@ -137,7 +135,7 @@ public class Chat {
             BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true));
             String request = "SET PREDICATES";
             String response = multisentenceRespond(request);
-            while (!request.equals("quit")) {
+            while (!"quit".equals(request)) {
                 //noinspection UseOfSystemOutOrSystemErr
                 System.out.print("Human: ");
                 request = IOUtils.readInputTextLine();

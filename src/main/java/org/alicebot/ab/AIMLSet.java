@@ -66,7 +66,7 @@ public class AIMLSet extends HashSet<String> {
             String query = MagicStrings.set_member_string + setName.toUpperCase() + " " + s;
             String response = Sraix.sraix(null, query, "false", null, host, botid, null, "0");
             //System.out.println("External "+setName+" contains "+s+"? "+response);
-            if (response.equals("true")) {
+            if ("true".equals(response)) {
                 inCache.add(s);
                 return true;
             } else {

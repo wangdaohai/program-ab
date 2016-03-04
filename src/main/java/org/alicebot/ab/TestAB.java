@@ -28,27 +28,26 @@ public final class TestAB {
             if (textLine == null || textLine.length() < 1) {
                 textLine = MagicStrings.null_input;
             }
-            if (textLine.equals("q")) {
+            if ("q".equals(textLine)) {
                 System.exit(0);
-            } else if (textLine.equals("wq")) {
+            } else if ("wq".equals(textLine)) {
                 bot.writeQuit();
                 System.exit(0);
-            } else if (textLine.equals("sc")) {
+            } else if ("sc".equals(textLine)) {
                 sraixCache("c:/ab/data/sraixdata6.txt", chatSession);
-            } else if (textLine.equals("iqtest")) {
+            } else if ("iqtest".equals(textLine)) {
                 ChatTest ct = new ChatTest(bot);
                 try {
                     ct.testMultisentenceRespond();
                 } catch (Exception ex) {
                     logger.error("testChat error", ex);
                 }
-            } else if (textLine.equals("ab")) {
+            } else if ("ab".equals(textLine)) {
                 testAB(bot, sample_file);
             } else {
-                String request = textLine;
                 logger.debug("STATE={}:THAT={}:TOPIC={}",
-                    request, chatSession.thatHistory.get(0).get(0), chatSession.predicates.get("topic"));
-                String response = chatSession.multisentenceRespond(request);
+                    textLine, chatSession.thatHistory.get(0).get(0), chatSession.predicates.get("topic"));
+                String response = chatSession.multisentenceRespond(textLine);
                 while (response.contains("&lt;")) { response = response.replace("&lt;", "<"); }
                 while (response.contains("&gt;")) { response = response.replace("&gt;", ">"); }
                 IOUtils.writeOutputTextLine("Robot", response);
@@ -85,20 +84,19 @@ public final class TestAB {
         System.out.print(0);
         while (textLine != null) {
             if (textLine == null || textLine.length() < 1) { textLine = MagicStrings.null_input; }
-            if (textLine.equals("q")) {
+            if ("q".equals(textLine)) {
                 System.exit(0);
-            } else if (textLine.equals("wq")) {
+            } else if ("wq".equals(textLine)) {
                 bot.writeQuit();
                 System.exit(0);
-            } else if (textLine.equals("ab")) {
+            } else if ("ab".equals(textLine)) {
                 testAB(bot, sample_file);
             } else if (textLine.equals(MagicStrings.null_input)) {
                 testOutput.writeLine("");
             } else if (textLine.startsWith("#")) { testOutput.writeLine(textLine); } else {
-                String request = textLine;
                 logger.debug("STATE={}:THAT={}:TOPIC={}",
-                    request, chatSession.thatHistory.get(0).get(0), chatSession.predicates.get("topic"));
-                String response = chatSession.multisentenceRespond(request);
+                    textLine, chatSession.thatHistory.get(0).get(0), chatSession.predicates.get("topic"));
+                String response = chatSession.multisentenceRespond(textLine);
                 while (response.contains("&lt;")) { response = response.replace("&lt;", "<"); }
                 while (response.contains("&gt;")) { response = response.replace("&gt;", ">"); }
                 testOutput.writeLine("Robot: " + response);

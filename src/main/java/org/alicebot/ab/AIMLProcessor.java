@@ -64,13 +64,13 @@ public final class AIMLProcessor {
             Node m = children.item(j);
             String mName = m.getNodeName();
             //System.out.println("mName: " + mName);
-            if (mName.equals("#text")) {
+            if ("#text".equals(mName)) {
                 /*skip*/
-            } else if (mName.equals("pattern")) {
+            } else if ("pattern".equals(mName)) {
                 pattern = DomUtils.nodeToString(m);
-            } else if (mName.equals("that")) { that = DomUtils.nodeToString(m); } else if (mName.equals("topic")) {
+            } else if ("that".equals(mName)) { that = DomUtils.nodeToString(m); } else if ("topic".equals(mName)) {
                 topic = DomUtils.nodeToString(m);
-            } else if (mName.equals("template")) {
+            } else if ("template".equals(mName)) {
                 template = DomUtils.nodeToString(m);
             } else {
                 logger.info("categoryProcessor: unexpected {} in {}", mName, DomUtils.nodeToString(m));
@@ -131,7 +131,7 @@ public final class AIMLProcessor {
             if (root.hasAttributes()) {
                 NamedNodeMap XMLAttributes = root.getAttributes();
                 for (int i = 0; i < XMLAttributes.getLength(); i++) {
-                    if (XMLAttributes.item(i).getNodeName().equals("language")) {
+                    if ("language".equals(XMLAttributes.item(i).getNodeName())) {
                         language = XMLAttributes.item(i).getNodeValue();
                     }
                 }
@@ -140,16 +140,16 @@ public final class AIMLProcessor {
             for (int i = 0; i < nodelist.getLength(); i++) {
                 Node n = nodelist.item(i);
                 //System.out.println("AIML child: " +n.getNodeName());
-                if (n.getNodeName().equals("category")) {
+                if ("category".equals(n.getNodeName())) {
                     categoryProcessor(n, categories, "*", aimlFile, language);
-                } else if (n.getNodeName().equals("topic")) {
+                } else if ("topic".equals(n.getNodeName())) {
                     String topic = n.getAttributes().getNamedItem("name").getTextContent();
                     //System.out.println("topic: " + topic);
                     NodeList children = n.getChildNodes();
                     for (int j = 0; j < children.getLength(); j++) {
                         Node m = children.item(j);
                         //System.out.println("Topic child: " + m.getNodeName());
-                        if (m.getNodeName().equals("category")) {
+                        if ("category".equals(m.getNodeName())) {
                             categoryProcessor(m, categories, topic, aimlFile, language);
                         }
                     }
@@ -293,11 +293,8 @@ public final class AIMLProcessor {
      * @return unevaluated generic XML string
      */
     public static String genericXML(Node node, ParseState ps) {
-        //MagicBooleans.trace("AIMLProcessor.genericXML(node: " + node + ", ps: " + ps);
         String evalResult = evalTagContent(node, ps, null);
-        String result = unevaluatedXML(evalResult, node, ps);
-        //MagicBooleans.trace("in AIMLProcessor.genericXML(), returning: " + result);
-        return result;
+        return unevaluatedXML(evalResult, node, ps);
     }
 
     /**
@@ -402,7 +399,7 @@ public final class AIMLProcessor {
         } else {
             result = m.getNodeValue();
         }
-        logger.trace("in AIMLProcessor.getAttributeOrTagValue (), returning: {}");
+        logger.trace("in AIMLProcessor.getAttributeOrTagValue(), returning: {}", result);
         return result;
     }
 
@@ -564,10 +561,10 @@ public final class AIMLProcessor {
             to = CalendarUtils.date(jformat, null, null);
         }
         String result = "unknown";
-        if (style.equals("years")) { result = String.valueOf(IntervalUtils.getYearsBetween(from, to, jformat)); }
-        if (style.equals("months")) { result = String.valueOf(IntervalUtils.getMonthsBetween(from, to, jformat)); }
-        if (style.equals("days")) { result = String.valueOf(IntervalUtils.getDaysBetween(from, to, jformat)); }
-        if (style.equals("hours")) { result = String.valueOf(IntervalUtils.getHoursBetween(from, to, jformat)); }
+        if ("years".equals(style)) { result = String.valueOf(IntervalUtils.getYearsBetween(from, to, jformat)); }
+        if ("months".equals(style)) { result = String.valueOf(IntervalUtils.getMonthsBetween(from, to, jformat)); }
+        if ("days".equals(style)) { result = String.valueOf(IntervalUtils.getDaysBetween(from, to, jformat)); }
+        if ("hours".equals(style)) { result = String.valueOf(IntervalUtils.getHoursBetween(from, to, jformat)); }
         return result;
     }
 
@@ -805,8 +802,7 @@ public final class AIMLProcessor {
      */
     private static String normalize(Node node, ParseState ps) {            // AIML 2.0
         String result = evalTagContent(node, ps, null);
-        String returning = ps.chatSession.bot.preProcessor.normalize(result);
-        return returning;
+        return ps.chatSession.bot.preProcessor.normalize(result);
     }
 
     /**
@@ -943,7 +939,7 @@ public final class AIMLProcessor {
         List<Node> liList = new ArrayList<>();
         String setName = getAttributeOrTagValue(node, ps, "set");
         for (int i = 0; i < childList.getLength(); i++) {
-            if (childList.item(i).getNodeName().equals("li")) { liList.add(childList.item(i)); }
+            if ("li".equals(childList.item(i).getNodeName())) { liList.add(childList.item(i)); }
         }
         int index = (int) (Math.random() * liList.size());
         if (MagicBooleans.qa_test_mode) { index = 0; }
@@ -983,14 +979,14 @@ public final class AIMLProcessor {
         String that = "*";
         String template = "";
         for (int i = 0; i < childList.getLength(); i++) {
-            if (childList.item(i).getNodeName().equals("category")) {
+            if ("category".equals(childList.item(i).getNodeName())) {
                 NodeList grandChildList = childList.item(i).getChildNodes();
                 for (int j = 0; j < grandChildList.getLength(); j++) {
-                    if (grandChildList.item(j).getNodeName().equals("pattern")) {
+                    if ("pattern".equals(grandChildList.item(j).getNodeName())) {
                         pattern = recursLearn(grandChildList.item(j), ps);
-                    } else if (grandChildList.item(j).getNodeName().equals("that")) {
+                    } else if ("that".equals(grandChildList.item(j).getNodeName())) {
                         that = recursLearn(grandChildList.item(j), ps);
-                    } else if (grandChildList.item(j).getNodeName().equals("template")) {
+                    } else if ("template".equals(grandChildList.item(j).getNodeName())) {
                         template = recursLearn(grandChildList.item(j), ps);
                     }
                 }
@@ -1012,7 +1008,7 @@ public final class AIMLProcessor {
                 logger.debug("Learn That = {}", that);
                 logger.debug("Learn Template = {}", template);
                 Category c;
-                if (node.getNodeName().equals("learn")) {
+                if ("learn".equals(node.getNodeName())) {
                     c = new Category(0, pattern, that, "*", template, MagicStrings.null_aiml_file);
                     ps.chatSession.bot.learnGraph.addCategory(c);
                 } else {// learnf
@@ -1071,7 +1067,7 @@ public final class AIMLProcessor {
         String varName = getAttributeOrTagValue(node, ps, "var");
         // Make a list of all the <li> child nodes:
         for (int i = 0; i < childList.getLength(); i++) {
-            if (childList.item(i).getNodeName().equals("li")) { liList.add(childList.item(i)); }
+            if ("li".equals(childList.item(i).getNodeName())) { liList.add(childList.item(i)); }
         }
         // if there are no <li> nodes, this is a one-shot condition.
         String value;
@@ -1098,10 +1094,10 @@ public final class AIMLProcessor {
                 if (value != null) {
                     // if the predicate equals the value, return the <li> item.
                     if (liPredicate != null && value != null && (ps.chatSession.predicates.get(liPredicate).equalsIgnoreCase(value) ||
-                        (ps.chatSession.predicates.containsKey(liPredicate) && value.equals("*")))) {
+                        (ps.chatSession.predicates.containsKey(liPredicate) && "*".equals(value)))) {
                         return evalTagContent(n, ps, attributeNames);
                     } else if (liVarName != null && value != null && (ps.vars.get(liVarName).equalsIgnoreCase(value) ||
-                        (ps.vars.containsKey(liPredicate) && value.equals("*")))) {
+                        (ps.vars.containsKey(liPredicate) && "*".equals(value)))) {
                         return evalTagContent(n, ps, attributeNames);
                     }
 
@@ -1124,7 +1120,7 @@ public final class AIMLProcessor {
     public static boolean evalTagForLoop(Node node) {
         NodeList childList = node.getChildNodes();
         for (int i = 0; i < childList.getLength(); i++) {
-            if (childList.item(i).getNodeName().equals("loop")) { return true; }
+            if ("loop".equals(childList.item(i).getNodeName())) { return true; }
         }
         return false;
     }
@@ -1173,11 +1169,11 @@ public final class AIMLProcessor {
         for (int j = 0; j < childList.getLength(); j++) {
             Node childNode = childList.item(j);
             String contents = evalTagContent(childNode, ps, null);
-            if (childNode.getNodeName().equals("subj")) {
+            if ("subj".equals(childNode.getNodeName())) {
                 subj = contents;
-            } else if (childNode.getNodeName().equals("pred")) {
+            } else if ("pred".equals(childNode.getNodeName())) {
                 pred = contents;
-            } else if (childNode.getNodeName().equals("obj")) {
+            } else if ("obj".equals(childNode.getNodeName())) {
                 obj = contents;
             }
             if (contents.startsWith("?")) {
@@ -1210,7 +1206,7 @@ public final class AIMLProcessor {
         Set<String> visibleVars = new HashSet<>();
         for (int i = 0; i < childList.getLength(); i++) {
             Node childNode = childList.item(i);
-            if (childNode.getNodeName().equals("vars")) {
+            if ("vars".equals(childNode.getNodeName())) {
                 String contents = evalTagContent(childNode, ps, null);
                 String[] splitVars = contents.split(" ");
                 for (String var : splitVars) {
@@ -1218,8 +1214,8 @@ public final class AIMLProcessor {
                     if (!var.isEmpty()) { visibleVars.add(var); }
                 }
                 // System.out.println("AIML Processor select: visible vars "+visibleVars);
-            } else if (childNode.getNodeName().equals("q") || childNode.getNodeName().equals("notq")) {
-                Boolean affirm = !childNode.getNodeName().equals("notq");
+            } else if ("q".equals(childNode.getNodeName()) || "notq".equals(childNode.getNodeName())) {
+                Boolean affirm = !"notq".equals(childNode.getNodeName());
                 NodeList grandChildList = childNode.getChildNodes();
                 String subj = null;
                 String pred = null;
@@ -1227,11 +1223,11 @@ public final class AIMLProcessor {
                 for (int j = 0; j < grandChildList.getLength(); j++) {
                     Node grandChildNode = grandChildList.item(j);
                     String contents = evalTagContent(grandChildNode, ps, null);
-                    if (grandChildNode.getNodeName().equals("subj")) {
+                    if ("subj".equals(grandChildNode.getNodeName())) {
                         subj = contents;
-                    } else if (grandChildNode.getNodeName().equals("pred")) {
+                    } else if ("pred".equals(grandChildNode.getNodeName())) {
                         pred = contents;
-                    } else if (grandChildNode.getNodeName().equals("obj")) {
+                    } else if ("obj".equals(grandChildNode.getNodeName())) {
                         obj = contents;
                     }
                     if (contents.startsWith("?")) { vars.add(contents); }
@@ -1358,103 +1354,103 @@ public final class AIMLProcessor {
             String nodeName = node.getNodeName();
             //MagicBooleans.trace("in AIMLProcessor.recursEval(), nodeName: " + nodeName);
             //MagicBooleans.trace("in AIMLProcessor.recursEval(), node.getNodeValue(): " + node.getNodeValue());
-            if (nodeName.equals("#text")) {
+            if ("#text".equals(nodeName)) {
                 return node.getNodeValue();
-            } else if (nodeName.equals("#comment")) {
+            } else if ("#comment".equals(nodeName)) {
                 //MagicBooleans.trace("in AIMLProcessor.recursEval(), comment = "+node.getTextContent());
                 return "";
-            } else if (nodeName.equals("template")) {
+            } else if ("template".equals(nodeName)) {
                 return evalTagContent(node, ps, null);
-            } else if (nodeName.equals("random")) {
+            } else if ("random".equals(nodeName)) {
                 return random(node, ps);
-            } else if (nodeName.equals("condition")) {
+            } else if ("condition".equals(nodeName)) {
                 return loopCondition(node, ps);
-            } else if (nodeName.equals("srai")) {
+            } else if ("srai".equals(nodeName)) {
                 return srai(node, ps);
-            } else if (nodeName.equals("sr")) {
+            } else if ("sr".equals(nodeName)) {
                 return respond(ps.starBindings.inputStars.star(0), ps.that, ps.topic, ps.chatSession, sraiCount);
-            } else if (nodeName.equals("sraix")) {
+            } else if ("sraix".equals(nodeName)) {
                 return sraix(node, ps);
-            } else if (nodeName.equals("set")) {
+            } else if ("set".equals(nodeName)) {
                 return set(node, ps);
-            } else if (nodeName.equals("get")) {
+            } else if ("get".equals(nodeName)) {
                 return get(node, ps);
-            } else if (nodeName.equals("map")) { // AIML 2.0 -- see also <set> in pattern
+            } else if ("map".equals(nodeName)) { // AIML 2.0 -- see also <set> in pattern
                 return map(node, ps);
-            } else if (nodeName.equals("bot")) {
+            } else if ("bot".equals(nodeName)) {
                 return bot(node, ps);
-            } else if (nodeName.equals("id")) {
+            } else if ("id".equals(nodeName)) {
                 return id(node, ps);
-            } else if (nodeName.equals("size")) {
+            } else if ("size".equals(nodeName)) {
                 return size(node, ps);
-            } else if (nodeName.equals("vocabulary")) {// AIML 2.0
+            } else if ("vocabulary".equals(nodeName)) {// AIML 2.0
                 return vocabulary(node, ps);
-            } else if (nodeName.equals("program")) {
+            } else if ("program".equals(nodeName)) {
                 return program(node, ps);
-            } else if (nodeName.equals("date")) {
+            } else if ("date".equals(nodeName)) {
                 return date(node, ps);
-            } else if (nodeName.equals("interval")) {
+            } else if ("interval".equals(nodeName)) {
                 return interval(node, ps);
             }
             //else if (nodeName.equals("gossip"))       // removed from AIML 2.0
             //    return gossip(node, ps);
-            else if (nodeName.equals("think")) {
+            else if ("think".equals(nodeName)) {
                 return think(node, ps);
-            } else if (nodeName.equals("system")) {
+            } else if ("system".equals(nodeName)) {
                 return system(node, ps);
-            } else if (nodeName.equals("explode")) {
+            } else if ("explode".equals(nodeName)) {
                 return explode(node, ps);
-            } else if (nodeName.equals("normalize")) {
+            } else if ("normalize".equals(nodeName)) {
                 return normalize(node, ps);
-            } else if (nodeName.equals("denormalize")) {
+            } else if ("denormalize".equals(nodeName)) {
                 return denormalize(node, ps);
-            } else if (nodeName.equals("uppercase")) {
+            } else if ("uppercase".equals(nodeName)) {
                 return uppercase(node, ps);
-            } else if (nodeName.equals("lowercase")) {
+            } else if ("lowercase".equals(nodeName)) {
                 return lowercase(node, ps);
-            } else if (nodeName.equals("formal")) {
+            } else if ("formal".equals(nodeName)) {
                 return formal(node, ps);
-            } else if (nodeName.equals("sentence")) {
+            } else if ("sentence".equals(nodeName)) {
                 return sentence(node, ps);
-            } else if (nodeName.equals("person")) {
+            } else if ("person".equals(nodeName)) {
                 return person(node, ps);
-            } else if (nodeName.equals("person2")) {
+            } else if ("person2".equals(nodeName)) {
                 return person2(node, ps);
-            } else if (nodeName.equals("gender")) {
+            } else if ("gender".equals(nodeName)) {
                 return gender(node, ps);
-            } else if (nodeName.equals("star")) {
+            } else if ("star".equals(nodeName)) {
                 return inputStar(node, ps);
-            } else if (nodeName.equals("thatstar")) {
+            } else if ("thatstar".equals(nodeName)) {
                 return thatStar(node, ps);
-            } else if (nodeName.equals("topicstar")) {
+            } else if ("topicstar".equals(nodeName)) {
                 return topicStar(node, ps);
-            } else if (nodeName.equals("that")) {
+            } else if ("that".equals(nodeName)) {
                 return that(node, ps);
-            } else if (nodeName.equals("input")) {
+            } else if ("input".equals(nodeName)) {
                 return input(node, ps);
-            } else if (nodeName.equals("request")) {
+            } else if ("request".equals(nodeName)) {
                 return request(node, ps);
-            } else if (nodeName.equals("response")) {
+            } else if ("response".equals(nodeName)) {
                 return response(node, ps);
-            } else if (nodeName.equals("learn") || nodeName.equals("learnf")) {
+            } else if ("learn".equals(nodeName) || "learnf".equals(nodeName)) {
                 return learn(node, ps);
-            } else if (nodeName.equals("addtriple")) {
+            } else if ("addtriple".equals(nodeName)) {
                 return addTriple(node, ps);
-            } else if (nodeName.equals("deletetriple")) {
+            } else if ("deletetriple".equals(nodeName)) {
                 return deleteTriple(node, ps);
-            } else if (nodeName.equals("javascript")) {
+            } else if ("javascript".equals(nodeName)) {
                 return javascript(node, ps);
-            } else if (nodeName.equals("select")) {
+            } else if ("select".equals(nodeName)) {
                 return select(node, ps);
-            } else if (nodeName.equals("uniq")) {
+            } else if ("uniq".equals(nodeName)) {
                 return uniq(node, ps);
-            } else if (nodeName.equals("first")) {
+            } else if ("first".equals(nodeName)) {
                 return first(node, ps);
-            } else if (nodeName.equals("rest")) {
+            } else if ("rest".equals(nodeName)) {
                 return rest(node, ps);
-            } else if (nodeName.equals("resetlearnf")) {
+            } else if ("resetlearnf".equals(nodeName)) {
                 return resetlearnf(node, ps);
-            } else if (nodeName.equals("resetlearn")) {
+            } else if ("resetlearn".equals(nodeName)) {
                 return resetlearn(node, ps);
             } else if (extension != null && extension.extensionTagSet().contains(nodeName)) {
                 return extension.recursEval(node, ps);

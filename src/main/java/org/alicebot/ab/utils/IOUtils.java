@@ -16,9 +16,9 @@ public class IOUtils {
 
     public IOUtils(String filePath, String mode) {
         try {
-            if (mode.equals("read")) {
+            if ("read".equals(mode)) {
                 reader = new BufferedReader(new FileReader(filePath));
-            } else if (mode.equals("write")) {
+            } else if ("write".equals(mode)) {
                 (new File(filePath)).delete();
                 writer = new BufferedWriter(new FileWriter(filePath, true));
             }

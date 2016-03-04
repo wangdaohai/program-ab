@@ -449,9 +449,9 @@ public final class AB {
             }
         }
         String template;
-        if (textLine.equals("q")) {
+        if ("q".equals(textLine)) {
             System.exit(0);       // Quit program
-        } else if (textLine.equals("wq")) {   // Write AIML Files and quit program
+        } else if ("wq".equals(textLine)) {   // Write AIML Files and quit program
             bot.writeQuit();
          /*  Nodemapper udcNode = bot.brain.findNode("*", "*", "*");
            if (udcNode != null) {
@@ -480,16 +480,16 @@ public final class AB {
                System.out.println("Wrote passed test cases");
            }*/
             System.exit(0);
-        } else if (textLine.equals("skip") || textLine.isEmpty()) { // skip this one for now
+        } else if ("skip".equals(textLine) || textLine.isEmpty()) { // skip this one for now
             skipCategory(c);
-        } else if (textLine.equals("s") || textLine.equals("pass")) { //
+        } else if ("s".equals(textLine) || "pass".equals(textLine)) { //
             passed.add(request);
             AIMLSet difference = new AIMLSet("difference", bot);
             difference.addAll(testSet);
             difference.removeAll(passed);
             difference.writeAIMLSet();
             passed.writeAIMLSet();
-        } else if (textLine.equals("a")) {
+        } else if ("a".equals(textLine)) {
             template = alicetemplate;
             String filename;
             if (template.contains("<sr")) {
@@ -498,21 +498,21 @@ public final class AB {
                 filename = MagicStrings.personality_aiml_file;
             }
             saveCategory(c.getPattern(), template, filename);
-        } else if (textLine.equals("d")) { // delete this suggested category
+        } else if ("d".equals(textLine)) { // delete this suggested category
             deleteCategory(c);
-        } else if (textLine.equals("x")) {    // ask another bot
+        } else if ("x".equals(textLine)) {    // ask another bot
             template = "<sraix services=\"pannous\">" + c.getPattern().replace("*", "<star/>") + "</sraix>";
             template += botThinks;
             saveCategory(c.getPattern(), template, MagicStrings.sraix_aiml_file);
-        } else if (textLine.equals("p")) {   // filter inappropriate content
+        } else if ("p".equals(textLine)) {   // filter inappropriate content
             template = "<srai>" + MagicStrings.inappropriate_filter + "</srai>";
             template += botThinks;
             saveCategory(c.getPattern(), template, MagicStrings.inappropriate_aiml_file);
-        } else if (textLine.equals("f")) { // filter profanity
+        } else if ("f".equals(textLine)) { // filter profanity
             template = "<srai>" + MagicStrings.profanity_filter + "</srai>";
             template += botThinks;
             saveCategory(c.getPattern(), template, MagicStrings.profanity_aiml_file);
-        } else if (textLine.equals("i")) {
+        } else if ("i".equals(textLine)) {
             template = "<srai>" + MagicStrings.insult_filter + "</srai>";
             template += botThinks;
             saveCategory(c.getPattern(), template, MagicStrings.insult_aiml_file);

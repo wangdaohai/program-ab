@@ -74,9 +74,9 @@ public class AIMLMap extends HashMap<String, String> {
             } catch (Exception ex) {
                 return MagicStrings.default_map;
             }
-        } else if (mapName.equals("singular")) {
+        } else if ("singular".equals(mapName)) {
             return inflector.singularize(key).toLowerCase();
-        } else if (mapName.equals("plural")) {
+        } else if ("plural".equals(mapName)) {
             return inflector.pluralize(key).toLowerCase();
         } else if (isExternal && MagicBooleans.enable_external_sets) {
             //String[] split = key.split(" ");
