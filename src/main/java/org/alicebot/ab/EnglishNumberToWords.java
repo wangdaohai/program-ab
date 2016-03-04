@@ -9,7 +9,7 @@ package org.alicebot.ab;
 
 import java.text.DecimalFormat;
 
-public class EnglishNumberToWords {
+public final class EnglishNumberToWords {
     private static final String[] tensNames = {
         "",
         " ten",

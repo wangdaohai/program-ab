@@ -6,7 +6,9 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public class CalendarUtils {
+public final class CalendarUtils {
+
+    private CalendarUtils() {}
 
     public static String formatTime(String formatString, long msSinceEpoch) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(formatString);

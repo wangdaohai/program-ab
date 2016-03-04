@@ -22,7 +22,10 @@ package org.alicebot.ab;
 /**
  * Integers with specific values in Program AB
  */
-public class MagicNumbers {
+public final class MagicNumbers {
+
+    private MagicNumbers() {}
+
     public static int node_activation_cnt = 4;  // minimum number of activations to suggest atomic pattern
     public static int node_size = 4;  // minimum number of branches to suggest wildcard pattern
     public static int displayed_input_sample_size = 6;

@@ -1,6 +1,8 @@
 package org.alicebot.ab.utils;
 
-public class MemoryUtils {
+public final class MemoryUtils {
+
+    private MemoryUtils() {}
 
     public static long totalMemory() {
         return Runtime.getRuntime().totalMemory();

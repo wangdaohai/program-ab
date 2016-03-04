@@ -9,7 +9,9 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class JapaneseUtils {
+public final class JapaneseUtils {
+
+    private JapaneseUtils() {}
 
     /**
      * Tokenize a fragment of the input that contains only text

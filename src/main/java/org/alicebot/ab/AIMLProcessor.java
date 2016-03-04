@@ -35,11 +35,13 @@ import java.util.Set;
  * AIML 2.0 Working Draft document
  * https://docs.google.com/document/d/1wNT25hJRyupcG51aO89UcQEiG-HkXRXusukADpFnDs4/pub
  */
-public class AIMLProcessor {
+public final class AIMLProcessor {
 
-    static private boolean DEBUG = false;
+    private static boolean DEBUG = false;
 
     public static AIMLProcessorExtension extension;
+
+    private AIMLProcessor() {}
 
     /**
      * when parsing an AIML file, process a category element.

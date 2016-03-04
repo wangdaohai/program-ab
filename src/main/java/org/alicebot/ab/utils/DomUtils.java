@@ -16,7 +16,9 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.StringWriter;
 
-public class DomUtils {
+public final class DomUtils {
+
+    private DomUtils() {}
 
     public static Node parseFile(String fileName) throws Exception {
         File file = new File(fileName);

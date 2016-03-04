@@ -5,7 +5,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class Verbs {
+public final class Verbs {
+
+    private Verbs() {}
+
     static Set<String> es = Utilities.stringSet("sh", "ch", "th", "ss", "x");
     static Set<String> ies = Utilities.stringSet("ly", "ry", "ny", "fy", "dy", "py");
     static Set<String> ring = Utilities.stringSet("be", "me", "re", "se", "ve", "de", "le", "ce", "ze", "ke", "te", "ge", "ne", "pe", "ue");

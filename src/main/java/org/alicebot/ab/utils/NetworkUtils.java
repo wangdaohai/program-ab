@@ -11,7 +11,9 @@ import java.io.InputStreamReader;
 import java.net.*;
 import java.util.Enumeration;
 
-public class NetworkUtils {
+public final class NetworkUtils {
+
+    private NetworkUtils() {}
 
     public static String localIPAddress() {
         try {

@@ -24,7 +24,7 @@ import java.util.ArrayList;
 /**
  * Linked list representation of Pattern Path and Input Path
  */
-public class Path extends ArrayList<String> {
+public final class Path extends ArrayList<String> {
     public String word;
     public Path next;
     public int length;

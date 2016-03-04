@@ -9,7 +9,9 @@ import org.joda.time.chrono.LenientChronology;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-public class IntervalUtils {
+public final class IntervalUtils {
+
+    private IntervalUtils() {}
 
     public static void test() {
         String date1 = "23:59:59.00";

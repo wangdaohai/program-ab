@@ -25,7 +25,9 @@ import java.io.*;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Utilities {
+public final class Utilities {
+
+    private Utilities() {}
 
     /**
      * Excel sometimes adds mysterious formatting to CSV files.

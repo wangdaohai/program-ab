@@ -26,7 +26,10 @@ import org.alicebot.ab.utils.MemoryUtils;
 /**
  * Memory statistics for program instrumentation
  */
-public class MemStats {
+public final class MemStats {
+
+    private MemStats() {}
+
     public static long prevHeapSize = 0;
 
     /**

@@ -25,7 +25,9 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Main {
+public final class Main {
+
+    private Main() {}
 
     public static void main(String[] args) {
 

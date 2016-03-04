@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
  * The AIML Pattern matching algorithm and data structure.
  */
 public class Graphmaster {
-    static private boolean DEBUG = false;
+    private static boolean DEBUG = false;
 
     public Bot bot;
     public String name;
