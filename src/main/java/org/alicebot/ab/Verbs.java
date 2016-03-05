@@ -3,7 +3,11 @@ package org.alicebot.ab;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.io.File;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public final class Verbs {
 
@@ -80,30 +84,22 @@ public final class Verbs {
     public static void getIrregulars() {
         // Do, Did, Done, Does, Doing
         // be, was, been, is, being
-
-        String irrFile = Utilities.getFile("c:/ab/data/irrverbs.txt");
-        String[] triples = irrFile.split("\n");
-        for (String x : triples) {
-            x = x.toLowerCase();
-            String[] triple = x.split(",");
-            if (triple.length == 5) {
+        Utilities.lines(new File("c:/ab/data/irrverbs.txt"))
+            .map(String::toLowerCase).map(l -> l.split(",")).filter(l -> l.length == 5)
+            .forEach(triple -> {
                 irregular.add(triple[0]);
                 allVerbs.add(triple[0]);
                 be2was.put(triple[0], triple[1]);
                 be2been.put(triple[0], triple[2]);
                 be2is.put(triple[0], triple[3]);
                 be2being.put(triple[0], triple[4]);
-
-            }
-
-        }
+            });
     }
 
     public static void makeVerbSetsMaps(Bot bot) {
         getIrregulars();
-        String verbFile = Utilities.getFile("c:/ab/data/verb300.txt");
-        String[] verbs = verbFile.split("\n");
-        Collections.addAll(allVerbs, verbs);
+        Utilities.lines(new File("c:/ab/data/verb300.txt"))
+            .forEachOrdered(allVerbs::add);
         AIMLSet be = new AIMLSet("be");
         AIMLSet is = new AIMLSet("is");
         AIMLSet was = new AIMLSet("was");

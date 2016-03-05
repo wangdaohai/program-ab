@@ -24,13 +24,13 @@ import org.alicebot.ab.utils.LogUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
+import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class AB {
 
@@ -165,15 +165,7 @@ public final class AB {
      */
     public void graphInputs(String filename) {
         try {
-            // Open the file that is the first
-            // command line parameter
-            FileInputStream fstream = new FileInputStream(filename);
-            // Get the object
-            BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
-            String strLine;
-            //Read File Line By Line
-            int count = 0;
-            while ((strLine = br.readLine()) != null && count < limit) {
+            Files.lines(new File(filename).toPath()).limit(limit).forEach(strLine -> {
                 //strLine = preProcessor.normalize(strLine);
                 Category c = new Category(0, strLine, "*", "*", "nothing", MagicStrings.unknown_aiml_file);
                 Nodemapper node = inputGraph.findNode(c);
@@ -183,12 +175,8 @@ public final class AB {
                 } else {
                     node.category.incrementActivationCnt();
                 }
-                count++;
-                //System.out.println("Root branches="+g.root.size());
-            }
-            //Close the input stream
-            br.close();
-        } catch (Exception e) {//Catch exception if any
+            });
+        } catch (Exception e) {
             logger.error("graphInputs error", e);
         }
     }
@@ -266,40 +254,21 @@ public final class AB {
 
     public void classifyInputs(String filename) {
         try {
-            FileInputStream fstream = new FileInputStream(filename);
-            // Get the object
-            BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
-            String strLine;
-            //Read File Line By Line
-            int count = 0;
-            while ((strLine = br.readLine()) != null && count < limit) {
-                // Print the content on the console
-                //System.out.println("Classifying "+strLine);
-
-                if (strLine != null) {
-                    if (strLine.startsWith("Human: ")) {
-                        strLine = strLine.substring("Human: ".length(), strLine.length());
+            long count = Files.lines(new File(filename).toPath())
+                .map(l -> l.startsWith("Human: ") ? l.substring("Human: ".length()) : l)
+                .flatMap(l -> Stream.of(bot.preProcessor.sentenceSplit(l)))
+                .filter(s -> !s.isEmpty())
+                .limit(limit)
+                .peek(sentence -> {
+                    Nodemapper match = patternGraph.match(sentence, "unknown", "unknown");
+                    if (match == null) {
+                        logger.info("{} null match", sentence);
+                    } else {
+                        match.category.incrementActivationCnt();
+                        //logger.debug("{} matched {}", sentence, match.category.inputThatTopic());
                     }
-                    String[] sentences = bot.preProcessor.sentenceSplit(strLine);
-                    for (String sentence : sentences) {
-                        if (!sentence.isEmpty()) {
-                            Nodemapper match = patternGraph.match(sentence, "unknown", "unknown");
-
-                            if (match == null) {
-                                logger.info("{} null match", sentence);
-                            } else {
-                                match.category.incrementActivationCnt();
-                                //System.out.println(count+". "+sentence+" matched "+match.category.inputThatTopic());
-                            }
-                            count += 1;
-                            if (count % 10000 == 0) { logger.info(String.valueOf(count)); }
-                        }
-                    }
-                }
-            }
+                }).count();
             logger.info("Finished classifying {} inputs", count);
-            //Close the input stream
-            br.close();
         } catch (Exception e) {
             logger.error("classifyInputs error", e);
         }

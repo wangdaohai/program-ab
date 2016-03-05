@@ -25,6 +25,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -165,8 +167,7 @@ public final class Main {
                     }
                     String definition;
                     if (def.keySet().contains(word)) {
-                        definition = def.get(word);
-                        definition = definition + "; " + gloss;
+                        definition = def.get(word) + "; " + gloss;
                     } else {
                         definition = gloss;
                     }
@@ -201,19 +202,12 @@ public final class Main {
 
     public static void sraixCache(String filename, Chat chatSession) {
         try {
-            FileInputStream fstream = new FileInputStream(filename);
-            // Get the object
-            BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
-            String strLine;
-            //Read File Line By Line
-            int count = 0;
-            int limit = 1000;
-            while ((strLine = br.readLine()) != null && count++ < limit) {
+            Files.lines(Paths.get(filename)).limit(1000).forEach(strLine -> {
                 logger.info("Human: {}", strLine);
 
                 String response = chatSession.multisentenceRespond(strLine);
                 logger.info("Robot: {}", response);
-            }
+            });
         } catch (Exception ex) {
             logger.error("sraixCache error", ex);
         }

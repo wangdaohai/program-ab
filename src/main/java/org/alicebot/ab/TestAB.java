@@ -5,9 +5,8 @@ import org.alicebot.ab.utils.LogUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
+import java.io.File;
+import java.nio.file.Files;
 
 /**
  * @since 5/13/2014.
@@ -139,19 +138,11 @@ public final class TestAB {
     public static void sraixCache(String filename, Chat chatSession) {
         MagicBooleans.cache_sraix = true;
         try {
-            FileInputStream fstream = new FileInputStream(filename);
-            // Get the object
-            BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
-            String strLine;
-            //Read File Line By Line
-            int count = 0;
-            int limit = 650000;
-            while ((strLine = br.readLine()) != null && count++ < limit) {
+            Files.lines(new File(filename).toPath()).limit(650000).forEach(strLine -> {
                 logger.info("Human: {}", strLine);
-
                 String response = chatSession.multisentenceRespond(strLine);
                 logger.info("Robot: {}", response);
-            }
+            });
         } catch (Exception ex) {
             logger.error("sraixCache error", ex);
         }

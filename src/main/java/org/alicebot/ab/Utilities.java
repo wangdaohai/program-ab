@@ -23,8 +23,11 @@ import org.alicebot.ab.utils.CalendarUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.nio.file.Files;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class Utilities {
 
@@ -63,54 +66,20 @@ public final class Utilities {
         return set;
     }
 
-    public static String getFileFromInputStream(InputStream in) {
-        BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        //Read File Line By Line
-        StringBuilder contents = new StringBuilder();
+    public static Stream<String> lines(File file) {
         try {
-            String strLine;
-            while ((strLine = br.readLine()) != null) {
-                if (!strLine.startsWith(MagicStrings.text_comment_mark)) {
-                    contents.append(strLine).append("\n");
-                }
-            }
-        } catch (Exception ex) {
-            logger.error("getFileFromInputStream error", ex);
-        }
-        return contents.toString().trim();
-    }
-
-    public static String getFile(String filename) {
-        String contents = "";
-        try {
-            File file = new File(filename);
             if (file.exists()) {
-                //System.out.println("Found file "+filename);
-                FileInputStream fstream = new FileInputStream(filename);
-                // Get the object
-                contents = getFileFromInputStream(fstream);
-                fstream.close();
+                return Files.lines(file.toPath())
+                    .filter(line -> !line.startsWith(MagicStrings.text_comment_mark));
             }
         } catch (Exception e) {
-            logger.error("getFile error", e);
+            logger.error("lines error", e);
         }
-        //System.out.println("getFile: "+contents);
-        return contents;
+        return Stream.empty();
     }
 
-    public static String getCopyrightFromInputStream(InputStream in) {
-        BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        //Read File Line By Line
-        StringBuilder copyright = new StringBuilder();
-        try {
-            String strLine;
-            while ((strLine = br.readLine()) != null) {
-                copyright.append((strLine.isEmpty()) ? "\n" : ("<!-- " + strLine + " -->\n"));
-            }
-        } catch (Exception ex) {
-            logger.error("getCopyrightFromInputStream error", ex);
-        }
-        return copyright.toString();
+    public static String getFile(File file) {
+        return lines(file).collect(Collectors.joining("\n"));
     }
 
     public static String getCopyright(Bot bot, String AIMLFilename) {
@@ -118,36 +87,31 @@ public final class Utilities {
         String year = CalendarUtils.year();
         String date = CalendarUtils.date();
         try {
-            copyright = getFile(bot.config_path + "/copyright.txt");
-            String[] splitCopyright = copyright.split("\n");
-            copyright = "";
-            for (String aSplitCopyright : splitCopyright) {
-                copyright += "<!-- " + aSplitCopyright + " -->\n";
-            }
-            copyright = copyright.replace("[url]", bot.properties.get("url"));
-            copyright = copyright.replace("[date]", date);
-            copyright = copyright.replace("[YYYY]", year);
-            copyright = copyright.replace("[version]", bot.properties.get("version"));
-            copyright = copyright.replace("[botname]", bot.name.toUpperCase());
-            copyright = copyright.replace("[filename]", AIMLFilename);
-            copyright = copyright.replace("[botmaster]", bot.properties.get("botmaster"));
-            copyright = copyright.replace("[organization]", bot.properties.get("organization"));
+            copyright = lines(new File(bot.config_path, "copyright.txt"))
+                .map(line -> "<!-- " + line + " -->")
+                .collect(Collectors.joining("\n", "", "\n"))
+                .replace("[url]", bot.properties.get("url"))
+                .replace("[date]", date)
+                .replace("[YYYY]", year)
+                .replace("[version]", bot.properties.get("version"))
+                .replace("[botname]", bot.name.toUpperCase())
+                .replace("[filename]", AIMLFilename)
+                .replace("[botmaster]", bot.properties.get("botmaster"))
+                .replace("[organization]", bot.properties.get("organization"));
         } catch (Exception e) {
             logger.error("getCopyright error", e);
         }
-        copyright += "<!--  -->\n";
-        //System.out.println("Copyright: "+copyright);
-        return copyright;
+        return copyright + "<!--  -->\n";
     }
 
     public static String getPannousAPIKey(Bot bot) {
-        String apiKey = getFile(bot.config_path + "/pannous-apikey.txt");
+        String apiKey = getFile(new File(bot.config_path, "pannous-apikey.txt"));
         if (apiKey.isEmpty()) { apiKey = MagicStrings.pannous_api_key; }
         return apiKey;
     }
 
     public static String getPannousLogin(Bot bot) {
-        String login = getFile(bot.config_path + "/pannous-login.txt");
+        String login = getFile(new File(bot.config_path, "pannous-login.txt"));
         if (login.isEmpty()) { login = MagicStrings.pannous_login; }
         return login;
     }

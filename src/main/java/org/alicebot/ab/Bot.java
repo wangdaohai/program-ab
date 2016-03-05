@@ -24,9 +24,14 @@ import org.alicebot.ab.utils.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Class representing the AIML bot
@@ -173,13 +178,8 @@ public final class Bot {
     }
 
     Set<String> getPronouns() {
-        Set<String> pronounSet = new HashSet<>();
-        String pronouns = Utilities.getFile(config_path + "/pronouns.txt");
-        String[] splitPronouns = pronouns.split("\n");
-        for (String splitPronoun : splitPronouns) {
-            String p = splitPronoun.trim();
-            if (!p.isEmpty()) { pronounSet.add(p); }
-        }
+        Set<String> pronounSet = Utilities.lines(new File(config_path, "pronouns.txt"))
+            .map(String::trim).filter(p -> !p.isEmpty()).collect(Collectors.toSet());
         logger.debug("Read pronouns: {}", pronounSet);
         return pronounSet;
     }
@@ -505,29 +505,19 @@ public final class Bot {
      * @return array list of categories read
      */
     public List<Category> readIFCategories(String filename) {
-        List<Category> categories = new ArrayList<>();
         try {
-            // Open the file that is the first
-            // command line parameter
-            FileInputStream fstream = new FileInputStream(filename);
-            // Get the object
-            BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
-            String strLine;
-            //Read File Line By Line
-            while ((strLine = br.readLine()) != null) {
+            return Files.lines(new File(filename).toPath()).map(strLine -> {
                 try {
-                    Category c = Category.IFToCategory(strLine);
-                    categories.add(c);
+                    return Category.IFToCategory(strLine);
                 } catch (Exception ex) {
                     logger.error("Invalid AIMLIF in {} line {}", filename, strLine, ex);
+                    return null;
                 }
-            }
-            //Close the input stream
-            br.close();
+            }).filter(c -> c != null).collect(Collectors.toList());
         } catch (Exception e) {
             logger.error("readIFCategories error", e);
+            return Collections.emptyList();
         }
-        return categories;
     }
 
     /**

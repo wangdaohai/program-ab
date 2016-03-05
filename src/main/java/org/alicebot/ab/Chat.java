@@ -5,7 +5,10 @@ import org.alicebot.ab.utils.JapaneseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.nio.file.Files;
 
 /* Program AB Reference AIML 2.0 implementation
         Copyright (C) 2013 ALICE A.I. Foundation
@@ -102,22 +105,15 @@ public class Chat {
         int tripleCnt = 0;
         if (f.exists()) {
             try {
-                InputStream is = new FileInputStream(f);
-                BufferedReader br = new BufferedReader(new InputStreamReader(is));
-                String strLine;
-                //Read File Line By Line
-                while ((strLine = br.readLine()) != null) {
-                    String[] triple = strLine.split(":");
-                    if (triple.length >= 3) {
+                tripleCnt = (int) Files.lines(f.toPath())
+                    .map(l -> l.split(":")).filter(triple -> triple.length >= 3)
+                    .peek(triple -> {
                         String subject = triple[0];
                         String predicate = triple[1];
                         String object = triple[2];
                         tripleStore.addTriple(subject, predicate, object);
-                        //Log.i(TAG, "Added Triple:" + subject + " " + predicate + " " + object);
-                        tripleCnt++;
-                    }
-                }
-                is.close();
+                        //logger.debug("Added Triple: {} {} {}", subject, predicate, object);
+                    }).count();
             } catch (Exception ex) {
                 logger.error("addTriples error", ex);
             }

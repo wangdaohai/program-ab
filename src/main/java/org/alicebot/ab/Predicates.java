@@ -23,7 +23,8 @@ import org.alicebot.ab.utils.JapaneseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,43 +73,22 @@ public class Predicates {
     }
 
     /**
-     * Read predicate default values from an input stream
-     *
-     * @param in input stream
-     */
-    public void getPredicateDefaultsFromInputStream(InputStream in) {
-        BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        try {
-            //Read File Line By Line
-            String strLine;
-            while ((strLine = br.readLine()) != null) {
-                if (strLine.contains(":")) {
-                    String property = strLine.substring(0, strLine.indexOf(':'));
-                    String value = strLine.substring(strLine.indexOf(':') + 1);
-                    put(property, value);
-                }
-            }
-        } catch (Exception ex) {
-            logger.error("getPredicateDefaultsFromInputStream error", ex);
-        }
-    }
-
-    /**
      * read predicate defaults from a file
      *
      * @param filename name of file
      */
     public void getPredicateDefaults(String filename) {
         try {
-            // Open the file that is the first
-            // command line parameter
             File file = new File(filename);
-            if (file.exists()) {
-                FileInputStream fstream = new FileInputStream(filename);
-                // Get the object
-                getPredicateDefaultsFromInputStream(fstream);
-                fstream.close();
+            if (!file.exists()) {
+                logger.warn("{} does not exist", file);
+                return;
             }
+            Files.lines(file.toPath()).filter(l -> l.contains(":")).forEach(strLine -> {
+                String property = strLine.substring(0, strLine.indexOf(':'));
+                String value = strLine.substring(strLine.indexOf(':') + 1);
+                put(property, value);
+            });
         } catch (Exception e) {
             logger.error("getPredicateDefaults error", e);
         }
