@@ -1,6 +1,5 @@
 package org.alicebot.ab;
 
-import java.util.ArrayList;
 /* Program AB Reference AIML 2.0 implementation
         Copyright (C) 2013 ALICE A.I. Foundation
         Contact: info@alicebot.org
@@ -24,7 +23,8 @@ import java.util.ArrayList;
 /**
  * Linked list representation of Pattern Path and Input Path
  */
-public final class Path extends ArrayList<String> {
+public final class Path {
+
     public String word;
     public Path next;
     public int length;

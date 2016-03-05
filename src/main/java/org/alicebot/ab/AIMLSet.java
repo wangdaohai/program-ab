@@ -24,7 +24,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.util.AbstractCollection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,10 +35,11 @@ import java.util.stream.Stream;
 /**
  * implements AIML Sets
  */
-public class AIMLSet extends HashSet<String> {
+public class AIMLSet extends AbstractCollection<String> {
 
     private static final Logger logger = LoggerFactory.getLogger(AIMLSet.class);
 
+    private final Set<String> valueSet = new HashSet<>();
     public String setName;
     int maxLength = 1; // there are no empty sets
     String host; // for external sets
@@ -53,6 +56,21 @@ public class AIMLSet extends HashSet<String> {
     public AIMLSet(String name) {
         this.setName = name.toLowerCase();
         if (setName.equals(MagicStrings.natural_number_set_name)) { maxLength = 1; }
+    }
+
+    @Override
+    public Iterator<String> iterator() {
+        return valueSet.iterator();
+    }
+
+    @Override
+    public int size() {
+        return valueSet.size();
+    }
+
+    @Override
+    public boolean add(String s) {
+        return valueSet.add(s);
     }
 
     public boolean contains(String s) {
@@ -78,14 +96,14 @@ public class AIMLSet extends HashSet<String> {
             Matcher numberMatcher = numberPattern.matcher(s);
             return numberMatcher.matches();
         } else {
-            return super.contains(s);
+            return valueSet.contains(s);
         }
     }
 
     public void writeSet(Bot bot) {
         logger.info("Writing AIML Set {}", setName);
         try {
-            Stream<String> lines = stream().map(String::trim);
+            Stream<String> lines = valueSet.stream().map(String::trim);
             File setFile = new File(bot.sets_path, setName + ".txt");
             Files.write(setFile.toPath(), (Iterable<String>) lines::iterator);
         } catch (Exception e) {
@@ -112,7 +130,7 @@ public class AIMLSet extends HashSet<String> {
                 int length = splitLine.length;
                 if (length > maxLength) { maxLength = length; }
                 //logger.debug("readFromStream {}", strLine);
-                add(strLine.trim());
+                valueSet.add(strLine.trim());
             }
             /*Category c = new Category(0, "ISA"+setName.toUpperCase()+" "+strLine.toUpperCase(), "*", "*", "true", MagicStrings.null_aiml_file);
             bot.brain.addCategory(c);*/

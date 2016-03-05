@@ -25,13 +25,16 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Manage client predicates
  */
-public class Predicates extends HashMap<String, String> {
+public class Predicates {
 
     private static final Logger logger = LoggerFactory.getLogger(Predicates.class);
+
+    private final Map<String, String> valueMap = new HashMap<>();
 
     /**
      * save a predicate value
@@ -40,7 +43,6 @@ public class Predicates extends HashMap<String, String> {
      * @param value predicate value
      * @return predicate value
      */
-    @Override
     public String put(String key, String value) {
         //MagicBooleans.trace("predicates.put(key: " + key + ", value: " + value + ")");
         if (MagicBooleans.jp_tokenize) {
@@ -48,7 +50,7 @@ public class Predicates extends HashMap<String, String> {
         }
         if ("topic".equals(key) && value.isEmpty()) { value = MagicStrings.default_get; }
         if (value.equals(MagicStrings.too_much_recursion)) { value = MagicStrings.default_list_item; }
-        return super.put(key, value);
+        return valueMap.put(key, value);
     }
 
     /**
@@ -59,10 +61,14 @@ public class Predicates extends HashMap<String, String> {
      */
     public String get(String key) {
         //MagicBooleans.trace("predicates.get(key: " + key + ")");
-        String result = super.get(key);
+        String result = valueMap.get(key);
         if (result == null) { result = MagicStrings.default_get; }
         //MagicBooleans.trace("in predicates.get, returning: " + result);
         return result;
+    }
+
+    public boolean contains(String key) {
+        return valueMap.containsKey(key);
     }
 
     /**
@@ -106,6 +112,11 @@ public class Predicates extends HashMap<String, String> {
         } catch (Exception e) {
             logger.error("getPredicateDefaults error", e);
         }
+    }
+
+    @Override
+    public String toString() {
+        return valueMap.toString();
     }
 }
 

@@ -1094,10 +1094,10 @@ public final class AIMLProcessor {
                 if (value != null) {
                     // if the predicate equals the value, return the <li> item.
                     if (liPredicate != null && value != null && (ps.chatSession.predicates.get(liPredicate).equalsIgnoreCase(value) ||
-                        (ps.chatSession.predicates.containsKey(liPredicate) && "*".equals(value)))) {
+                        (ps.chatSession.predicates.contains(liPredicate) && "*".equals(value)))) {
                         return evalTagContent(n, ps, attributeNames);
                     } else if (liVarName != null && value != null && (ps.vars.get(liVarName).equalsIgnoreCase(value) ||
-                        (ps.vars.containsKey(liPredicate) && "*".equals(value)))) {
+                        (ps.vars.contains(liPredicate) && "*".equals(value)))) {
                         return evalTagContent(n, ps, attributeNames);
                     }
 

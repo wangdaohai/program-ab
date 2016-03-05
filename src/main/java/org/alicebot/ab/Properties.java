@@ -25,14 +25,17 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Bot Properties
  */
 
-public class Properties extends HashMap<String, String> {
+public class Properties {
 
     private static final Logger logger = LoggerFactory.getLogger(Properties.class);
+
+    private final Map<String, String> properties = new HashMap<>();
 
     /**
      * get the value of a bot property.
@@ -41,7 +44,7 @@ public class Properties extends HashMap<String, String> {
      * @return property value or a string indicating the property is undefined
      */
     public String get(String key) {
-        String result = super.get(key);
+        String result = properties.get(key);
         return result == null ? MagicStrings.default_property : result;
     }
 
@@ -61,7 +64,7 @@ public class Properties extends HashMap<String, String> {
             Files.lines(file.toPath()).filter(l -> l.contains(":")).forEach(strLine -> {
                 String property = strLine.substring(0, strLine.indexOf(':'));
                 String value = strLine.substring(strLine.indexOf(':') + 1);
-                put(property, value);
+                properties.put(property, value);
             });
         } catch (Exception e) {
             logger.error("getProperties error", e);

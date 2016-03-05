@@ -8,10 +8,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class Tuple extends HashMap<String, String> {
+public class Tuple {
 
     private static final Logger logger = LoggerFactory.getLogger(Tuple.class);
 
+    private final Map<String, String> valueMap = new HashMap<>();
     public static int index = 0;
     public static Map<String, Tuple> tupleMap = new HashMap<>();
     public HashSet<String> visibleVars = new HashSet<>();
@@ -47,11 +48,8 @@ public class Tuple extends HashMap<String, String> {
                 return false;
             }
         }
-        //System.out.println("Tuple: values = "+values());
-        //System.out.println("Tuple: tuple.values = "+tuple.values());
-        if (values().contains(MagicStrings.unbound_variable)) { return false; }
-        if (tuple.values().contains(MagicStrings.unbound_variable)) { return false; }
-        //System.out.println("Tuple: "+name+"="+tuple.name);
+        if (valueMap.values().contains(MagicStrings.unbound_variable)) { return false; }
+        if (tuple.valueMap.values().contains(MagicStrings.unbound_variable)) { return false; }
         return true;
     }
 
@@ -74,13 +72,13 @@ public class Tuple extends HashMap<String, String> {
         //System.out.println("visbileVars="+visibleVars);
         if (visibleVars != null) { this.visibleVars.addAll(visibleVars); }
         if (varSet == null && tuple != null) {
-            for (Entry<String, String> entry : tuple.entrySet()) {
-                put(entry.getKey(), entry.getValue());
-            }
+            valueMap.putAll(tuple.valueMap);
             this.visibleVars.addAll(tuple.visibleVars);
         }
         if (varSet != null) {
-            for (String key : varSet) { put(key, MagicStrings.unbound_variable); }
+            for (String key : varSet) {
+                valueMap.put(key, MagicStrings.unbound_variable);
+            }
         }
         name = "tuple" + index;
         index++;
@@ -96,7 +94,7 @@ public class Tuple extends HashMap<String, String> {
     }
 
     public Set<String> getVars() {
-        return keySet();
+        return valueMap.keySet();
     }
 
     public String printVars() {
@@ -116,7 +114,7 @@ public class Tuple extends HashMap<String, String> {
         if (get(var) != null && !get(var).equals(MagicStrings.unbound_variable)) {
             logger.warn("{} already bound to {}", var, get(var));
         } else {
-            put(var, value);
+            valueMap.put(var, value);
         }
 
     }
@@ -124,9 +122,14 @@ public class Tuple extends HashMap<String, String> {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder().append("\n");
-        for (String x : keySet()) {
+        for (String x : valueMap.keySet()) {
             result.append(x).append("=").append(get(x)).append("\n");
         }
         return result.toString().trim();
     }
+
+    private String get(String key) {
+        return valueMap.get(key);
+    }
+
 }

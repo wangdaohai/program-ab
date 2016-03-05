@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 
 /**
@@ -33,10 +34,11 @@ import java.util.stream.Stream;
  * A map is a function from one string set to another.
  * Elements of the domain are called keys and elements of the range are called values.
  */
-public class AIMLMap extends HashMap<String, String> {
+public class AIMLMap {
 
     private static final Logger logger = LoggerFactory.getLogger(AIMLMap.class);
 
+    private final Map<String, String> valueMap = new HashMap<>();
     public String mapName;
     String host; // for external maps
     String botid; // for external maps
@@ -85,7 +87,7 @@ public class AIMLMap extends HashMap<String, String> {
             logger.info("External {}({})={}", mapName, key, response);
             value = response;
         } else {
-            value = super.get(key);
+            value = valueMap.get(key);
         }
         if (value == null) { value = MagicStrings.default_map; }
         //System.out.println("AIMLMap get "+key+"="+value);
@@ -99,16 +101,15 @@ public class AIMLMap extends HashMap<String, String> {
      * @param value the range element
      * @return the value
      */
-    @Override
     public String put(String key, String value) {
         //System.out.println("AIMLMap put "+key+"="+value);
-        return super.put(key, value);
+        return valueMap.put(key, value);
     }
 
     public void writeMap(Bot bot) {
         logger.info("Writing AIML Map {}", mapName);
         try {
-            Stream<String> lines = keySet().stream().map(String::trim).map(p -> p + ":" + get(p).trim());
+            Stream<String> lines = valueMap.keySet().stream().map(String::trim).map(p -> p + ":" + get(p).trim());
             File mapFile = new File(bot.maps_path, mapName + ".txt");
             Files.write(mapFile.toPath(), (Iterable<String>) lines::iterator);
         } catch (Exception e) {
@@ -156,4 +157,8 @@ public class AIMLMap extends HashMap<String, String> {
 
     }
 
+    @Override
+    public String toString() {
+        return valueMap.toString();
+    }
 }
