@@ -22,7 +22,8 @@ package org.alicebot.ab;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.nio.file.Files;
 import java.util.HashMap;
 
 /**
@@ -45,28 +46,6 @@ public class Properties extends HashMap<String, String> {
     }
 
     /**
-     * Read bot properties from an input stream.
-     *
-     * @param in Input stream
-     */
-    public void getPropertiesFromInputStream(InputStream in) {
-        BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        //Read File Line By Line
-        try {
-            String strLine;
-            while ((strLine = br.readLine()) != null) {
-                if (strLine.contains(":")) {
-                    String property = strLine.substring(0, strLine.indexOf(':'));
-                    String value = strLine.substring(strLine.indexOf(':') + 1);
-                    put(property, value);
-                }
-            }
-        } catch (Exception ex) {
-            logger.error("getPropertiesFromInputStream error", ex);
-        }
-    }
-
-    /**
      * Read bot properties from a file.
      *
      * @param filename file containing bot properties
@@ -74,15 +53,16 @@ public class Properties extends HashMap<String, String> {
     public void getProperties(String filename) {
         logger.debug("Get Properties: {}", filename);
         try {
-            // Open the file that is the first
-            // command line parameter
             File file = new File(filename);
-            if (file.exists()) {
-                logger.debug("Exists: {}", filename);
-                try (FileInputStream fstream = new FileInputStream(filename)) {
-                    getPropertiesFromInputStream(fstream);
-                }
+            if (!file.exists()) {
+                logger.warn("{} does not exist", file);
+                return;
             }
+            Files.lines(file.toPath()).filter(l -> l.contains(":")).forEach(strLine -> {
+                String property = strLine.substring(0, strLine.indexOf(':'));
+                String value = strLine.substring(strLine.indexOf(':') + 1);
+                put(property, value);
+            });
         } catch (Exception e) {
             logger.error("getProperties error", e);
         }

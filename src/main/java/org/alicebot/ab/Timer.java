@@ -37,12 +37,6 @@ public final class Timer {
         return System.currentTimeMillis() - startTimeMillis + 1;
     }
 
-    public long elapsedRestartMs() {
-        long ms = System.currentTimeMillis() - startTimeMillis + 1;
-        start();
-        return ms;
-    }
-
     public float elapsedTimeSecs() {
         return elapsedTimeMillis() / 1000F;
     }

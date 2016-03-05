@@ -1,6 +1,5 @@
 package org.alicebot.ab;
 
-import org.alicebot.ab.utils.MemoryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,15 +40,15 @@ public final class MemStats {
      */
     public static void memStats() {
         // Get current size of heap in bytes
-        long heapSize = MemoryUtils.totalMemory();
+        long heapSize = Runtime.getRuntime().totalMemory();
 
         // Get maximum size of heap in bytes. The heap cannot grow beyond this size.
         // Any attempt will result in an OutOfMemoryException.
-        long heapMaxSize = MemoryUtils.maxMemory();
+        long heapMaxSize = Runtime.getRuntime().maxMemory();
 
         // Get amount of free memory within the heap in bytes. This size will increase
         // after garbage collection and decrease as new objects are created.
-        long heapFreeSize = MemoryUtils.freeMemory();
+        long heapFreeSize = Runtime.getRuntime().freeMemory();
         long diff = heapSize - prevHeapSize;
         prevHeapSize = heapSize;
         logger.info("Heap {} MaxSize {} Free {} Diff {}", heapSize, heapMaxSize, heapFreeSize, diff);

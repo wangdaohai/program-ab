@@ -20,13 +20,21 @@ package org.alicebot.ab;
 */
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Array of values matching wildcards
  */
-public class Stars extends ArrayList<String> {
+public class Stars {
+
+    private final List<String> stars = new ArrayList<>();
+
     public String star(int i) {
-        return i < size() ? get(i) : null;
+        return i < stars.size() ? stars.get(i) : null;
+    }
+
+    public boolean add(String star) {
+        return stars.add(star);
     }
 
 }

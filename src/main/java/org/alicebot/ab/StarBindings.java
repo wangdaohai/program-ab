@@ -23,16 +23,8 @@ package org.alicebot.ab;
  * structure to hold binding of wildcards in input pattern, that pattern and topicpattern
  */
 public class StarBindings {
-    public Stars inputStars;
-    public Stars thatStars;
-    public Stars topicStars;
+    public final Stars inputStars = new Stars();
+    public final Stars thatStars = new Stars();
+    public final Stars topicStars = new Stars();
 
-    /**
-     * Constructor  -- this class has public members
-     */
-    public StarBindings() {
-        inputStars = new Stars();
-        thatStars = new Stars();
-        topicStars = new Stars();
-    }
 }

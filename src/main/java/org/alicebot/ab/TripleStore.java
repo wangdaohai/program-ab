@@ -304,22 +304,22 @@ public class TripleStore {
         String subj = clause.subj;
         String pred = clause.pred;
         String obj = clause.obj;
-        Clause newClause = new Clause(clause);
+        Clause newClause = clause.copy();
         if (vars.contains(subj)) {
             String value = tuple.getValue(subj);
-            if (!value.equals(MagicStrings.unbound_variable)) {/*System.out.println("adjusting "+subj+" "+value);*/
+            if (!value.equals(MagicStrings.unbound_variable)) {
                 newClause.subj = value;
             }
         }
         if (vars.contains(pred)) {
             String value = tuple.getValue(pred);
-            if (!value.equals(MagicStrings.unbound_variable)) {/*System.out.println("adjusting "+pred+" "+value);*/
+            if (!value.equals(MagicStrings.unbound_variable)) {
                 newClause.pred = value;
             }
         }
         if (vars.contains(obj)) {
             String value = tuple.getValue(obj);
-            if (!value.equals(MagicStrings.unbound_variable)) {/*System.out.println("adjusting "+obj+" "+value); */
+            if (!value.equals(MagicStrings.unbound_variable)) {
                 newClause.obj = value;
             }
         }
@@ -335,7 +335,7 @@ public class TripleStore {
         return tuple;
     }
 
-    public Set<Tuple> selectFromSingleClause(Tuple partial, Clause clause, Boolean affirm) {
+    public Set<Tuple> selectFromSingleClause(Tuple partial, Clause clause, boolean affirm) {
         Set<Tuple> result = new HashSet<>();
         Set<String> triples = getTriples(clause.subj, clause.pred, clause.obj);
         //System.out.println("TripleStore: selected "+triples.size()+" from single clause "+clause.subj+" "+clause.pred+" "+clause.obj);
