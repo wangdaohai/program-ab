@@ -104,19 +104,19 @@ public final class Verbs {
         String verbFile = Utilities.getFile("c:/ab/data/verb300.txt");
         String[] verbs = verbFile.split("\n");
         Collections.addAll(allVerbs, verbs);
-        AIMLSet be = new AIMLSet("be", bot);
-        AIMLSet is = new AIMLSet("is", bot);
-        AIMLSet was = new AIMLSet("was", bot);
-        AIMLSet been = new AIMLSet("been", bot);
-        AIMLSet being = new AIMLSet("being", bot);
-        AIMLMap is2be = new AIMLMap("is2be", bot);
-        AIMLMap be2is = new AIMLMap("be2is", bot);
-        AIMLMap was2be = new AIMLMap("was2be", bot);
-        AIMLMap be2was = new AIMLMap("be2was", bot);
-        AIMLMap been2be = new AIMLMap("been2be", bot);
-        AIMLMap be2been = new AIMLMap("be2been", bot);
-        AIMLMap be2being = new AIMLMap("be2being", bot);
-        AIMLMap being2be = new AIMLMap("being2be", bot);
+        AIMLSet be = new AIMLSet("be");
+        AIMLSet is = new AIMLSet("is");
+        AIMLSet was = new AIMLSet("was");
+        AIMLSet been = new AIMLSet("been");
+        AIMLSet being = new AIMLSet("being");
+        AIMLMap is2be = new AIMLMap("is2be");
+        AIMLMap be2is = new AIMLMap("be2is");
+        AIMLMap was2be = new AIMLMap("was2be");
+        AIMLMap be2was = new AIMLMap("be2was");
+        AIMLMap been2be = new AIMLMap("been2be");
+        AIMLMap be2been = new AIMLMap("be2been");
+        AIMLMap be2being = new AIMLMap("be2being");
+        AIMLMap being2be = new AIMLMap("being2be");
 
         for (String verb : allVerbs) {
             String isForm = is(verb);
@@ -139,18 +139,18 @@ public final class Verbs {
             being2be.put(beingForm, verb);
 
         }
-        be.writeAIMLSet();
-        is.writeAIMLSet();
-        was.writeAIMLSet();
-        been.writeAIMLSet();
-        being.writeAIMLSet();
-        be2is.writeAIMLMap();
-        is2be.writeAIMLMap();
-        be2was.writeAIMLMap();
-        was2be.writeAIMLMap();
-        be2been.writeAIMLMap();
-        been2be.writeAIMLMap();
-        be2being.writeAIMLMap();
-        being2be.writeAIMLMap();
+        be.writeSet(bot);
+        is.writeSet(bot);
+        was.writeSet(bot);
+        been.writeSet(bot);
+        being.writeSet(bot);
+        be2is.writeMap(bot);
+        is2be.writeMap(bot);
+        be2was.writeMap(bot);
+        was2be.writeMap(bot);
+        be2been.writeMap(bot);
+        been2be.writeMap(bot);
+        be2being.writeMap(bot);
+        being2be.writeMap(bot);
     }
 }

@@ -22,8 +22,10 @@ package org.alicebot.ab;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.stream.Stream;
 
 /**
  * implements AIML Map
@@ -40,15 +42,13 @@ public class AIMLMap extends HashMap<String, String> {
     String botid; // for external maps
     boolean isExternal = false;
     Inflector inflector = new Inflector();
-    Bot bot;
 
     /**
      * constructor to create a new AIML Map
      *
      * @param name the name of the map
      */
-    public AIMLMap(String name, Bot bot) {
-        this.bot = bot;
+    public AIMLMap(String name) {
         this.mapName = name;
     }
 
@@ -105,56 +105,34 @@ public class AIMLMap extends HashMap<String, String> {
         return super.put(key, value);
     }
 
-    public void writeAIMLMap() {
+    public void writeMap(Bot bot) {
         logger.info("Writing AIML Map {}", mapName);
         try {
-            // Create file
-            FileWriter fstream = new FileWriter(bot.maps_path + "/" + mapName + ".txt");
-            BufferedWriter out = new BufferedWriter(fstream);
-            for (String p : this.keySet()) {
-                p = p.trim();
-                //System.out.println(p+"-->"+this.get(p));
-                out.write(p + ":" + this.get(p).trim());
-                out.newLine();
-            }
-            //Close the output stream
-            out.close();
+            Stream<String> lines = keySet().stream().map(String::trim).map(p -> p + ":" + get(p).trim());
+            File mapFile = new File(bot.maps_path, mapName + ".txt");
+            Files.write(mapFile.toPath(), (Iterable<String>) lines::iterator);
         } catch (Exception e) {
-            logger.error("writeAIMLMap error", e);
+            logger.error("writeMap error", e);
         }
     }
 
-    public int readAIMLMapFromInputStream(InputStream in, Bot bot) {
-        int cnt = 0;
-        BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        //Read File Line By Line
-        try {
-            String strLine;
-            while ((strLine = br.readLine()) != null && !strLine.isEmpty()) {
-                String[] splitLine = strLine.split(":");
-                //System.out.println("AIMLMap line="+strLine);
-                if (splitLine.length >= 2) {
-                    cnt++;
-                    if (strLine.startsWith(MagicStrings.remote_map_key)) {
-                        if (splitLine.length >= 3) {
-                            host = splitLine[1];
-                            botid = splitLine[2];
-                            isExternal = true;
-                            logger.info("Created external map at {} {}", host, botid);
-                        }
-                    } else {
-                        String key = splitLine[0].toUpperCase();
-                        String value = splitLine[1];
-                        // assume domain element is already normalized for speedier load
-                        //key = bot.preProcessor.normalize(key).trim();
-                        put(key, value);
-                    }
+    private long readFromStream(Stream<String> in) {
+        return in.map(l -> l.split(":")).filter(l -> l.length >= 2).peek(splitLine -> {
+            if (splitLine[0].startsWith(MagicStrings.remote_map_key)) {
+                if (splitLine.length >= 3) {
+                    host = splitLine[1];
+                    botid = splitLine[2];
+                    isExternal = true;
+                    logger.info("Created external map at {} {}", host, botid);
                 }
+            } else {
+                String key = splitLine[0].toUpperCase();
+                String value = splitLine[1];
+                // assume domain element is already normalized for speedier load
+                //key = bot.preProcessor.normalize(key).trim();
+                put(key, value);
             }
-        } catch (Exception ex) {
-            logger.error("readAIMLMapFromInputStream error", ex);
-        }
-        return cnt;
+        }).count();
     }
 
     /**
@@ -162,21 +140,17 @@ public class AIMLMap extends HashMap<String, String> {
      *
      * @param bot the bot associated with this map.
      */
-    public int readAIMLMap(Bot bot) {
+    public long readMap(Bot bot) {
         try {
-            // Open the file that is the first
-            // command line parameter
             File file = new File(bot.maps_path, mapName + ".txt");
             logger.debug("Reading AIML Map {}", file);
             if (file.exists()) {
-                try (FileInputStream fstream = new FileInputStream(file)) {
-                    return readAIMLMapFromInputStream(fstream, bot);
-                }
+                return readFromStream(Files.lines(file.toPath()));
             } else {
                 logger.info("{} not found", file);
             }
         } catch (Exception e) {
-            logger.error("readAIMLMap error", e);
+            logger.error("readMap error", e);
         }
         return 0;
 

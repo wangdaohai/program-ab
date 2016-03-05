@@ -137,8 +137,8 @@ public final class EnglishNumberToWords {
     }
 
     public static void makeSetMap(Bot bot) {
-        AIMLSet numberName = new AIMLSet("numbername", bot);
-        AIMLMap name2number = new AIMLMap("name2number", bot);
+        AIMLSet numberName = new AIMLSet("numbername");
+        AIMLMap name2number = new AIMLMap("name2number");
 
         for (int i = 0; i < 10000; i++) {
             String name = convert(i).trim();
@@ -149,8 +149,8 @@ public final class EnglishNumberToWords {
 
         }
 
-        numberName.writeAIMLSet();
-        name2number.writeAIMLMap();
+        numberName.writeSet(bot);
+        name2number.writeMap(bot);
 
     }
 

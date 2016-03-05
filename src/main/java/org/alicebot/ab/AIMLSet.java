@@ -22,11 +22,13 @@ package org.alicebot.ab;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.nio.file.Files;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 /**
  * implements AIML Sets
@@ -40,7 +42,6 @@ public class AIMLSet extends HashSet<String> {
     String host; // for external sets
     String botid; // for external sets
     boolean isExternal = false;
-    Bot bot;
     private final Set<String> inCache = new HashSet<>();
     private final Set<String> outCache = new HashSet<>();
 
@@ -49,8 +50,7 @@ public class AIMLSet extends HashSet<String> {
      *
      * @param name name of set
      */
-    public AIMLSet(String name, Bot bot) {
-        this.bot = bot;
+    public AIMLSet(String name) {
         this.setName = name.toLowerCase();
         if (setName.equals(MagicStrings.natural_number_set_name)) { maxLength = 1; }
     }
@@ -82,75 +82,54 @@ public class AIMLSet extends HashSet<String> {
         }
     }
 
-    public void writeAIMLSet() {
+    public void writeSet(Bot bot) {
         logger.info("Writing AIML Set {}", setName);
         try {
-            // Create file
-            FileWriter fstream = new FileWriter(bot.sets_path + "/" + setName + ".txt");
-            BufferedWriter out = new BufferedWriter(fstream);
-            for (String p : this) {
-
-                out.write(p.trim());
-                out.newLine();
-            }
-            //Close the output stream
-            out.close();
+            Stream<String> lines = stream().map(String::trim);
+            File setFile = new File(bot.sets_path, setName + ".txt");
+            Files.write(setFile.toPath(), (Iterable<String>) lines::iterator);
         } catch (Exception e) {
-            logger.error("writeAIMLSet error", e);
+            logger.error("writeSet error", e);
         }
     }
 
-    public int readAIMLSetFromInputStream(InputStream in, Bot bot) {
-        BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        int cnt = 0;
-        //Read File Line By Line
-        try {
-            String strLine;
-            while ((strLine = br.readLine()) != null && !strLine.isEmpty()) {
-                cnt++;
-                //strLine = bot.preProcessor.normalize(strLine).toUpperCase();
-                // assume the set is pre-normalized for faster loading
-                if (strLine.startsWith("external")) {
-                    String[] splitLine = strLine.split(":");
-                    if (splitLine.length >= 4) {
-                        host = splitLine[1];
-                        botid = splitLine[2];
-                        maxLength = Integer.parseInt(splitLine[3]);
-                        isExternal = true;
-                        logger.info("Created external set at {} {}", host, botid);
-                    }
-                } else {
-                    strLine = strLine.toUpperCase().trim();
-                    String[] splitLine = strLine.split(" ");
-                    int length = splitLine.length;
-                    if (length > maxLength) { maxLength = length; }
-                    //System.out.println("readAIMLSetFromInputStream "+strLine);
-                    add(strLine.trim());
+    public long readFromStream(Stream<String> in) {
+        return in.peek(strLine -> {
+            //strLine = bot.preProcessor.normalize(strLine).toUpperCase();
+            // assume the set is pre-normalized for faster loading
+            if (strLine.startsWith(MagicStrings.remote_set_key)) {
+                String[] splitLine = strLine.split(":");
+                if (splitLine.length >= 4) {
+                    host = splitLine[1];
+                    botid = splitLine[2];
+                    maxLength = Integer.parseInt(splitLine[3]);
+                    isExternal = true;
+                    logger.info("Created external set at {} {}", host, botid);
                 }
-                /*Category c = new Category(0, "ISA"+setName.toUpperCase()+" "+strLine.toUpperCase(), "*", "*", "true", MagicStrings.null_aiml_file);
-                bot.brain.addCategory(c);*/
+            } else {
+                strLine = strLine.toUpperCase().trim();
+                String[] splitLine = strLine.split(" ");
+                int length = splitLine.length;
+                if (length > maxLength) { maxLength = length; }
+                //logger.debug("readFromStream {}", strLine);
+                add(strLine.trim());
             }
-        } catch (Exception ex) {
-            logger.error("readAIMLSetFromInputStream error", ex);
-        }
-        return cnt;
+            /*Category c = new Category(0, "ISA"+setName.toUpperCase()+" "+strLine.toUpperCase(), "*", "*", "true", MagicStrings.null_aiml_file);
+            bot.brain.addCategory(c);*/
+        }).count();
     }
 
-    public int readAIMLSet(Bot bot) {
+    public long readSet(Bot bot) {
+        File file = new File(bot.sets_path, setName + ".txt");
         try {
-            // Open the file that is the first
-            // command line parameter
-            File file = new File(bot.sets_path, setName + ".txt");
             logger.debug("Reading AIML Set {}", file);
             if (file.exists()) {
-                try (FileInputStream fStream = new FileInputStream(file)) {
-                    return readAIMLSetFromInputStream(fStream, bot);
-                }
+                return readFromStream(Files.lines(file.toPath()));
             } else {
                 logger.warn("{} not found", file);
             }
         } catch (Exception e) {
-            logger.error("readAIMLSet error", e);
+            logger.error("readSet error for file {}", file, e);
         }
         return 0;
     }

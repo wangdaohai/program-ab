@@ -125,20 +125,20 @@ public final class Bot {
 
         preProcessor = new PreProcessor(this);
         addProperties();
-        int cnt = addAIMLSets();
-        logger.debug("Loaded {} set elements.", cnt);
-        cnt = addAIMLMaps();
-        logger.debug("Loaded {} map elements", cnt);
+        long setCnt = addAIMLSets();
+        logger.debug("Loaded {} set elements.", setCnt);
+        long mapCnt = addAIMLMaps();
+        logger.debug("Loaded {} map elements", mapCnt);
         this.pronounSet = getPronouns();
-        AIMLSet number = new AIMLSet(MagicStrings.natural_number_set_name, this);
+        AIMLSet number = new AIMLSet(MagicStrings.natural_number_set_name);
         setMap.put(MagicStrings.natural_number_set_name, number);
-        AIMLMap successor = new AIMLMap(MagicStrings.map_successor, this);
+        AIMLMap successor = new AIMLMap(MagicStrings.map_successor);
         mapMap.put(MagicStrings.map_successor, successor);
-        AIMLMap predecessor = new AIMLMap(MagicStrings.map_predecessor, this);
+        AIMLMap predecessor = new AIMLMap(MagicStrings.map_predecessor);
         mapMap.put(MagicStrings.map_predecessor, predecessor);
-        AIMLMap singular = new AIMLMap(MagicStrings.map_singular, this);
+        AIMLMap singular = new AIMLMap(MagicStrings.map_singular);
         mapMap.put(MagicStrings.map_singular, singular);
-        AIMLMap plural = new AIMLMap(MagicStrings.map_plural, this);
+        AIMLMap plural = new AIMLMap(MagicStrings.map_plural);
         mapMap.put(MagicStrings.map_plural, plural);
         //System.out.println("setMap = "+setMap);
         Instant aimlDate = Instant.ofEpochMilli(new File(aiml_path).lastModified());
@@ -153,16 +153,16 @@ public final class Bot {
             addCategoriesFromAIMLIF();
         } else if ("chat-app".equals(action)) {
             logger.debug("Loading only AIMLIF files");
-            cnt = addCategoriesFromAIMLIF();
+            addCategoriesFromAIMLIF();
         } else if (aimlDate.isAfter(aimlIFDate)) {
             logger.debug("AIML modified after AIMLIF");
-            cnt = addCategoriesFromAIML();
+            addCategoriesFromAIML();
             writeAIMLIFFiles();
         } else {
             addCategoriesFromAIMLIF();
             if (brain.getCategories().isEmpty()) {
                 logger.info("No AIMLIF Files found.  Looking for AIML");
-                cnt = addCategoriesFromAIML();
+                addCategoriesFromAIML();
             }
         }
         Category b = new Category(0, "PROGRAM VERSION", "*", "*", MagicStrings.program_name_version, "update.aiml");
@@ -533,10 +533,10 @@ public final class Bot {
     /**
      * Load all AIML Sets
      */
-    int addAIMLSets() {
+    long addAIMLSets() {
         Timer timer = new Timer();
         timer.start();
-        int cnt = 0;
+        long cnt = 0;
         try {
             // Directory path here
             File folder = new File(sets_path);
@@ -550,8 +550,8 @@ public final class Bot {
                             logger.debug(file);
                             String setName = file.substring(0, file.length() - ".txt".length());
                             logger.debug("Read AIML Set {}", setName);
-                            AIMLSet aimlSet = new AIMLSet(setName, this);
-                            cnt += aimlSet.readAIMLSet(this);
+                            AIMLSet aimlSet = new AIMLSet(setName);
+                            cnt += aimlSet.readSet(this);
                             setMap.put(setName, aimlSet);
                         }
                     }
@@ -568,10 +568,10 @@ public final class Bot {
     /**
      * Load all AIML Maps
      */
-    int addAIMLMaps() {
+    long addAIMLMaps() {
         Timer timer = new Timer();
         timer.start();
-        int cnt = 0;
+        long cnt = 0;
         try {
             // Directory path here
             File folder = new File(maps_path);
@@ -585,8 +585,8 @@ public final class Bot {
                             logger.debug(file);
                             String mapName = file.substring(0, file.length() - ".txt".length());
                             logger.debug("Read AIML Map {}", mapName);
-                            AIMLMap aimlMap = new AIMLMap(mapName, this);
-                            cnt += aimlMap.readAIMLMap(this);
+                            AIMLMap aimlMap = new AIMLMap(mapName);
+                            cnt += aimlMap.readMap(this);
                             mapMap.put(mapName, aimlMap);
                         }
                     }

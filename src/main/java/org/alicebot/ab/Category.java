@@ -47,7 +47,7 @@ public class Category {
      * @return and AIML Set of elements matching this category
      */
     public AIMLSet getMatches(Bot bot) {
-        return matches != null ? matches : new AIMLSet("No Matches", bot);
+        return matches != null ? matches : new AIMLSet("No Matches");
     }
 
     /**
@@ -190,7 +190,7 @@ public class Category {
         if (matches == null) {
             String setName = this.inputThatTopic().replace("*", "STAR").replace("_", "UNDERSCORE").replace(" ", "-").replace("<THAT>", "THAT").replace("<TOPIC>", "TOPIC");
             // System.out.println("Created match set "+setName);
-            matches = new AIMLSet(setName, bot);
+            matches = new AIMLSet(setName);
         }
         matches.add(input);
     }

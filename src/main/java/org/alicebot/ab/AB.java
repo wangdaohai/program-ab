@@ -70,8 +70,8 @@ public final class AB {
         this.patternGraph = new Graphmaster(bot, "pattern");
         bot.brain.getCategories().forEach(patternGraph::addCategory);
         this.suggestedCategories = new ArrayList<>();
-        passed = new AIMLSet("passed", bot);
-        testSet = new AIMLSet("1000", bot);
+        passed = new AIMLSet("passed");
+        testSet = new AIMLSet("1000");
         readDeletedIFCategories();
     }
 
@@ -457,13 +457,13 @@ public final class AB {
            if (udcNode != null) {
                AIMLSet udcMatches = new AIMLSet("udcmatches");
                udcMatches.addAll(udcNode.category.getMatches());
-               udcMatches.writeAIMLSet();
+               udcMatches.writeSet();
            }*/
           /* Nodemapper cNode = bot.brain.match("JOE MAKES BEER", "unknown", "unknown");
            if (cNode != null) {
                AIMLSet cMatches = new AIMLSet("cmatches");
                cMatches.addAll(cNode.category.getMatches());
-               cMatches.writeAIMLSet();
+               cMatches.writeSet();
            }
            if (passed.size() > 0) {
                AIMLSet difference = new AIMLSet("difference");
@@ -473,10 +473,10 @@ public final class AB {
                passed.setName = "passed";
                difference.addAll(testSet);
                difference.removeAll(passed);
-               difference.writeAIMLSet();
+               difference.writeSet();
 
-               passed.writeAIMLSet();
-               testSet.writeAIMLSet();
+               passed.writeSet();
+               testSet.writeSet();
                System.out.println("Wrote passed test cases");
            }*/
             System.exit(0);
@@ -484,11 +484,11 @@ public final class AB {
             skipCategory(c);
         } else if ("s".equals(textLine) || "pass".equals(textLine)) { //
             passed.add(request);
-            AIMLSet difference = new AIMLSet("difference", bot);
+            AIMLSet difference = new AIMLSet("difference");
             difference.addAll(testSet);
             difference.removeAll(passed);
-            difference.writeAIMLSet();
-            passed.writeAIMLSet();
+            difference.writeSet(bot);
+            passed.writeSet(bot);
         } else if ("a".equals(textLine)) {
             template = alicetemplate;
             String filename;
