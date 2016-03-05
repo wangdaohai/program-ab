@@ -26,8 +26,10 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -284,11 +286,9 @@ public final class Sraix {
                     template = template.replaceAll("<a(.*)</a>", "");
                     template = template.trim();
                     if (!template.isEmpty()) {
-                        FileWriter fstream = new FileWriter("c:/ab/bots/sraixcache/aimlif/sraixcache.aiml.csv", true);
-                        BufferedWriter fbw = new BufferedWriter(fstream);
-                        fbw.write("0," + pattern + ",*,*," + template + ",sraixcache.aiml");
-                        fbw.newLine();
-                        fbw.close();
+                        Files.write(Paths.get("c:/ab/bots/sraixcache/aimlif/sraixcache.aiml.csv"),
+                            Arrays.asList("0," + pattern + ",*,*," + template + ",sraixcache.aiml"),
+                            StandardOpenOption.APPEND);
                     }
                 }
             } catch (Exception e) {

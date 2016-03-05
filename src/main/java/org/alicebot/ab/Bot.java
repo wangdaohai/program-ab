@@ -24,14 +24,14 @@ import org.alicebot.ab.utils.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Class representing the AIML bot
@@ -362,30 +362,14 @@ public final class Bot {
      * @param cats     array list of categories
      * @param filename AIMLIF filename
      */
-    public void writeIFCategories(Iterable<Category> cats, String filename) {
+    public void writeIFCategories(List<Category> cats, String filename) {
         //System.out.println("writeIFCategories "+filename);
-        File existsPath = new File(aimlif_path);
-        if (existsPath.exists()) {
-            BufferedWriter bw = null;
+        if (new File(aimlif_path).exists()) {
             try {
-                //Construct the bw object
-                bw = new BufferedWriter(new FileWriter(aimlif_path + "/" + filename));
-                for (Category category : cats) {
-                    bw.write(Category.categoryToIF(category));
-                    bw.newLine();
-                }
+                Files.write(Paths.get(aimlif_path, filename),
+                    (Iterable<String>) cats.stream().map(Category::categoryToIF)::iterator);
             } catch (IOException ex) {
                 logger.error("writeIFCategories error", ex);
-            } finally {
-                //Close the bw
-                try {
-                    if (bw != null) {
-                        bw.flush();
-                        bw.close();
-                    }
-                } catch (IOException ex) {
-                    logger.error("writeIFCategories error", ex);
-                }
             }
         }
     }
@@ -395,42 +379,20 @@ public final class Bot {
      */
     public void writeAIMLIFFiles() {
         logger.debug("writeAIMLIFFiles");
-        Map<String, BufferedWriter> fileMap = new HashMap<>();
         Category b = new Category(0, "BRAIN BUILD", "*", "*", new Date().toString(), "update.aiml");
         brain.addCategory(b);
-        List<Category> brainCategories = brain.getCategories();
-        Collections.sort(brainCategories, Category.CATEGORY_NUMBER_COMPARATOR);
-        for (Category c : brainCategories) {
-            try {
-                BufferedWriter bw;
-                String fileName = c.getFilename();
-                if (fileMap.containsKey(fileName)) {
-                    bw = fileMap.get(fileName);
-                } else {
-                    bw = new BufferedWriter(new FileWriter(aimlif_path + "/" + fileName + MagicStrings.aimlif_file_suffix));
-                    fileMap.put(fileName, bw);
-
+        brain.getCategories().stream().sorted(Category.CATEGORY_NUMBER_COMPARATOR)
+            .collect(Collectors.groupingBy(Category::getFilename)).entrySet().stream()
+            .forEach(entry -> {
+                try {
+                    Stream<String> categoriesIF = entry.getValue().stream().map(Category::categoryToIF);
+                    Files.write(Paths.get(aimlif_path, entry.getKey() + MagicStrings.aimlif_file_suffix),
+                        (Iterable<String>) categoriesIF::iterator);
+                } catch (IOException e) {
+                    logger.error("writeAIMLIFFiles error", e);
                 }
-                bw.write(Category.categoryToIF(c));
-                bw.newLine();
-            } catch (Exception ex) {
-                logger.error("writeAIMLIFFiles error", ex);
-            }
-        }
-        for (BufferedWriter bw : fileMap.values()) {
-            //Close the bw
-            try {
-                if (bw != null) {
-                    bw.flush();
-                    bw.close();
-                }
-            } catch (IOException ex) {
-                logger.error("writeAIMLIFFiles error", ex);
-            }
-
-        }
-        File dir = new File(aimlif_path);
-        dir.setLastModified(new Date().getTime());
+            });
+        new File(aimlif_path).setLastModified(new Date().getTime());
     }
 
     /**
@@ -438,53 +400,31 @@ public final class Bot {
      */
     public void writeAIMLFiles() {
         logger.debug("writeAIMLFiles");
-        Map<String, BufferedWriter> fileMap = new HashMap<>();
         Category b = new Category(0, "BRAIN BUILD", "*", "*", new Date().toString(), "update.aiml");
         brain.addCategory(b);
         //b = new Category(0, "PROGRAM VERSION", "*", "*", MagicStrings.program_name_version, "update.aiml");
         //brain.addCategory(b);
-        List<Category> brainCategories = brain.getCategories();
-        Collections.sort(brainCategories, Category.CATEGORY_NUMBER_COMPARATOR);
-        for (Category c : brainCategories) {
 
-            if (!c.getFilename().equals(MagicStrings.null_aiml_file)) {
+        brain.getCategories().stream().sorted(Category.CATEGORY_NUMBER_COMPARATOR)
+            .collect(Collectors.groupingBy(Category::getFilename)).entrySet().stream()
+            .forEach(entry -> {
                 try {
-                    //System.out.println("Writing "+c.getCategoryNumber()+" "+c.inputThatTopic());
-                    BufferedWriter bw;
-                    String fileName = c.getFilename();
-                    if (fileMap.containsKey(fileName)) {
-                        bw = fileMap.get(fileName);
-                    } else {
-                        String copyright = Utilities.getCopyright(this, fileName);
-                        bw = new BufferedWriter(new FileWriter(aiml_path + "/" + fileName));
-                        fileMap.put(fileName, bw);
-                        bw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + "\n" +
-                            "<aiml>\n");
-                        bw.write(copyright);
-                        //bw.newLine();
-                    }
-                    bw.write(Category.categoryToAIML(c) + "\n");
-                    //bw.newLine();
-                } catch (Exception ex) {
-                    logger.error("writeAIMLFiles error", ex);
+                    Files.write(Paths.get(aiml_path, entry.getKey()),
+                        aimlFileContent(entry.getKey(), entry.getValue()));
+                } catch (IOException e) {
+                    logger.error("writeAIMLFiles error", e);
                 }
-            }
-        }
-        for (BufferedWriter bw : fileMap.values()) {
-            //Close the bw
-            try {
-                if (bw != null) {
-                    bw.write("</aiml>\n");
-                    bw.flush();
-                    bw.close();
-                }
-            } catch (IOException ex) {
-                logger.error("writeAIMLFiles error", ex);
-            }
+            });
+        new File(aiml_path).setLastModified(new Date().getTime());
+    }
 
-        }
-        File dir = new File(aiml_path);
-        dir.setLastModified(new Date().getTime());
+    Iterable<String> aimlFileContent(String fileName, List<Category> categories) {
+        return Stream.of(
+            Stream.of("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "<aiml>"),
+            Stream.of(Utilities.getCopyright(this, fileName)),
+            categories.stream().map(Category::categoryToAIML),
+            Stream.of("</aiml>")
+        ).flatMap(a -> a)::iterator;
     }
 
     /**

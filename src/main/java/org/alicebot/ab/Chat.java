@@ -130,12 +130,12 @@ public class Chat {
             //Construct the bw object
             BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true));
             String request = "SET PREDICATES";
-            String response = multisentenceRespond(request);
+            multisentenceRespond(request);
             while (!"quit".equals(request)) {
                 //noinspection UseOfSystemOutOrSystemErr
                 System.out.print("Human: ");
                 request = IOUtils.readInputTextLine();
-                response = multisentenceRespond(request);
+                String response = multisentenceRespond(request);
                 //noinspection UseOfSystemOutOrSystemErr
                 System.out.println("Robot: " + response);
                 bw.write("Human: " + request);

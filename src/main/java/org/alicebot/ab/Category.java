@@ -235,23 +235,21 @@ public class Category {
     /**
      * convert a Category object to AIMLIF format
      *
-     * @param category Category object
      * @return category in AIML format
      */
-    public static String categoryToIF(Category category) {
+    public String categoryToIF() {
         //System.out.println("categoryToIF: template="+templateToLine(category.getTemplate()));
         String c = MagicStrings.aimlif_split_char;
-        return category.getActivationCnt() + c + category.getPattern() + c + category.getThat() + c + category.getTopic() + c + templateToLine(category.getTemplate()) + c + category.getFilename();
+        return getActivationCnt() + c + getPattern() + c + getThat() + c + getTopic() + c + templateToLine(getTemplate()) + c + getFilename();
     }
 
     /**
      * convert a Category object to AIML syntax
      *
-     * @param category Category object
      * @return AIML Category
      */
-    public static String categoryToAIML(Category category) {
-        String pattern = category.getPattern();
+    public String categoryToAIML() {
+        String pattern = getPattern();
         if (pattern.contains("<SET>") || pattern.contains("<BOT")) {
             String[] splitPattern = pattern.split(" ");
             StringBuilder rpattern = new StringBuilder();
@@ -269,14 +267,14 @@ public class Category {
         try {
             String topicStart = "";
             String topicEnd = "";
-            if (!"*".equals(category.getTopic())) {
-                topicStart = "<topic name=\"" + category.getTopic() + "\">" + NL;
+            if (!"*".equals(getTopic())) {
+                topicStart = "<topic name=\"" + getTopic() + "\">" + NL;
                 topicEnd = "</topic>" + NL;
             }
             String thatStatement = "";
-            if (!"*".equals(category.getThat())) { thatStatement = "<that>" + category.getThat() + "</that>";}
+            if (!"*".equals(getThat())) { thatStatement = "<that>" + getThat() + "</that>";}
             result = topicStart + "<category><pattern>" + pattern + "</pattern>" + thatStatement + NL +
-                "<template>" + category.getTemplate() + "</template>" + NL +
+                "<template>" + getTemplate() + "</template>" + NL +
                 "</category>" + topicEnd;
         } catch (Exception ex) {
             logger.error("categoryToAIML error", ex);

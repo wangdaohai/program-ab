@@ -101,7 +101,7 @@ public final class Utilities {
         } catch (Exception e) {
             logger.error("getCopyright error", e);
         }
-        return copyright + "<!--  -->\n";
+        return copyright + "<!--  -->";
     }
 
     public static String getPannousAPIKey(Bot bot) {
