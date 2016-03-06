@@ -27,12 +27,12 @@ public final class MagicBooleans {
     private MagicBooleans() {}
 
     public static boolean enable_external_sets = true;
-    public static boolean enable_external_maps = true;
+    public static final boolean enable_external_maps = true;
     public static boolean jp_tokenize = false;
-    public static boolean fix_excel_csv = true;
-    public static boolean enable_network_connection = true;
+    public static final boolean fix_excel_csv = true;
+    public static final boolean enable_network_connection = true;
     public static boolean cache_sraix = false;
     public static boolean qa_test_mode = false;
-    public static boolean make_verbs_sets_maps = false;
+    public static final boolean make_verbs_sets_maps = false;
 
 }
