@@ -3,7 +3,6 @@ package org.alicebot.ab;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -84,7 +83,7 @@ public final class Verbs {
     public static void getIrregulars() {
         // Do, Did, Done, Does, Doing
         // be, was, been, is, being
-        Utilities.lines(new File("c:/ab/data/irrverbs.txt"))
+        Utilities.lines(MagicStrings.rootPath.resolve("data/irrverbs.txt"))
             .map(String::toLowerCase).map(l -> l.split(",")).filter(l -> l.length == 5)
             .forEach(triple -> {
                 irregular.add(triple[0]);
@@ -98,7 +97,7 @@ public final class Verbs {
 
     public static void makeVerbSetsMaps(Bot bot) {
         getIrregulars();
-        Utilities.lines(new File("c:/ab/data/verb300.txt"))
+        Utilities.lines(MagicStrings.rootPath.resolve("data/verb300.txt"))
             .forEachOrdered(allVerbs::add);
         AIMLSet be = new AIMLSet("be");
         AIMLSet is = new AIMLSet("is");

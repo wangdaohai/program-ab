@@ -22,8 +22,8 @@ package org.alicebot.ab;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 /**
@@ -45,11 +45,11 @@ public class PreProcessor {
      * @param bot AIML bot
      */
     public PreProcessor(Bot bot) {
-        normalSubstitutions = new SubstitutionList(bot.config_path, "normal.txt");
-        denormalSubstitutions = new SubstitutionList(bot.config_path, "denormal.txt");
-        personSubstitutions = new SubstitutionList(bot.config_path, "person.txt");
-        person2Substitutions = new SubstitutionList(bot.config_path, "person2.txt");
-        genderSubstitutions = new SubstitutionList(bot.config_path, "gender.txt");
+        normalSubstitutions = new SubstitutionList(bot.configPath, "normal.txt");
+        denormalSubstitutions = new SubstitutionList(bot.configPath, "denormal.txt");
+        personSubstitutions = new SubstitutionList(bot.configPath, "person.txt");
+        person2Substitutions = new SubstitutionList(bot.configPath, "person2.txt");
+        genderSubstitutions = new SubstitutionList(bot.configPath, "gender.txt");
     }
 
     /**
@@ -133,7 +133,7 @@ public class PreProcessor {
      */
     public void normalizeFile(String infile, String outfile) {
         try {
-            Stream<String> sentenceStream = Files.lines(new File(infile).toPath())
+            Stream<String> sentenceStream = Files.lines(Paths.get(infile))
                 .map(String::trim).filter(l -> !l.isEmpty())
                 .flatMap(strLine -> {
                     String norm = normalize(strLine).toUpperCase();
@@ -146,7 +146,7 @@ public class PreProcessor {
                     return Stream.of(sentences);
                 }).map(String::trim).filter(s -> !s.isEmpty());
 
-            Files.write(new File(outfile).toPath(), (Iterable<String>) sentenceStream::iterator);
+            Files.write(Paths.get(outfile), (Iterable<String>) sentenceStream::iterator);
         } catch (Exception ex) {
             logger.error("normalizeFile error", ex);
         }

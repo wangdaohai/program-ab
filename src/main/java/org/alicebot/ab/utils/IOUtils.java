@@ -6,6 +6,9 @@ import org.slf4j.LoggerFactory;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
 public class IOUtils {
 
@@ -14,13 +17,12 @@ public class IOUtils {
     BufferedReader reader;
     BufferedWriter writer;
 
-    public IOUtils(String filePath, String mode) {
+    public IOUtils(Path filePath, String mode) {
         try {
             if ("read".equals(mode)) {
-                reader = new BufferedReader(new FileReader(filePath));
+                reader = Files.newBufferedReader(filePath);
             } else if ("write".equals(mode)) {
-                (new File(filePath)).delete();
-                writer = new BufferedWriter(new FileWriter(filePath, true));
+                writer = Files.newBufferedWriter(filePath, StandardOpenOption.TRUNCATE_EXISTING);
             }
         } catch (IOException e) {
             logger.error("IOUtils error", e);

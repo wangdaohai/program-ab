@@ -22,8 +22,8 @@ package org.alicebot.ab;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -110,8 +110,8 @@ public class AIMLMap {
         logger.info("Writing AIML Map {}", mapName);
         try {
             Stream<String> lines = valueMap.keySet().stream().map(String::trim).map(p -> p + ":" + get(p).trim());
-            File mapFile = new File(bot.maps_path, mapName + ".txt");
-            Files.write(mapFile.toPath(), (Iterable<String>) lines::iterator);
+            Path mapFile = bot.mapsPath.resolve(mapName + ".txt");
+            Files.write(mapFile, (Iterable<String>) lines::iterator);
         } catch (Exception e) {
             logger.error("writeMap error", e);
         }
@@ -142,16 +142,16 @@ public class AIMLMap {
      * @param bot the bot associated with this map.
      */
     public long readMap(Bot bot) {
+        Path path = bot.mapsPath.resolve(mapName + ".txt");
         try {
-            File file = new File(bot.maps_path, mapName + ".txt");
-            logger.debug("Reading AIML Map {}", file);
-            if (file.exists()) {
-                return readFromStream(Files.lines(file.toPath()));
+            logger.debug("Reading AIML Map {}", path);
+            if (path.toFile().exists()) {
+                return readFromStream(Files.lines(path));
             } else {
-                logger.info("{} not found", file);
+                logger.info("{} not found", path);
             }
         } catch (Exception e) {
-            logger.error("readMap error", e);
+            logger.error("readMap error for file {}", path, e);
         }
         return 0;
 

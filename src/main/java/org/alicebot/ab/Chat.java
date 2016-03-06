@@ -6,9 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 /* Program AB Reference AIML 2.0 implementation
         Copyright (C) 2013 ALICE A.I. Foundation
@@ -90,7 +89,7 @@ public class Chat {
      */
     void addPredicates() {
         try {
-            predicates.getPredicateDefaults(bot.config_path + "/predicates.txt");
+            predicates.getPredicateDefaults(bot.configPath.resolve("predicates.txt"));
         } catch (Exception ex) {
             logger.error("addPredicates error", ex);
         }
@@ -100,12 +99,12 @@ public class Chat {
      * Load Triple Store knowledge base
      */
     void addTriples() {
-        File f = new File(bot.config_path, "triples.txt");
-        logger.debug("Loading Triples from {}", f);
+        Path path = bot.configPath.resolve("triples.txt");
+        logger.debug("Loading Triples from {}", path);
         int tripleCnt = 0;
-        if (f.exists()) {
+        if (path.toFile().exists()) {
             try {
-                tripleCnt = (int) Files.lines(f.toPath())
+                tripleCnt = (int) Files.lines(path)
                     .map(l -> l.split(":")).filter(triple -> triple.length >= 3)
                     .peek(triple -> {
                         String subject = triple[0];
@@ -125,10 +124,10 @@ public class Chat {
      * Chat session terminal interaction
      */
     public void chat() {
-        String logFile = bot.log_path + "/log_" + customerId + ".txt";
+        Path logFile = bot.logPath.resolve("log_" + customerId + ".txt");
         try {
             //Construct the bw object
-            BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true));
+            BufferedWriter bw = Files.newBufferedWriter(logFile);
             String request = "SET PREDICATES";
             multisentenceRespond(request);
             while (!"quit".equals(request)) {

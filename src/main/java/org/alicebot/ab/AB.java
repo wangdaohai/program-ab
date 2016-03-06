@@ -24,8 +24,8 @@ import org.alicebot.ab.utils.LogUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -46,7 +46,7 @@ public final class AB {
     public boolean filter_wild_mode = false;
     public boolean offer_alice_responses = true;
 
-    public String logfile = MagicStrings.root_path + "/data/" + MagicStrings.ab_sample_file; //normal.txt";
+    private final Path logFile;
 
     public int runCompletedCnt;
     public Bot bot;
@@ -61,9 +61,8 @@ public final class AB {
     public static int limit = 500000;
 
     public AB(Bot bot, String sampleFile) {
-        MagicStrings.ab_sample_file = sampleFile;
-        logfile = MagicStrings.root_path + "/data/" + MagicStrings.ab_sample_file;
-        logger.info("AB with sample file {}", logfile);
+        logFile = MagicStrings.rootPath.resolve("data").resolve(sampleFile);
+        logger.info("AB with sample file {}", logFile);
         this.bot = bot;
         this.inputGraph = new Graphmaster(bot, "input");
         this.deletedGraph = new Graphmaster(bot, "deleted");
@@ -152,20 +151,18 @@ public final class AB {
     public void abwq() {
         Timer timer = new Timer();
         timer.start();
-        classifyInputs(logfile);
+        classifyInputs();
         logger.info("{} classifying inputs", timer.elapsedTimeSecs());
         bot.writeQuit();
     }
 
     /**
-     * read sample inputs from filename, turn them into Paths, and
+     * read sample inputs from log file, turn them into Paths, and
      * add them to the graph.
-     *
-     * @param filename file containing sample inputs
      */
-    public void graphInputs(String filename) {
+    public void graphInputs() {
         try {
-            Files.lines(new File(filename).toPath()).limit(limit).forEach(strLine -> {
+            Files.lines(logFile).limit(limit).forEach(strLine -> {
                 //strLine = preProcessor.normalize(strLine);
                 Category c = new Category(0, strLine, "*", "*", "nothing", MagicStrings.unknown_aiml_file);
                 Nodemapper node = inputGraph.findNode(c);
@@ -248,13 +245,10 @@ public final class AB {
 
     /**
      * classify inputs into matching categories
-     *
-     * @param filename file containing sample normalized inputs
      */
-
-    public void classifyInputs(String filename) {
+    public void classifyInputs() {
         try {
-            long count = Files.lines(new File(filename).toPath())
+            long count = Files.lines(logFile)
                 .map(l -> l.startsWith("Human: ") ? l.substring("Human: ".length()) : l)
                 .flatMap(l -> Stream.of(bot.preProcessor.sentenceSplit(l)))
                 .filter(s -> !s.isEmpty())
@@ -282,7 +276,6 @@ public final class AB {
      * Classifies input log into those new patterns.
      */
     public void ab() {
-        String logFile = logfile;
         LogUtil.activateDebug(false);
         MagicBooleans.enable_external_sets = false;
         if (offer_alice_responses) { alice = new Bot("alice"); }
@@ -291,7 +284,7 @@ public final class AB {
         if (bot.brain.getCategories().size() < MagicNumbers.brain_print_size) { bot.brain.printgraph(); }
         timer.start();
         logger.info("Graphing inputs");
-        graphInputs(logFile);
+        graphInputs();
         logger.info("{} seconds Graphing inputs", timer.elapsedTimeSecs());
         inputGraph.nodeStats();
         if (inputGraph.getCategories().size() < MagicNumbers.brain_print_size) { inputGraph.printgraph(); }
@@ -305,7 +298,7 @@ public final class AB {
         patternGraph.nodeStats();
         if (patternGraph.getCategories().size() < MagicNumbers.brain_print_size) { patternGraph.printgraph(); }
         logger.info("Classifying Inputs from {}", logFile);
-        classifyInputs(logFile);
+        classifyInputs();
         logger.info("{} classifying inputs", timer.elapsedTimeSecs());
     }
 

@@ -19,6 +19,8 @@ package org.alicebot.ab;
         Boston, MA  02110-1301, USA.
 */
 
+import java.nio.file.Paths;
+
 /**
  * Global values for many strings in Program AB
  */
@@ -34,7 +36,6 @@ public final class MagicStrings {
     public static final String default_language = "EN";
     public static final String aimlif_split_char_name = "\\#Comma";
     public static final String aimlif_file_suffix = ".csv";
-    public static String ab_sample_file = "sample.txt";
     public static final String text_comment_mark = ";;";
     // <sraix> defaults
     public static String pannous_api_key = "guest";
@@ -101,10 +102,10 @@ public final class MagicStrings {
     public static final String map_singular = "singular";
     public static final String map_plural = "plural";
     // paths
-    public static String root_path = "c:/ab";
+    public static java.nio.file.Path rootPath = Paths.get("c:/ab");
 
     public static void setRootPath(String newRootPath) {
-        root_path = newRootPath;
+        rootPath = Paths.get(newRootPath);
     }
 
     public static void setRootPath() {setRootPath(System.getProperty("user.dir"));}

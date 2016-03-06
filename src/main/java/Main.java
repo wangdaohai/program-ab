@@ -67,10 +67,10 @@ public final class Main {
                 }
             }
         }
-        logger.debug("Working Directory = {}", MagicStrings.root_path);
+        logger.debug("Working Directory = {}", MagicStrings.rootPath);
         Graphmaster.enableShortCuts = true;
         //Timer timer = new Timer();
-        Bot bot = new Bot(botName, MagicStrings.root_path, action); //
+        Bot bot = new Bot(botName, MagicStrings.rootPath, action); //
         //EnglishNumberToWords.makeSetMap(bot);
         //getGloss(bot, "c:/ab/data/wn30-lfs/wne-2006-12-06.xml");
         if (MagicBooleans.make_verbs_sets_maps) { Verbs.makeVerbSetsMaps(bot); }
@@ -82,7 +82,7 @@ public final class Main {
             boolean doWrites = !"chat-app".equals(action);
             TestAB.testChat(bot, doWrites);
         }
-        //else if (action.equals("test")) testSuite(bot, MagicStrings.root_path+"/data/find.txt");
+        //else if (action.equals("test")) testSuite(bot, MagicStrings.rootPath+"/data/find.txt");
         else if ("ab".equals(action)) {
             TestAB.testAB(bot, TestAB.sample_file);
         } else if ("aiml2csv".equals(action) || "csv2aiml".equals(action)) {

@@ -22,8 +22,8 @@ package org.alicebot.ab;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.AbstractCollection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -104,8 +104,8 @@ public class AIMLSet extends AbstractCollection<String> {
         logger.info("Writing AIML Set {}", setName);
         try {
             Stream<String> lines = valueSet.stream().map(String::trim);
-            File setFile = new File(bot.sets_path, setName + ".txt");
-            Files.write(setFile.toPath(), (Iterable<String>) lines::iterator);
+            Path setFile = bot.setsPath.resolve(setName + ".txt");
+            Files.write(setFile, (Iterable<String>) lines::iterator);
         } catch (Exception e) {
             logger.error("writeSet error", e);
         }
@@ -138,16 +138,16 @@ public class AIMLSet extends AbstractCollection<String> {
     }
 
     public long readSet(Bot bot) {
-        File file = new File(bot.sets_path, setName + ".txt");
+        Path path = bot.setsPath.resolve(setName + ".txt");
         try {
-            logger.debug("Reading AIML Set {}", file);
-            if (file.exists()) {
-                return readFromStream(Files.lines(file.toPath()));
+            logger.debug("Reading AIML Set {}", path);
+            if (path.toFile().exists()) {
+                return readFromStream(Files.lines(path));
             } else {
-                logger.warn("{} not found", file);
+                logger.warn("{} not found", path);
             }
         } catch (Exception e) {
-            logger.error("readSet error for file {}", file, e);
+            logger.error("readSet error for file {}", path, e);
         }
         return 0;
     }

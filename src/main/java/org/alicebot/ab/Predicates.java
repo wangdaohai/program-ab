@@ -23,8 +23,8 @@ import org.alicebot.ab.utils.JapaneseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -75,16 +75,15 @@ public class Predicates {
     /**
      * read predicate defaults from a file
      *
-     * @param filename name of file
+     * @param path name of file
      */
-    public void getPredicateDefaults(String filename) {
+    public void getPredicateDefaults(Path path) {
         try {
-            File file = new File(filename);
-            if (!file.exists()) {
-                logger.warn("{} does not exist", file);
+            if (!path.toFile().exists()) {
+                logger.warn("{} does not exist", path);
                 return;
             }
-            Files.lines(file.toPath()).filter(l -> l.contains(":")).forEach(strLine -> {
+            Files.lines(path).filter(l -> l.contains(":")).forEach(strLine -> {
                 String property = strLine.substring(0, strLine.indexOf(':'));
                 String value = strLine.substring(strLine.indexOf(':') + 1);
                 put(property, value);

@@ -24,8 +24,7 @@ public final class DomUtils {
 
     private DomUtils() {}
 
-    public static Node parseFile(String fileName) throws SAXException, IOException, ParserConfigurationException {
-        File file = new File(fileName);
+    public static Node parseFile(File file) throws SAXException, IOException, ParserConfigurationException {
         return parseDoc(documentBuilder().parse(file));
     }
 

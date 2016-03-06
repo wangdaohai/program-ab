@@ -27,7 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -286,7 +285,7 @@ public final class Sraix {
                     template = template.replaceAll("<a(.*)</a>", "");
                     template = template.trim();
                     if (!template.isEmpty()) {
-                        Files.write(Paths.get("c:/ab/bots/sraixcache/aimlif/sraixcache.aiml.csv"),
+                        Files.write(MagicStrings.rootPath.resolve("bots/sraixcache/aimlif/sraixcache.aiml.csv"),
                             Arrays.asList("0," + pattern + ",*,*," + template + ",sraixcache.aiml"),
                             StandardOpenOption.APPEND);
                     }

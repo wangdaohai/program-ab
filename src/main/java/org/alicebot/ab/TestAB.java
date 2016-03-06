@@ -5,8 +5,8 @@ import org.alicebot.ab.utils.LogUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * @since 5/13/2014.
@@ -33,7 +33,7 @@ public final class TestAB {
                 bot.writeQuit();
                 System.exit(0);
             } else if ("sc".equals(textLine)) {
-                sraixCache("c:/ab/data/sraixdata6.txt", chatSession);
+                sraixCache(MagicStrings.rootPath.resolve("data/sraixdata6.txt"), chatSession);
             } else if ("iqtest".equals(textLine)) {
                 ChatTest ct = new ChatTest(bot);
                 try {
@@ -74,10 +74,10 @@ public final class TestAB {
         Chat chatSession = new Chat(bot, false);
         //        bot.preProcessor.normalizeFile("c:/ab/bots/super/aiml/thats.txt", "c:/ab/bots/super/aiml/normalthats.txt");
         bot.brain.nodeStats();
-        IOUtils testInput = new IOUtils(MagicStrings.root_path + "/data/lognormal-500.txt", "read");
-        //IOUtils testInput = new IOUtils(MagicStrings.root_path + "/data/callmom-inputs.txt", "read");
-        IOUtils testOutput = new IOUtils(MagicStrings.root_path + "/data/lognormal-500-out.txt", "write");
-        //IOUtils testOutput = new IOUtils(MagicStrings.root_path + "/data/callmom-outputs.txt", "write");
+        IOUtils testInput = new IOUtils(MagicStrings.rootPath.resolve("data").resolve("lognormal-500.txt"), "read");
+        //IOUtils testInput = new IOUtils(MagicStrings.rootPath + "/data/callmom-inputs.txt", "read");
+        IOUtils testOutput = new IOUtils(MagicStrings.rootPath.resolve("data").resolve("lognormal-500-out.txt"), "write");
+        //IOUtils testOutput = new IOUtils(MagicStrings.rootPath + "/data/callmom-outputs.txt", "write");
         String textLine = testInput.readLine();
         int i = 1;
         System.out.print(0);
@@ -135,10 +135,10 @@ public final class TestAB {
         //bot.brain.nodeStats();
     }
 
-    public static void sraixCache(String filename, Chat chatSession) {
+    public static void sraixCache(Path path, Chat chatSession) {
         MagicBooleans.cache_sraix = true;
         try {
-            Files.lines(new File(filename).toPath()).limit(650000).forEach(strLine -> {
+            Files.lines(path).limit(650000).forEach(strLine -> {
                 logger.info("Human: {}", strLine);
                 String response = chatSession.multisentenceRespond(strLine);
                 logger.info("Robot: {}", response);

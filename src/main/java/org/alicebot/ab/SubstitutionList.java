@@ -3,8 +3,8 @@ package org.alicebot.ab;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -22,13 +22,13 @@ public class SubstitutionList {
         this.substitutions = substitutions;
     }
 
-    public SubstitutionList(String folder, String filename) {
-        this(read(new File(folder, filename)));
+    public SubstitutionList(Path folder, String filename) {
+        this(read(folder.resolve(filename)));
     }
 
-    private static List<Substitution> read(File file) {
+    private static List<Substitution> read(Path path) {
         try {
-            return Files.lines(file.toPath()).map(String::trim)
+            return Files.lines(path).map(String::trim)
                 .filter(l -> !l.startsWith(MagicStrings.text_comment_mark))
                 .map(linePattern::matcher).filter(Matcher::find).limit(MagicNumbers.max_substitutions)
                 .map(matcher -> {
@@ -38,7 +38,7 @@ public class SubstitutionList {
                     return new Substitution(pattern, matcher.group(2));
                 }).collect(Collectors.toList());
         } catch (Exception e) {
-            logger.error("Failed to read substitutions from {}", file, e);
+            logger.error("Failed to read substitutions from {}", path, e);
             return Collections.emptyList();
         }
     }

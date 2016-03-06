@@ -22,8 +22,8 @@ package org.alicebot.ab;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,17 +51,16 @@ public class Properties {
     /**
      * Read bot properties from a file.
      *
-     * @param filename file containing bot properties
+     * @param path file containing bot properties
      */
-    public void getProperties(String filename) {
-        logger.debug("Get Properties: {}", filename);
+    public void getProperties(Path path) {
+        logger.debug("Get Properties: {}", path);
         try {
-            File file = new File(filename);
-            if (!file.exists()) {
-                logger.warn("{} does not exist", file);
+            if (!path.toFile().exists()) {
+                logger.warn("{} does not exist", path);
                 return;
             }
-            Files.lines(file.toPath()).filter(l -> l.contains(":")).forEach(strLine -> {
+            Files.lines(path).filter(l -> l.contains(":")).forEach(strLine -> {
                 String property = strLine.substring(0, strLine.indexOf(':'));
                 String value = strLine.substring(strLine.indexOf(':') + 1);
                 properties.put(property, value);

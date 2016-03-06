@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -53,42 +53,12 @@ public final class Bot {
     public Map<String, AIMLSet> setMap = new HashMap<>();
     public Map<String, AIMLMap> mapMap = new HashMap<>();
     public Set<String> pronounSet = new HashSet<>();
-    public String root_path = "c:/ab";
-    public String bot_path = root_path + "/bots";
-    public String bot_name_path = bot_path + "/super";
-    public String aimlif_path = bot_path + "/aimlif";
-    public String aiml_path = bot_path + "/aiml";
-    public String config_path = bot_path + "/config";
-    public String log_path = bot_path + "/log";
-    public String sets_path = bot_path + "/sets";
-    public String maps_path = bot_path + "/maps";
-
-    /**
-     * Set all directory path variables for this bot
-     *
-     * @param root root directory of Program AB
-     * @param name name of bot
-     */
-    public void setAllPaths(String root, String name) {
-        bot_path = root + "/bots";
-        bot_name_path = bot_path + "/" + name;
-        logger.debug("Name = {} Path = {}", name, bot_name_path);
-        aiml_path = bot_name_path + "/aiml";
-        aimlif_path = bot_name_path + "/aimlif";
-        config_path = bot_name_path + "/config";
-        log_path = bot_name_path + "/logs";
-        sets_path = bot_name_path + "/sets";
-        maps_path = bot_name_path + "/maps";
-        logger.debug(root_path);
-        logger.debug(bot_path);
-        logger.debug(bot_name_path);
-        logger.debug(aiml_path);
-        logger.debug(aimlif_path);
-        logger.debug(config_path);
-        logger.debug(log_path);
-        logger.debug(sets_path);
-        logger.debug(maps_path);
-    }
+    private final Path aimlifPath;
+    private final Path aimlPath;
+    public final Path configPath;
+    public final Path logPath;
+    public final Path setsPath;
+    public final Path mapsPath;
 
     /**
      * Constructor (default action, default path, default bot name)
@@ -101,26 +71,35 @@ public final class Bot {
      * Constructor (default action, default path)
      */
     public Bot(String name) {
-        this(name, MagicStrings.root_path);
+        this(name, MagicStrings.rootPath);
     }
 
     /**
      * Constructor (default action)
      */
-    public Bot(String name, String path) {
+    public Bot(String name, java.nio.file.Path path) {
         this(name, path, "auto");
     }
 
     /**
      * Constructor
      *
-     * @param name   name of bot
-     * @param path   root path of Program AB
-     * @param action Program AB action
+     * @param name     name of bot
+     * @param rootPath root path of Program AB
+     * @param action   Program AB action
      */
-    public Bot(String name, String path, String action) {
+    public Bot(String name, java.nio.file.Path rootPath, String action) {
         this.name = name;
-        setAllPaths(path, name);
+        Path botPath = rootPath.resolve("bots").resolve(name);
+        logger.debug("Name = {} Path = {}", name, botPath);
+        aimlPath = botPath.resolve("aiml");
+        aimlifPath = botPath.resolve("aimlif");
+        configPath = botPath.resolve("config");
+        logPath = botPath.resolve("logs");
+        setsPath = botPath.resolve("sets");
+        mapsPath = botPath.resolve("maps");
+        logger.debug("Bot path: {}", botPath);
+
         this.brain = new Graphmaster(this);
 
         this.learnfGraph = new Graphmaster(this, "learnf");
@@ -146,8 +125,8 @@ public final class Bot {
         AIMLMap plural = new AIMLMap(MagicStrings.map_plural);
         mapMap.put(MagicStrings.map_plural, plural);
         //System.out.println("setMap = "+setMap);
-        Instant aimlDate = Instant.ofEpochMilli(new File(aiml_path).lastModified());
-        Instant aimlIFDate = Instant.ofEpochMilli(new File(aimlif_path).lastModified());
+        Instant aimlDate = Instant.ofEpochMilli(aimlPath.toFile().lastModified());
+        Instant aimlIFDate = Instant.ofEpochMilli(aimlifPath.toFile().lastModified());
         logger.debug("AIML modified {} AIMLIF modified {}", aimlDate, aimlIFDate);
         //readUnfinishedIFCategories();
         MagicStrings.pannous_api_key = Utilities.getPannousAPIKey(this);
@@ -178,7 +157,7 @@ public final class Bot {
     }
 
     Set<String> getPronouns() {
-        Set<String> pronounSet = Utilities.lines(new File(config_path, "pronouns.txt"))
+        Set<String> pronounSet = Utilities.lines(configPath.resolve("pronouns.txt"))
             .map(String::trim).filter(p -> !p.isEmpty()).collect(Collectors.toSet());
         logger.debug("Read pronouns: {}", pronounSet);
         return pronounSet;
@@ -226,17 +205,17 @@ public final class Bot {
         int cnt = 0;
         try {
             // Directory path here
-            File folder = new File(aiml_path);
+            File folder = aimlPath.toFile();
             if (folder.exists()) {
                 File[] listOfFiles = IOUtils.listFiles(folder);
-                logger.debug("Loading AIML files from {}", aiml_path);
+                logger.debug("Loading AIML files from {}", aimlPath);
                 for (File listOfFile : listOfFiles) {
                     if (listOfFile.isFile()) {
                         String file = listOfFile.getName();
                         if (file.endsWith(".aiml") || file.endsWith(".AIML")) {
                             logger.debug(file);
                             try {
-                                List<Category> moreCategories = AIMLProcessor.AIMLToCategories(aiml_path, file);
+                                List<Category> moreCategories = AIMLProcessor.AIMLToCategories(aimlPath, file);
                                 addMoreCategories(file, moreCategories);
                                 cnt += moreCategories.size();
                             } catch (Exception iex) {
@@ -264,17 +243,17 @@ public final class Bot {
         int cnt = 0;
         try {
             // Directory path here
-            File folder = new File(aimlif_path);
+            File folder = aimlifPath.toFile();
             if (folder.exists()) {
                 File[] listOfFiles = IOUtils.listFiles(folder);
-                logger.debug("Loading AIML files from {}", aimlif_path);
+                logger.debug("Loading AIML files from {}", aimlifPath);
                 for (File listOfFile : listOfFiles) {
                     if (listOfFile.isFile()) {
                         String file = listOfFile.getName();
                         if (file.endsWith(MagicStrings.aimlif_file_suffix) || file.endsWith(MagicStrings.aimlif_file_suffix.toUpperCase())) {
                             logger.debug(file);
                             try {
-                                List<Category> moreCategories = readIFCategories(aimlif_path + "/" + file);
+                                List<Category> moreCategories = readIFCategories(aimlifPath.resolve(file));
                                 cnt += moreCategories.size();
                                 addMoreCategories(file, moreCategories);
                                 //   MemStats.memStats();
@@ -314,10 +293,10 @@ public final class Bot {
      * @param fileName file name of AIMLIF file
      */
     public void readCertainIFCategories(Graphmaster graph, String fileName) {
-        File file = new File(aimlif_path, fileName + MagicStrings.aimlif_file_suffix);
+        File file = aimlifPath.resolve(fileName + MagicStrings.aimlif_file_suffix).toFile();
         if (file.exists()) {
             try {
-                List<Category> certainCategories = readIFCategories(aimlif_path + "/" + fileName + MagicStrings.aimlif_file_suffix);
+                List<Category> certainCategories = readIFCategories(aimlifPath.resolve(fileName + MagicStrings.aimlif_file_suffix));
                 certainCategories.forEach(graph::addCategory);
                 int cnt = certainCategories.size();
                 logger.info("readCertainIFCategories {} categories from {}", cnt, file);
@@ -338,8 +317,7 @@ public final class Bot {
     public void writeCertainIFCategories(Graphmaster graph, String file) {
         logger.debug("writeCertainIFCaegories {} size= {}", file, graph.getCategories().size());
         writeIFCategories(graph.getCategories(), file + MagicStrings.aimlif_file_suffix);
-        File dir = new File(aimlif_path);
-        dir.setLastModified(new Date().getTime());
+        aimlifPath.toFile().setLastModified(new Date().getTime());
     }
 
     /**
@@ -364,9 +342,9 @@ public final class Bot {
      */
     public void writeIFCategories(List<Category> cats, String filename) {
         //System.out.println("writeIFCategories "+filename);
-        if (new File(aimlif_path).exists()) {
+        if (aimlifPath.toFile().exists()) {
             try {
-                Files.write(Paths.get(aimlif_path, filename),
+                Files.write(aimlifPath.resolve(filename),
                     (Iterable<String>) cats.stream().map(Category::categoryToIF)::iterator);
             } catch (IOException ex) {
                 logger.error("writeIFCategories error", ex);
@@ -386,13 +364,13 @@ public final class Bot {
             .forEach(entry -> {
                 try {
                     Stream<String> categoriesIF = entry.getValue().stream().map(Category::categoryToIF);
-                    Files.write(Paths.get(aimlif_path, entry.getKey() + MagicStrings.aimlif_file_suffix),
+                    Files.write(aimlifPath.resolve(entry.getKey() + MagicStrings.aimlif_file_suffix),
                         (Iterable<String>) categoriesIF::iterator);
                 } catch (IOException e) {
                     logger.error("writeAIMLIFFiles error", e);
                 }
             });
-        new File(aimlif_path).setLastModified(new Date().getTime());
+        aimlifPath.toFile().setLastModified(new Date().getTime());
     }
 
     /**
@@ -409,13 +387,13 @@ public final class Bot {
             .collect(Collectors.groupingBy(Category::getFilename)).entrySet().stream()
             .forEach(entry -> {
                 try {
-                    Files.write(Paths.get(aiml_path, entry.getKey()),
+                    Files.write(aimlPath.resolve(entry.getKey()),
                         aimlFileContent(entry.getKey(), entry.getValue()));
                 } catch (IOException e) {
                     logger.error("writeAIMLFiles error", e);
                 }
             });
-        new File(aiml_path).setLastModified(new Date().getTime());
+        aimlPath.toFile().setLastModified(new Date().getTime());
     }
 
     Iterable<String> aimlFileContent(String fileName, List<Category> categories) {
@@ -432,7 +410,7 @@ public final class Bot {
      */
     void addProperties() {
         try {
-            properties.getProperties(config_path + "/properties.txt");
+            properties.getProperties(configPath.resolve("properties.txt"));
         } catch (Exception ex) {
             logger.error("addProperties error", ex);
         }
@@ -441,16 +419,16 @@ public final class Bot {
     /**
      * read AIMLIF categories from a file into bot brain
      *
-     * @param filename name of AIMLIF file
+     * @param path name of AIMLIF file
      * @return array list of categories read
      */
-    public List<Category> readIFCategories(String filename) {
+    public List<Category> readIFCategories(Path path) {
         try {
-            return Files.lines(new File(filename).toPath()).map(strLine -> {
+            return Files.lines(path).map(strLine -> {
                 try {
                     return Category.IFToCategory(strLine);
                 } catch (Exception ex) {
-                    logger.error("Invalid AIMLIF in {} line {}", filename, strLine, ex);
+                    logger.error("Invalid AIMLIF in {} line {}", path, strLine, ex);
                     return null;
                 }
             }).filter(c -> c != null).collect(Collectors.toList());
@@ -469,10 +447,10 @@ public final class Bot {
         long cnt = 0;
         try {
             // Directory path here
-            File folder = new File(sets_path);
+            File folder = setsPath.toFile();
             if (folder.exists()) {
                 File[] listOfFiles = IOUtils.listFiles(folder);
-                logger.debug("Loading AIML Sets files from {}", sets_path);
+                logger.debug("Loading AIML Sets files from {}", setsPath);
                 for (File listOfFile : listOfFiles) {
                     if (listOfFile.isFile()) {
                         String file = listOfFile.getName();
@@ -504,10 +482,10 @@ public final class Bot {
         long cnt = 0;
         try {
             // Directory path here
-            File folder = new File(maps_path);
+            File folder = mapsPath.toFile();
             if (folder.exists()) {
                 File[] listOfFiles = IOUtils.listFiles(folder);
-                logger.debug("Loading AIML Map files from {}", maps_path);
+                logger.debug("Loading AIML Map files from {}", mapsPath);
                 for (File listOfFile : listOfFiles) {
                     if (listOfFile.isFile()) {
                         String file = listOfFile.getName();
