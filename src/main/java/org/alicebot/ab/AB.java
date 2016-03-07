@@ -196,7 +196,7 @@ public final class AB {
      * @param partialPatternThatTopic partial pattern path
      */
     void findPatterns(Nodemapper node, String partialPatternThatTopic) {
-        if (NodemapperOperator.isLeaf(node)) {
+        if (node.isLeaf()) {
             //System.out.println("LEAF: "+node.category.getActivationCnt()+". "+partialPatternThatTopic);
             if (node.category.getActivationCnt() > MagicNumbers.node_activation_cnt) {
                 //System.out.println("LEAF: "+node.category.getActivationCnt()+". "+partialPatternThatTopic+" "+node.shortCut);    //Start writing to the output stream
@@ -221,8 +221,8 @@ public final class AB {
                 }
             }
         }
-        if (NodemapperOperator.size(node) > MagicNumbers.node_size) {
-            //System.out.println("STAR: "+NodemapperOperator.size(node)+". "+partialPatternThatTopic+" * <that> * <topic> *");
+        if (node.size() > MagicNumbers.node_size) {
+            //System.out.println("STAR: "+node.size()+". "+partialPatternThatTopic+" * <that> * <topic> *");
             starPatternCnt++;
             try {
                 Category c = new Category(0, partialPatternThatTopic + " * <THAT> * <TOPIC> *", MagicStrings.blank_template, MagicStrings.unknown_aiml_file);
@@ -236,8 +236,8 @@ public final class AB {
                 logger.error("findPatterns error", e);
             }
         }
-        for (String key : NodemapperOperator.keySet(node)) {
-            Nodemapper value = NodemapperOperator.get(node, key);
+        for (String key : node.keySet()) {
+            Nodemapper value = node.get(key);
             findPatterns(value, partialPatternThatTopic + " " + key);
         }
 

@@ -165,9 +165,9 @@ public class Graphmaster {
             node.category = category;
             node.height = Math.min(4, node.height);
             node.shortCut = true;
-        } else if (NodemapperOperator.containsKey(node, path.word)) {
+        } else if (node.containsKey(path.word)) {
             if (path.word.startsWith("<SET>")) { addSets(path.word, bot, node, category.getFilename()); }
-            Nodemapper nextNode = NodemapperOperator.get(node, path.word);
+            Nodemapper nextNode = node.get(path.word);
             addPath(nextNode, path.next, category);
             int offset = 1;
             if ("#".equals(path.word) || "^".equals(path.word)) { offset = 0; }
@@ -177,11 +177,11 @@ public class Graphmaster {
             if (path.word.startsWith("<SET>")) {
                 addSets(path.word, bot, node, category.getFilename());
             }
-            if (node.key != null) {
-                NodemapperOperator.upgrade(node);
+            if (node.isSingleton()) {
+                node.upgrade();
                 upgradeCnt++;
             }
-            NodemapperOperator.put(node, path.word, nextNode);
+            node.put(path.word, nextNode);
             addPath(nextNode, path.next, category);
             int offset = 1;
             if ("#".equals(path.word) || "^".equals(path.word)) { offset = 0; }
@@ -239,9 +239,9 @@ public class Graphmaster {
         } else if ("<THAT> * <TOPIC> *".equals(Path.pathToSentence(path).trim()) && node.shortCut && "<THAT>".equals(path.word)) {
             if (verbose) { logger.debug("findNode: shortcut, returning {}", node.category.inputThatTopic()); }
             return node;
-        } else if (NodemapperOperator.containsKey(node, path.word)) {
+        } else if (node.containsKey(path.word)) {
             if (verbose) { logger.debug("findNode: node contains {}", path.word); }
-            Nodemapper nextNode = NodemapperOperator.get(node, path.word.toUpperCase());
+            Nodemapper nextNode = node.get(path.word.toUpperCase());
             return findNode(nextNode, path.next);
         } else {
             if (verbose) { logger.debug("findNode: returning null"); }
@@ -394,7 +394,7 @@ public class Graphmaster {
      * @return matching leaf node or null if no match found
      */
     final Nodemapper nullMatch(Path path, Nodemapper node, String matchTrace) {
-        if (path == null && node != null && NodemapperOperator.isLeaf(node) && node.category != null) {
+        if (path == null && node != null && node.isLeaf() && node.category != null) {
             return node;
         } else {
             fail("null", matchTrace);
@@ -432,8 +432,8 @@ public class Graphmaster {
             //System.out.println("path.next= "+path.next+" node.get="+node.get(uword));
             matchTrace += "[" + uword + "," + uword + "]";
             Nodemapper matchedNode;
-            if (path != null && NodemapperOperator.containsKey(node, uword) &&
-                (matchedNode = match(path.next, NodemapperOperator.get(node, uword), inputThatTopic, starState, starIndex, inputStars, thatStars, topicStars, matchTrace)) != null) {
+            if (path != null && node.containsKey(uword) &&
+                (matchedNode = match(path.next, node.get(uword), inputThatTopic, starState, starIndex, inputStars, thatStars, topicStars, matchTrace)) != null) {
                 return matchedNode;
             } else {
                 fail("word", matchTrace);
@@ -448,7 +448,7 @@ public class Graphmaster {
     final Nodemapper dollarMatch(Path path, Nodemapper node, String inputThatTopic, String starState, int starIndex, String[] inputStars, String[] thatStars, String[] topicStars, String matchTrace) {
         String uword = "$" + path.word.toUpperCase();
         Nodemapper matchedNode;
-        if (path != null && NodemapperOperator.containsKey(node, uword) && (matchedNode = match(path.next, NodemapperOperator.get(node, uword), inputThatTopic, starState, starIndex, inputStars, thatStars, topicStars, matchTrace)) != null) {
+        if (path != null && node.containsKey(uword) && (matchedNode = match(path.next, node.get(uword), inputThatTopic, starState, starIndex, inputStars, thatStars, topicStars, matchTrace)) != null) {
             return matchedNode;
         } else {
             fail("dollar", matchTrace);
@@ -484,12 +484,12 @@ public class Graphmaster {
 
     final Nodemapper zeroMatch(Path path, Nodemapper node, String input, String starState, int starIndex,
                                String[] inputStars, String[] thatStars, String[] topicStars, String wildcard, String matchTrace) {
-        // System.out.println("Entering zeroMatch on "+path.word+" "+NodemapperOperator.get(node, wildcard));
+        // System.out.println("Entering zeroMatch on "+path.word+" "+node.get(wildcard));
         matchTrace += "[" + wildcard + ",]";
-        if (path != null && NodemapperOperator.containsKey(node, wildcard)) {
+        if (path != null && node.containsKey(wildcard)) {
             //System.out.println("Zero match calling setStars Prop "+MagicStrings.null_star+" = "+bot.properties.get(MagicStrings.null_star));
             setStars(bot.properties.get(MagicStrings.null_star), starIndex, starState, inputStars, thatStars, topicStars);
-            Nodemapper nextNode = NodemapperOperator.get(node, wildcard);
+            Nodemapper nextNode = node.get(wildcard);
             return match(path, nextNode, input, starState, starIndex + 1, inputStars, thatStars, topicStars, matchTrace);
         } else {
             fail("zero " + wildcard, matchTrace);
@@ -505,14 +505,14 @@ public class Graphmaster {
             return null;
         }
         try {
-            if (path != null && NodemapperOperator.containsKey(node, wildcard)) {
+            if (path != null && node.containsKey(wildcard)) {
                 matchTrace += "[" + wildcard + "," + path.word + "]";
                 String currentWord = path.word;
                 String starWords = currentWord + " ";
                 Path pathStart = path.next;
-                Nodemapper nextNode = NodemapperOperator.get(node, wildcard);
+                Nodemapper nextNode = node.get(wildcard);
                 Nodemapper matchedNode;
-                if (NodemapperOperator.isLeaf(nextNode) && !nextNode.shortCut) {
+                if (nextNode.isLeaf() && !nextNode.shortCut) {
                     matchedNode = nextNode;
                     starWords = Path.pathToSentence(path);
                     //System.out.println(starIndex+". starwords="+starWords);
@@ -547,7 +547,7 @@ public class Graphmaster {
         logger.debug("in Graphmaster.setMatch, setMatch sets ={}", node.sets);
         for (String setName : node.sets) {
             logger.debug("in Graphmaster.setMatch, setMatch trying type {}", setName);
-            Nodemapper nextNode = NodemapperOperator.get(node, "<SET>" + setName.toUpperCase() + "</SET>");
+            Nodemapper nextNode = node.get("<SET>" + setName.toUpperCase() + "</SET>");
             AIMLSet aimlSet = bot.setMap.get(setName);
             //System.out.println(aimlSet.setName + "="+ aimlSet);
             String currentWord = path.word;
@@ -586,7 +586,7 @@ public class Graphmaster {
         if (DEBUG) System.out.println("in Graphmaster.setMatch, setMatch sets ="+node.sets);
         for (String setName : node.sets) {
             if (DEBUG) System.out.println("in Graphmaster.setMatch, setMatch trying type "+setName);
-            Nodemapper nextNode = NodemapperOperator.get(node, "<SET>"+setName.toUpperCase()+"</SET>");
+            Nodemapper nextNode = node.get("<SET>"+setName.toUpperCase()+"</SET>");
             AIMLSet aimlSet = bot.setMap.get(setName);
             //System.out.println(aimlSet.setName + "="+ aimlSet);
             Nodemapper matchedNode;
@@ -638,19 +638,19 @@ public class Graphmaster {
         if (node == null) {
             logger.info("Null graph");
         } else {
-            if (NodemapperOperator.isLeaf(node) || node.shortCut) {
+            if (node.isLeaf() || node.shortCut) {
                 String template = Category.templateToLine(node.category.getTemplate());
                 template = template.substring(0, Math.min(16, template.length()));
                 if (node.shortCut) {
                     logger.info("{}({}[{}])--<THAT>-->X(1)--*-->X(1)--<TOPIC>-->X(1)--*-->{}...",
-                        partial, NodemapperOperator.size(node), node.height, template);
+                        partial, node.size(), node.height, template);
                 } else {
-                    logger.info("{}({}[{}]) {}...", partial, NodemapperOperator.size(node), node.height, template);
+                    logger.info("{}({}[{}]) {}...", partial, node.size(), node.height, template);
                 }
             }
-            for (String key : NodemapperOperator.keySet(node)) {
+            for (String key : node.keySet()) {
                 //System.out.println(key);
-                printgraph(NodemapperOperator.get(node, key), partial + "(" + NodemapperOperator.size(node) + "[" + node.height + "])--" + key + "-->");
+                printgraph(node.get(key), partial + "(" + node.size() + "[" + node.height + "])--" + key + "-->");
             }
         }
     }
@@ -666,14 +666,14 @@ public class Graphmaster {
         if (node == null) {
             return;
         }
-        if (NodemapperOperator.isLeaf(node) || node.shortCut) {
+        if (node.isLeaf() || node.shortCut) {
             if (node.category != null) {
                 categories.add(node.category);   // node.category == null when the category is deleted.
             }
         }
-        for (String key : NodemapperOperator.keySet(node)) {
+        for (String key : node.keySet()) {
             //System.out.println(key);
-            getCategories(NodemapperOperator.get(node, key), categories);
+            getCategories(node.get(key), categories);
         }
     }
 
@@ -698,17 +698,17 @@ public class Graphmaster {
 
     public void nodeStatsGraph(Nodemapper node) {
         if (node != null) {
-            //System.out.println("Counting "+node.key+ " size="+NodemapperOperator.size(node));
+            //System.out.println("Counting "+node.key+ " size="+node.size());
             nodeCnt++;
-            nodeSize += NodemapperOperator.size(node);
-            if (NodemapperOperator.size(node) == 1) { singletonCnt += 1; }
-            if (NodemapperOperator.isLeaf(node) && !node.shortCut) {
+            nodeSize += node.size();
+            if (node.size() == 1) { singletonCnt += 1; }
+            if (node.isLeaf() && !node.shortCut) {
                 leafCnt++;
             }
-            if (NodemapperOperator.size(node) > 1) { naryCnt += 1; }
+            if (node.size() > 1) { naryCnt += 1; }
             if (node.shortCut) {shortCutCnt += 1;}
-            for (String key : NodemapperOperator.keySet(node)) {
-                nodeStatsGraph(NodemapperOperator.get(node, key));
+            for (String key : node.keySet()) {
+                nodeStatsGraph(node.get(key));
             }
         }
     }
@@ -722,10 +722,10 @@ public class Graphmaster {
 
     public void getBrainVocabulary(Nodemapper node) {
         if (node != null) {
-            //System.out.println("Counting "+node.key+ " size="+NodemapperOperator.size(node));
-            for (String key : NodemapperOperator.keySet(node)) {
+            //System.out.println("Counting "+node.key+ " size="+node.size());
+            for (String key : node.keySet()) {
                 vocabulary.add(key);
-                getBrainVocabulary(NodemapperOperator.get(node, key));
+                getBrainVocabulary(node.get(key));
             }
         }
     }

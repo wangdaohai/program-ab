@@ -502,7 +502,7 @@ public final class Bot {
      * traverse graph and test all categories found in leaf nodes for shadows
      */
     void shadowChecker(Nodemapper node) {
-        if (NodemapperOperator.isLeaf(node)) {
+        if (node.isLeaf()) {
             String input = node.category.getPattern();
             input = brain.replaceBotProperties(input);
             input =
@@ -518,8 +518,8 @@ public final class Bot {
                 logger.info("SHOULD MATCH:{}", node.category.inputThatTopic());
             }
         } else {
-            for (String key : NodemapperOperator.keySet(node)) {
-                shadowChecker(NodemapperOperator.get(node, key));
+            for (String key : node.keySet()) {
+                shadowChecker(node.get(key));
             }
         }
     }

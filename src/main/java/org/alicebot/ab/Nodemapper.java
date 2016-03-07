@@ -19,27 +19,101 @@ package org.alicebot.ab;
         Boston, MA  02110-1301, USA.
 */
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-/**
- * Nodemapper data structure.  In order to minimize memory overhead this class has no methods.
- * Operations on Nodemapper objects are performed by NodemapperOperator class
- */
+/** Nodemapper data structure. */
 public class Nodemapper {
-    /*    public static int idCnt=0;
-        public int id;*/
+
     public Category category;
     public int height = MagicNumbers.max_graph_height;
     public StarBindings starBindings;
-    public Map<String, Nodemapper> map;
-    public String key;
-    public Nodemapper value;
+    private Map<String, Nodemapper> map;
+    private String key;
+    private Nodemapper value;
     public boolean shortCut = false;
     public List<String> sets;
-/*    public Nodemapper () {
-        id = idCnt++;
-    }*/
+
+    /** number of branches from node */
+    public int size() {
+        Set<String> set = new HashSet<>();
+        if (shortCut) { set.add("<THAT>"); }
+        if (key != null) { set.add(key); }
+        if (map != null) { set.addAll(map.keySet()); }
+        return set.size();
+    }
+
+    /**
+     * insert a new link from this node to another, by adding a key, value pair
+     *
+     * @param key   key word
+     * @param value word maps to this next node
+     */
+    public void put(String key, Nodemapper value) {
+        if (map != null) {
+            map.put(key, value);
+        } else { // node.type == unary_node_mapper
+            this.key = key;
+            this.value = value;
+        }
+    }
+
+    /**
+     * get the node linked to this one by the word key
+     *
+     * @param key key word to map
+     * @return the mapped node or null if the key is not found
+     */
+    public Nodemapper get(String key) {
+        if (map != null) {
+            return map.get(key);
+        } else {// node.type == unary_node_mapper
+            return key.equals(this.key) ? this.value : null;
+        }
+    }
+
+    /**
+     * check whether a node contains a particular key
+     *
+     * @param key key to test
+     * @return true or false
+     */
+    public boolean containsKey(String key) {
+        if (map != null) {
+            return map.containsKey(key);
+        } else {// node.type == unary_node_mapper
+            return key.equals(this.key);
+        }
+    }
+
+    /** get key set of a node */
+    public Set<String> keySet() {
+        if (map != null) {
+            return map.keySet();
+        }
+        if (key != null) {
+            return Collections.singleton(key);
+        }
+        return Collections.emptySet();
+    }
+
+    /** test whether a node is a leaf */
+    public boolean isLeaf() {
+        return category != null;
+    }
+
+    public boolean isSingleton() {
+        return key != null;
+    }
+
+    /** upgrade a node from a singleton to a multi-way map */
+    public void upgrade() {
+        //System.out.println("Upgrading "+id);
+        //type = MagicNumbers.hash_node_mapper;
+        map = new HashMap<>();
+        map.put(key, value);
+        key = null;
+        value = null;
+    }
 
 }
 
