@@ -36,7 +36,7 @@ public final class Main {
 
     private Main() {}
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         MagicStrings.setRootPath();
 
@@ -44,7 +44,7 @@ public final class Main {
         mainFunction(args);
     }
 
-    public static void mainFunction(String[] args) {
+    public static void mainFunction(String[] args) throws IOException {
         String botName = "alice2";
         MagicBooleans.jp_tokenize = false;
         LogUtil.activateDebug(true);

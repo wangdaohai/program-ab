@@ -5,8 +5,12 @@ import org.alicebot.ab.utils.LogUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
 /**
  * @since 5/13/2014.
@@ -49,7 +53,8 @@ public final class TestAB {
                 String response = chatSession.multisentenceRespond(textLine);
                 while (response.contains("&lt;")) { response = response.replace("&lt;", "<"); }
                 while (response.contains("&gt;")) { response = response.replace("&gt;", ">"); }
-                IOUtils.writeOutputTextLine("Robot", response);
+                //noinspection UseOfSystemOutOrSystemErr
+                System.out.println("Robot: " + response);
                 //System.out.println("Learn graph:");
                 //bot.learnGraph.printgraph();
             }
@@ -69,14 +74,15 @@ public final class TestAB {
     }
 
     @SuppressWarnings("UseOfSystemOutOrSystemErr")
-    public static void runTests(Bot bot) {
+    public static void runTests(Bot bot) throws IOException {
         MagicBooleans.qa_test_mode = true;
         Chat chatSession = new Chat(bot, false);
         //        bot.preProcessor.normalizeFile("c:/ab/bots/super/aiml/thats.txt", "c:/ab/bots/super/aiml/normalthats.txt");
         bot.brain.nodeStats();
-        IOUtils testInput = new IOUtils(MagicStrings.rootPath.resolve("data").resolve("lognormal-500.txt"), "read");
+        BufferedReader testInput = Files.newBufferedReader(MagicStrings.rootPath.resolve("data/lognormal-500.txt"));
         //IOUtils testInput = new IOUtils(MagicStrings.rootPath + "/data/callmom-inputs.txt", "read");
-        IOUtils testOutput = new IOUtils(MagicStrings.rootPath.resolve("data").resolve("lognormal-500-out.txt"), "write");
+        BufferedWriter testOutput = Files.newBufferedWriter(MagicStrings.rootPath.resolve("data/lognormal-500-out.txt"),
+            StandardOpenOption.TRUNCATE_EXISTING);
         //IOUtils testOutput = new IOUtils(MagicStrings.rootPath + "/data/callmom-outputs.txt", "write");
         String textLine = testInput.readLine();
         int i = 1;
@@ -91,14 +97,18 @@ public final class TestAB {
             } else if ("ab".equals(textLine)) {
                 testAB(bot, sample_file);
             } else if (textLine.equals(MagicStrings.null_input)) {
-                testOutput.writeLine("");
-            } else if (textLine.startsWith("#")) { testOutput.writeLine(textLine); } else {
+                testOutput.newLine();
+            } else if (textLine.startsWith("#")) {
+                testOutput.write(textLine);
+                testOutput.newLine();
+            } else {
                 logger.debug("STATE={}:THAT={}:TOPIC={}",
                     textLine, chatSession.thatHistory.get(0).get(0), chatSession.predicates.get("topic"));
                 String response = chatSession.multisentenceRespond(textLine);
                 while (response.contains("&lt;")) { response = response.replace("&lt;", "<"); }
                 while (response.contains("&gt;")) { response = response.replace("&gt;", ">"); }
-                testOutput.writeLine("Robot: " + response);
+                testOutput.write("Robot: " + response);
+                testOutput.newLine();
             }
             textLine = testInput.readLine();
 

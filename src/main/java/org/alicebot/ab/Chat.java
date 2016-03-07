@@ -131,9 +131,7 @@ public class Chat {
             String request = "SET PREDICATES";
             multisentenceRespond(request);
             while (!"quit".equals(request)) {
-                //noinspection UseOfSystemOutOrSystemErr
-                System.out.print("Human: ");
-                request = IOUtils.readInputTextLine();
+                request = IOUtils.readInputTextLine("Human");
                 String response = multisentenceRespond(request);
                 //noinspection UseOfSystemOutOrSystemErr
                 System.out.println("Robot: " + response);

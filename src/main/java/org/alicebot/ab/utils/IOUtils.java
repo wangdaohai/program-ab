@@ -5,64 +5,20 @@ import org.slf4j.LoggerFactory;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-import java.io.*;
+import javax.script.ScriptException;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.stream.Stream;
 
-public class IOUtils {
+public final class IOUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(IOUtils.class);
 
-    BufferedReader reader;
-    BufferedWriter writer;
-
-    public IOUtils(Path filePath, String mode) {
-        try {
-            if ("read".equals(mode)) {
-                reader = Files.newBufferedReader(filePath);
-            } else if ("write".equals(mode)) {
-                writer = Files.newBufferedWriter(filePath, StandardOpenOption.TRUNCATE_EXISTING);
-            }
-        } catch (IOException e) {
-            logger.error("IOUtils error", e);
-        }
-    }
-
-    public String readLine() {
-        String result = null;
-        try {
-            result = reader.readLine();
-        } catch (IOException e) {
-            logger.error("readLine error ", e);
-        }
-        return result;
-    }
-
-    public void writeLine(String line) {
-        try {
-            writer.write(line);
-            writer.newLine();
-        } catch (IOException e) {
-            logger.error("writeLine error ", e);
-        }
-    }
-
-    public void close() {
-        try {
-            if (reader != null) { reader.close(); }
-            if (writer != null) { writer.close(); }
-        } catch (IOException e) {
-            logger.error("close error ", e);
-        }
-
-    }
-
-    @SuppressWarnings("UseOfSystemOutOrSystemErr")
-    public static void writeOutputTextLine(String prompt, String text) {
-        System.out.println(prompt + ": " + text);
-    }
+    private IOUtils() {}
 
     public static String readInputTextLine() {
         return readInputTextLine(null);
@@ -118,8 +74,7 @@ public class IOUtils {
         }
     }
 
-    public static String evalScript(String engineName, String script) throws Exception {
-        //System.out.println("evaluating "+script);
+    public static String evalScript(String script) throws ScriptException {
         ScriptEngineManager mgr = new ScriptEngineManager();
         ScriptEngine engine = mgr.getEngineByName("JavaScript");
         return String.valueOf(engine.eval(script));

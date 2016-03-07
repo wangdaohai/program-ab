@@ -1284,7 +1284,7 @@ public final class AIMLProcessor {
         String script = evalTagContent(node, ps, null);
 
         try {
-            result = IOUtils.evalScript("JavaScript", script);
+            result = IOUtils.evalScript(script);
         } catch (Exception ex) {
             logger.error("javascript error", ex);
         }
