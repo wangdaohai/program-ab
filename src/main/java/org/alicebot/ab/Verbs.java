@@ -2,6 +2,7 @@ package org.alicebot.ab;
 
 import org.alicebot.ab.map.MutableMap;
 import org.alicebot.ab.set.MutableSet;
+import org.alicebot.ab.utils.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,7 +86,7 @@ public final class Verbs {
     public static void getIrregulars() {
         // Do, Did, Done, Does, Doing
         // be, was, been, is, being
-        Utilities.lines(MagicStrings.rootPath.resolve("data/irrverbs.txt"))
+        IOUtils.lines(MagicStrings.rootPath.resolve("data/irrverbs.txt"))
             .map(String::toLowerCase).map(l -> l.split(",")).filter(l -> l.length == 5)
             .forEach(triple -> {
                 irregular.add(triple[0]);
@@ -99,7 +100,7 @@ public final class Verbs {
 
     public static void makeVerbSetsMaps(Bot bot) {
         getIrregulars();
-        Utilities.lines(MagicStrings.rootPath.resolve("data/verb300.txt"))
+        IOUtils.lines(MagicStrings.rootPath.resolve("data/verb300.txt"))
             .forEachOrdered(allVerbs::add);
         MutableSet be = new MutableSet("be");
         MutableSet is = new MutableSet("is");

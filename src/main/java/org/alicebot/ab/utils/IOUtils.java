@@ -1,5 +1,6 @@
 package org.alicebot.ab.utils;
 
+import org.alicebot.ab.MagicStrings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,6 +13,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class IOUtils {
@@ -80,5 +82,21 @@ public final class IOUtils {
         return String.valueOf(engine.eval(script));
     }
 
+    public static Stream<String> lines(Path path) {
+        try {
+            if (path.toFile().exists()) {
+                return Files.lines(path)
+                    .filter(line -> !line.startsWith(MagicStrings.text_comment_mark));
+            }
+            logger.error("{} does not exist", path);
+        } catch (Exception e) {
+            logger.error("lines error", e);
+        }
+        return Stream.empty();
+    }
+
+    public static String getFile(Path path) {
+        return lines(path).collect(Collectors.joining("\n"));
+    }
 }
 

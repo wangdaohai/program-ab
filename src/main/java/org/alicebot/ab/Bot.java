@@ -159,7 +159,7 @@ public final class Bot {
     }
 
     Set<String> getPronouns() {
-        Set<String> pronounSet = Utilities.lines(configPath.resolve("pronouns.txt"))
+        Set<String> pronounSet = IOUtils.lines(configPath.resolve("pronouns.txt"))
             .map(String::trim).filter(p -> !p.isEmpty()).collect(Collectors.toSet());
         logger.debug("Read pronouns: {}", pronounSet);
         return pronounSet;

@@ -20,12 +20,13 @@ package org.alicebot.ab;
 */
 
 import org.alicebot.ab.utils.CalendarUtils;
+import org.alicebot.ab.utils.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -61,25 +62,7 @@ public final class Utilities {
     }
 
     public static Set<String> stringSet(String... strings) {
-        Set<String> set = new HashSet<>();
-        Collections.addAll(set, strings);
-        return set;
-    }
-
-    public static Stream<String> lines(Path file) {
-        try {
-            if (file.toFile().exists()) {
-                return Files.lines(file)
-                    .filter(line -> !line.startsWith(MagicStrings.text_comment_mark));
-            }
-        } catch (Exception e) {
-            logger.error("lines error", e);
-        }
-        return Stream.empty();
-    }
-
-    public static String getFile(Path path) {
-        return lines(path).collect(Collectors.joining("\n"));
+        return Stream.of(strings).collect(Collectors.toSet());
     }
 
     public static String getCopyright(Bot bot, String AIMLFilename) {
@@ -87,7 +70,7 @@ public final class Utilities {
         String year = CalendarUtils.year();
         String date = CalendarUtils.date();
         try {
-            copyright = lines(bot.configPath.resolve("copyright.txt"))
+            copyright = IOUtils.lines(bot.configPath.resolve("copyright.txt"))
                 .map(line -> "<!-- " + line + " -->")
                 .collect(Collectors.joining("\n", "", "\n"))
                 .replace("[url]", bot.properties.get("url"))
@@ -105,13 +88,13 @@ public final class Utilities {
     }
 
     public static String getPannousAPIKey(Bot bot) {
-        String apiKey = getFile(bot.configPath.resolve("pannous-apikey.txt"));
+        String apiKey = IOUtils.getFile(bot.configPath.resolve("pannous-apikey.txt"));
         if (apiKey.isEmpty()) { apiKey = MagicStrings.pannous_api_key; }
         return apiKey;
     }
 
     public static String getPannousLogin(Bot bot) {
-        String login = getFile(bot.configPath.resolve("pannous-login.txt"));
+        String login = IOUtils.getFile(bot.configPath.resolve("pannous-login.txt"));
         if (login.isEmpty()) { login = MagicStrings.pannous_login; }
         return login;
     }
