@@ -4,8 +4,6 @@ import org.alicebot.ab.MagicStrings;
 
 public abstract class ComputeMap extends AIMLMap {
 
-    private static final Inflector INFLECTOR = new Inflector();
-
     public ComputeMap(String name) {
         super(name);
     }
@@ -47,14 +45,14 @@ public abstract class ComputeMap extends AIMLMap {
     public static final ComputeMap SINGULAR = new ComputeMap(MagicStrings.map_singular) {
         @Override
         public String get(String key) {
-            return INFLECTOR.singularize(key);
+            return Inflector.INSTANCE.singularize(key);
         }
     };
 
     public static final ComputeMap PLURAL = new ComputeMap(MagicStrings.map_plural) {
         @Override
         public String get(String key) {
-            return INFLECTOR.pluralize(key);
+            return Inflector.INSTANCE.pluralize(key);
         }
     };
 }

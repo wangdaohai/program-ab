@@ -11,19 +11,22 @@ import static org.junit.Assert.assertEquals;
 public class InflectorTest {
     @Test
     public void testPluralize() throws Exception {
-        Inflector inflector = new Inflector();
         String[][] pairs = {{"dog", "dogs"}, {"person", "people"}, {"cats", "cats"}};
         for (String[] pair : pairs) {
             String singular = pair[0];
-            String expected = pair[1];
-            String actual = inflector.pluralize(singular);
-            assertEquals("Pluralize " + pairs[0][0], expected, actual);
+            String plural = pair[1];
+            assertEquals(plural, Inflector.INSTANCE.pluralize(singular));
         }
 
     }
 
     @Test
     public void testSingularize() throws Exception {
-        System.out.println(ComputeMap.PLURAL);
+        String[][] pairs = {{"dog", "dogs"}, {"person", "people"}, {"cat", "cat"}};
+        for (String[] pair : pairs) {
+            String singular = pair[0];
+            String plural = pair[1];
+            assertEquals(singular, Inflector.INSTANCE.singularize(plural));
+        }
     }
 }

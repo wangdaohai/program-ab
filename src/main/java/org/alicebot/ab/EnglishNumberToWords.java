@@ -157,6 +157,7 @@ public final class EnglishNumberToWords {
 
     }
 
+    @SuppressWarnings("MagicNumber")
     public static void main(String[] args) {
         System.out.println("*** " + convert(0));
         System.out.println("*** " + convert(1));
