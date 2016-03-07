@@ -1,5 +1,8 @@
 package org.alicebot.ab;
 
+import org.alicebot.ab.set.AIMLSet;
+import org.alicebot.ab.set.InMemorySet;
+
 import java.text.DecimalFormat;
 
 /**
@@ -137,7 +140,7 @@ public final class EnglishNumberToWords {
     }
 
     public static void makeSetMap(Bot bot) {
-        AIMLSet numberName = new AIMLSet("numbername");
+        InMemorySet numberName = new InMemorySet("numbername");
         AIMLMap name2number = new AIMLMap("name2number");
 
         for (int i = 0; i < 10000; i++) {

@@ -19,6 +19,7 @@ package org.alicebot.ab;
         Boston, MA  02110-1301, USA.
 */
 
+import org.alicebot.ab.set.InMemorySet;
 import org.alicebot.ab.utils.IOUtils;
 import org.alicebot.ab.utils.LogUtil;
 import org.slf4j.Logger;
@@ -51,8 +52,8 @@ public final class AB {
     public int runCompletedCnt;
     public Bot bot;
     public Bot alice;
-    AIMLSet passed;
-    AIMLSet testSet;
+    InMemorySet passed;
+    InMemorySet testSet;
 
     public final Graphmaster inputGraph;
     public final Graphmaster patternGraph;
@@ -69,8 +70,8 @@ public final class AB {
         this.patternGraph = new Graphmaster(bot, "pattern");
         bot.brain.getCategories().forEach(patternGraph::addCategory);
         this.suggestedCategories = new ArrayList<>();
-        passed = new AIMLSet("passed");
-        testSet = new AIMLSet("1000");
+        passed = new InMemorySet("passed");
+        testSet = new InMemorySet("1000");
         readDeletedIFCategories();
     }
 
@@ -345,7 +346,7 @@ public final class AB {
         String alicetemplate = null;
         for (Category c : browserCategories) {
             try {
-                List<String> samples = new ArrayList<>(c.getMatches(bot));
+                List<String> samples = new ArrayList<>(c.getMatches().values());
                 Collections.shuffle(samples);
                 int sampleSize = Math.min(MagicNumbers.displayed_input_sample_size, samples.size());
                 samples.stream().limit(sampleSize).forEach(logger::info);
@@ -432,7 +433,7 @@ public final class AB {
                AIMLSet intersection = new AIMLSet("intersection");
                for (String s : passed) if (testSet.contains(s)) intersection.add(s);
                passed = intersection;
-               passed.setName = "passed";
+               passed.name = "passed";
                difference.addAll(testSet);
                difference.removeAll(passed);
                difference.writeSet();
@@ -446,7 +447,7 @@ public final class AB {
             skipCategory(c);
         } else if ("s".equals(textLine) || "pass".equals(textLine)) { //
             passed.add(request);
-            AIMLSet difference = new AIMLSet("difference");
+            InMemorySet difference = new InMemorySet("difference");
             difference.addAll(testSet);
             difference.removeAll(passed);
             difference.writeSet(bot);

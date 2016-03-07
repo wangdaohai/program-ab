@@ -19,6 +19,7 @@ package org.alicebot.ab;
         Boston, MA  02110-1301, USA.
 */
 
+import org.alicebot.ab.set.InMemorySet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,15 +40,15 @@ public class Category {
     private int activationCnt;
     private final int categoryNumber; // for loading order
     public static int categoryCnt = 0;
-    private AIMLSet matches;
+    private InMemorySet matches;
 
     /**
      * Return a set of inputs matching the category
      *
      * @return and AIML Set of elements matching this category
      */
-    public AIMLSet getMatches(Bot bot) {
-        return matches != null ? matches : new AIMLSet("No Matches");
+    public InMemorySet getMatches() {
+        return matches != null ? matches : new InMemorySet("No Matches");
     }
 
     /**
@@ -186,11 +187,11 @@ public class Category {
      *
      * @param input matching input
      */
-    public void addMatch(String input, Bot bot) {
+    public void addMatch(String input) {
         if (matches == null) {
             String setName = this.inputThatTopic().replace("*", "STAR").replace("_", "UNDERSCORE").replace(" ", "-").replace("<THAT>", "THAT").replace("<TOPIC>", "TOPIC");
-            // System.out.println("Created match set "+setName);
-            matches = new AIMLSet(setName);
+            // System.out.println("Created match set "+name);
+            matches = new InMemorySet(setName);
         }
         matches.add(input);
     }

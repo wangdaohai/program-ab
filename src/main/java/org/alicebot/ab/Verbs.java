@@ -1,5 +1,6 @@
 package org.alicebot.ab;
 
+import org.alicebot.ab.set.InMemorySet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,11 +100,11 @@ public final class Verbs {
         getIrregulars();
         Utilities.lines(MagicStrings.rootPath.resolve("data/verb300.txt"))
             .forEachOrdered(allVerbs::add);
-        AIMLSet be = new AIMLSet("be");
-        AIMLSet is = new AIMLSet("is");
-        AIMLSet was = new AIMLSet("was");
-        AIMLSet been = new AIMLSet("been");
-        AIMLSet being = new AIMLSet("being");
+        InMemorySet be = new InMemorySet("be");
+        InMemorySet is = new InMemorySet("is");
+        InMemorySet was = new InMemorySet("was");
+        InMemorySet been = new InMemorySet("been");
+        InMemorySet being = new InMemorySet("being");
         AIMLMap is2be = new AIMLMap("is2be");
         AIMLMap be2is = new AIMLMap("be2is");
         AIMLMap was2be = new AIMLMap("was2be");

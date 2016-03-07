@@ -20,6 +20,9 @@ package org.alicebot.ab;
         Boston, MA  02110-1301, USA.
 */
 
+import org.alicebot.ab.set.AIMLSet;
+import org.alicebot.ab.set.AIMLSetBuilder;
+import org.alicebot.ab.set.ComputeSet;
 import org.alicebot.ab.utils.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,12 +112,12 @@ public final class Bot {
 
         preProcessor = new PreProcessor(this);
         addProperties();
-        long setCnt = addAIMLSets();
+        int setCnt = addAIMLSets();
         logger.debug("Loaded {} set elements.", setCnt);
         long mapCnt = addAIMLMaps();
         logger.debug("Loaded {} map elements", mapCnt);
         this.pronounSet = getPronouns();
-        AIMLSet number = new AIMLSet(MagicStrings.natural_number_set_name);
+        AIMLSet number = ComputeSet.NATURAL_NUMBERS;
         setMap.put(MagicStrings.natural_number_set_name, number);
         AIMLMap successor = new AIMLMap(MagicStrings.map_successor);
         mapMap.put(MagicStrings.map_successor, successor);
@@ -428,18 +431,22 @@ public final class Bot {
     }
 
     /** Load all AIML Sets */
-    long addAIMLSets() {
+    int addAIMLSets() {
         try {
             // Directory path here
             File folder = setsPath.toFile();
             if (folder.exists()) {
                 logger.debug("Loading AIML Sets files from {}", setsPath);
                 return IOUtils.filesWithExtension(setsPath, ".txt")
-                    .mapToLong(path -> {
-                        String setName = IOUtils.basename(path);
-                        AIMLSet aimlSet = new AIMLSet(setName);
-                        setMap.put(setName, aimlSet);
-                        return aimlSet.readSet(this);
+                    .mapToInt(path -> {
+                        try {
+                            AIMLSet aimlSet = AIMLSetBuilder.forPath(path);
+                            setMap.put(aimlSet.name(), aimlSet);
+                            return aimlSet.size();
+                        } catch (IOException e) {
+                            logger.error("Failed to read set from path {}", path, e);
+                            return 0;
+                        }
                     }).sum();
             } else {
                 logger.warn("addAIMLSets: {} does not exist.", folder);
