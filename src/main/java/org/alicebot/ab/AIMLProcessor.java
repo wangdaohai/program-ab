@@ -25,7 +25,10 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -124,43 +127,38 @@ public final class AIMLProcessor {
      * @param aimlFile  AIML file name.
      * @return list of categories.
      */
-    public static List<Category> AIMLToCategories(Path directory, String aimlFile) {
-        try {
-            List<Category> categories = new ArrayList<>();
-            Node root = DomUtils.parseFile(directory.resolve(aimlFile).toFile());      // <aiml> tag
-            String language = MagicStrings.default_language;
-            if (root.hasAttributes()) {
-                NamedNodeMap XMLAttributes = root.getAttributes();
-                for (int i = 0; i < XMLAttributes.getLength(); i++) {
-                    if ("language".equals(XMLAttributes.item(i).getNodeName())) {
-                        language = XMLAttributes.item(i).getNodeValue();
-                    }
+    public static List<Category> AIMLToCategories(Path directory, String aimlFile) throws SAXException, IOException, ParserConfigurationException {
+        List<Category> categories = new ArrayList<>();
+        Node root = DomUtils.parseFile(directory.resolve(aimlFile).toFile());      // <aiml> tag
+        String language = MagicStrings.default_language;
+        if (root.hasAttributes()) {
+            NamedNodeMap XMLAttributes = root.getAttributes();
+            for (int i = 0; i < XMLAttributes.getLength(); i++) {
+                if ("language".equals(XMLAttributes.item(i).getNodeName())) {
+                    language = XMLAttributes.item(i).getNodeValue();
                 }
             }
-            NodeList nodelist = root.getChildNodes();
-            for (int i = 0; i < nodelist.getLength(); i++) {
-                Node n = nodelist.item(i);
-                //System.out.println("AIML child: " +n.getNodeName());
-                if ("category".equals(n.getNodeName())) {
-                    categoryProcessor(n, categories, "*", aimlFile, language);
-                } else if ("topic".equals(n.getNodeName())) {
-                    String topic = n.getAttributes().getNamedItem("name").getTextContent();
-                    //System.out.println("topic: " + topic);
-                    NodeList children = n.getChildNodes();
-                    for (int j = 0; j < children.getLength(); j++) {
-                        Node m = children.item(j);
-                        //System.out.println("Topic child: " + m.getNodeName());
-                        if ("category".equals(m.getNodeName())) {
-                            categoryProcessor(m, categories, topic, aimlFile, language);
-                        }
-                    }
-                }
-            }
-            return categories;
-        } catch (Exception ex) {
-            logger.error("AIMLToCategories error", ex);
-            return null;
         }
+        NodeList nodelist = root.getChildNodes();
+        for (int i = 0; i < nodelist.getLength(); i++) {
+            Node n = nodelist.item(i);
+            //System.out.println("AIML child: " +n.getNodeName());
+            if ("category".equals(n.getNodeName())) {
+                categoryProcessor(n, categories, "*", aimlFile, language);
+            } else if ("topic".equals(n.getNodeName())) {
+                String topic = n.getAttributes().getNamedItem("name").getTextContent();
+                //System.out.println("topic: " + topic);
+                NodeList children = n.getChildNodes();
+                for (int j = 0; j < children.getLength(); j++) {
+                    Node m = children.item(j);
+                    //System.out.println("Topic child: " + m.getNodeName());
+                    if ("category".equals(m.getNodeName())) {
+                        categoryProcessor(m, categories, topic, aimlFile, language);
+                    }
+                }
+            }
+        }
+        return categories;
     }
 
     public static int sraiCount = 0;

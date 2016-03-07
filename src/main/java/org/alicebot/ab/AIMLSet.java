@@ -40,7 +40,7 @@ public class AIMLSet extends AbstractCollection<String> {
     private static final Logger logger = LoggerFactory.getLogger(AIMLSet.class);
 
     private final Set<String> valueSet = new HashSet<>();
-    public String setName;
+    private final String setName;
     int maxLength = 1; // there are no empty sets
     String host; // for external sets
     String botid; // for external sets
@@ -140,7 +140,7 @@ public class AIMLSet extends AbstractCollection<String> {
     public long readSet(Bot bot) {
         Path path = bot.setsPath.resolve(setName + ".txt");
         try {
-            logger.debug("Reading AIML Set {}", path);
+            logger.debug("Reading AIML Set {}", setName);
             if (path.toFile().exists()) {
                 return readFromStream(Files.lines(path));
             } else {

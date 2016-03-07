@@ -199,78 +199,67 @@ public final class Bot {
     /**
      * Load all brain categories from AIML directory
      */
-    int addCategoriesFromAIML() {
-        Timer timer = new Timer();
-        timer.start();
-        int cnt = 0;
+    void addCategoriesFromAIML() {
         try {
-            // Directory path here
+            Timer timer = new Timer();
+            timer.start();
             File folder = aimlPath.toFile();
             if (folder.exists()) {
-                File[] listOfFiles = IOUtils.listFiles(folder);
                 logger.debug("Loading AIML files from {}", aimlPath);
-                for (File listOfFile : listOfFiles) {
-                    if (listOfFile.isFile()) {
-                        String file = listOfFile.getName();
-                        if (file.endsWith(".aiml") || file.endsWith(".AIML")) {
-                            logger.debug(file);
-                            try {
-                                List<Category> moreCategories = AIMLProcessor.AIMLToCategories(aimlPath, file);
-                                addMoreCategories(file, moreCategories);
-                                cnt += moreCategories.size();
-                            } catch (Exception iex) {
-                                logger.error("problem loading {}", file, iex);
-                            }
+                int cnt = IOUtils.filesWithExtension(aimlPath, ".aiml")
+                    .mapToInt(path -> {
+                        String file = path.getFileName().toString();
+                        logger.debug(file);
+                        try {
+                            List<Category> moreCategories = AIMLProcessor.AIMLToCategories(aimlPath, file);
+                            addMoreCategories(file, moreCategories);
+                            return moreCategories.size();
+                        } catch (Exception iex) {
+                            logger.error("problem loading categories from {}", path, iex);
+                            return 0;
                         }
-                    }
-                }
+                    }).sum();
+                logger.debug("Loaded {} categories in {} sec", cnt, timer.elapsedTimeSecs());
             } else {
                 logger.warn("addCategoriesFromAIML: {} does not exist.", folder);
             }
         } catch (Exception ex) {
             logger.error("addCategoriesFromAIML error", ex);
         }
-        logger.debug("Loaded {} categories in {} sec", cnt, timer.elapsedTimeSecs());
-        return cnt;
     }
 
     /**
      * load all brain categories from AIMLIF directory
      */
-    public int addCategoriesFromAIMLIF() {
-        Timer timer = new Timer();
-        timer.start();
-        int cnt = 0;
+    private void addCategoriesFromAIMLIF() {
         try {
+            Timer timer = new Timer();
+            timer.start();
             // Directory path here
             File folder = aimlifPath.toFile();
             if (folder.exists()) {
-                File[] listOfFiles = IOUtils.listFiles(folder);
                 logger.debug("Loading AIML files from {}", aimlifPath);
-                for (File listOfFile : listOfFiles) {
-                    if (listOfFile.isFile()) {
-                        String file = listOfFile.getName();
-                        if (file.endsWith(MagicStrings.aimlif_file_suffix) || file.endsWith(MagicStrings.aimlif_file_suffix.toUpperCase())) {
-                            logger.debug(file);
-                            try {
-                                List<Category> moreCategories = readIFCategories(aimlifPath.resolve(file));
-                                cnt += moreCategories.size();
-                                addMoreCategories(file, moreCategories);
-                                //   MemStats.memStats();
-                            } catch (Exception iex) {
-                                logger.error("Problem loading {}", file, iex);
-                            }
+                int cnt = IOUtils.filesWithExtension(aimlifPath, MagicStrings.aimlif_file_suffix)
+                    .mapToInt(path -> {
+                        String file = path.getFileName().toString();
+                        logger.debug(file);
+                        try {
+                            List<Category> moreCategories = readIFCategories(aimlifPath.resolve(file));
+                            addMoreCategories(file, moreCategories);
+                            //MemStats.memStats();
+                            return moreCategories.size();
+                        } catch (Exception iex) {
+                            logger.error("Problem loading categories from {}", path, iex);
+                            return 0;
                         }
-                    }
-                }
+                    }).sum();
+                logger.debug("Loaded {} categories in {} sec", cnt, timer.elapsedTimeSecs());
             } else {
                 logger.warn("addCategoriesFromAIMLIF: {} does not exist.", folder);
             }
         } catch (Exception ex) {
             logger.error("addCategoriesFromAIMLIF error", ex);
         }
-        logger.debug("Loaded {} categories in {} sec", cnt, timer.elapsedTimeSecs());
-        return cnt;
     }
 
     /**
@@ -433,79 +422,53 @@ public final class Bot {
                 }
             }).filter(c -> c != null).collect(Collectors.toList());
         } catch (Exception e) {
-            logger.error("readIFCategories error", e);
+            logger.error("error reading categories from {}", path, e);
             return Collections.emptyList();
         }
     }
 
-    /**
-     * Load all AIML Sets
-     */
+    /** Load all AIML Sets */
     long addAIMLSets() {
-        Timer timer = new Timer();
-        timer.start();
-        long cnt = 0;
         try {
             // Directory path here
             File folder = setsPath.toFile();
             if (folder.exists()) {
-                File[] listOfFiles = IOUtils.listFiles(folder);
                 logger.debug("Loading AIML Sets files from {}", setsPath);
-                for (File listOfFile : listOfFiles) {
-                    if (listOfFile.isFile()) {
-                        String file = listOfFile.getName();
-                        if (file.endsWith(".txt") || file.endsWith(".TXT")) {
-                            logger.debug(file);
-                            String setName = file.substring(0, file.length() - ".txt".length());
-                            logger.debug("Read AIML Set {}", setName);
-                            AIMLSet aimlSet = new AIMLSet(setName);
-                            cnt += aimlSet.readSet(this);
-                            setMap.put(setName, aimlSet);
-                        }
-                    }
-                }
+                return IOUtils.filesWithExtension(setsPath, ".txt")
+                    .mapToLong(path -> {
+                        String setName = IOUtils.basename(path);
+                        AIMLSet aimlSet = new AIMLSet(setName);
+                        setMap.put(setName, aimlSet);
+                        return aimlSet.readSet(this);
+                    }).sum();
             } else {
                 logger.warn("addAIMLSets: {} does not exist.", folder);
             }
         } catch (Exception ex) {
             logger.error("addAIMLSets error", ex);
         }
-        return cnt;
+        return 0;
     }
 
-    /**
-     * Load all AIML Maps
-     */
+    /** Load all AIML Maps */
     long addAIMLMaps() {
-        Timer timer = new Timer();
-        timer.start();
-        long cnt = 0;
         try {
-            // Directory path here
-            File folder = mapsPath.toFile();
-            if (folder.exists()) {
-                File[] listOfFiles = IOUtils.listFiles(folder);
+            if (mapsPath.toFile().exists()) {
                 logger.debug("Loading AIML Map files from {}", mapsPath);
-                for (File listOfFile : listOfFiles) {
-                    if (listOfFile.isFile()) {
-                        String file = listOfFile.getName();
-                        if (file.endsWith(".txt") || file.endsWith(".TXT")) {
-                            logger.debug(file);
-                            String mapName = file.substring(0, file.length() - ".txt".length());
-                            logger.debug("Read AIML Map {}", mapName);
-                            AIMLMap aimlMap = new AIMLMap(mapName);
-                            cnt += aimlMap.readMap(this);
-                            mapMap.put(mapName, aimlMap);
-                        }
-                    }
-                }
+                return IOUtils.filesWithExtension(mapsPath, ".txt")
+                    .mapToLong(path -> {
+                        String mapName = IOUtils.basename(path);
+                        AIMLMap aimlMap = new AIMLMap(mapName);
+                        mapMap.put(mapName, aimlMap);
+                        return aimlMap.readMap(this);
+                    }).sum();
             } else {
-                logger.warn("addAIMLMaps: {} does not exist.", folder);
+                logger.warn("addAIMLMaps: {} does not exist.", mapsPath);
             }
         } catch (Exception ex) {
             logger.warn("addAIMLMaps error", ex);
         }
-        return cnt;
+        return 0;
     }
 
     public void deleteLearnfCategories() {

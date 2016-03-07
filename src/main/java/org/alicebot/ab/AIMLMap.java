@@ -39,7 +39,7 @@ public class AIMLMap {
     private static final Logger logger = LoggerFactory.getLogger(AIMLMap.class);
 
     private final Map<String, String> valueMap = new HashMap<>();
-    public String mapName;
+    private final String mapName;
     String host; // for external maps
     String botid; // for external maps
     boolean isExternal = false;
@@ -144,7 +144,7 @@ public class AIMLMap {
     public long readMap(Bot bot) {
         Path path = bot.mapsPath.resolve(mapName + ".txt");
         try {
-            logger.debug("Reading AIML Map {}", path);
+            logger.debug("Reading AIML Map {}", mapName);
             if (path.toFile().exists()) {
                 return readFromStream(Files.lines(path));
             } else {

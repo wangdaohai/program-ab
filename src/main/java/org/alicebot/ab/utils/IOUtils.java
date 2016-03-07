@@ -9,6 +9,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.stream.Stream;
 
 public class IOUtils {
 
@@ -82,8 +83,17 @@ public class IOUtils {
         return textLine;
     }
 
-    public static File[] listFiles(File dir) {
-        return dir.listFiles();
+    public static Stream<Path> filesWithExtension(Path folder, String extension) throws IOException {
+        String lowerCaseExt = extension.toLowerCase();
+        return Files.list(folder)
+            .filter(f -> f.toFile().isFile())
+            .filter(f -> f.toString().toLowerCase().endsWith(lowerCaseExt));
+    }
+
+    public static String basename(Path path) {
+        String fileName = path.getFileName().toString();
+        int dotIndex = fileName.lastIndexOf('.');
+        return (dotIndex == -1) ? fileName : fileName.substring(0, dotIndex);
     }
 
     public static String system(String evaluatedContents, String failedString) {
