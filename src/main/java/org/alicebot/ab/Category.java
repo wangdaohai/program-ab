@@ -382,23 +382,10 @@ public class Category {
             patternThatTopic.substring(patternThatTopic.indexOf("<TOPIC>") + "<TOPIC>".length(), patternThatTopic.length()), template, filename);
     }
 
-    /**
-     * compare two categories for sorting purposes based on activation count
-     */
-    public static Comparator<Category> ACTIVATION_COMPARATOR = (c1, c2) -> {
-        return c2.activationCnt - c1.activationCnt;
-    };
-    /**
-     * compare two categories for sorting purposes based on alphabetical order of patterns
-     */
-    public static Comparator<Category> PATTERN_COMPARATOR = (c1, c2) -> {
-        return String.CASE_INSENSITIVE_ORDER.compare(c1.inputThatTopic(), c2.inputThatTopic());
-    };
-    /**
-     * compare two categories for sorting purposes based on category index number
-     */
-    public static Comparator<Category> CATEGORY_NUMBER_COMPARATOR = (c1, c2) -> {
-        return c1.categoryNumber - c2.categoryNumber;
-    };
+    /** Compare two categories for sorting purposes based on activation count (most activated first) */
+    public static Comparator<Category> ACTIVATION_COMPARATOR = Comparator.comparing(Category::getActivationCnt).reversed();
+
+    /** Compare two categories for sorting purposes based on category index number */
+    public static Comparator<Category> CATEGORY_NUMBER_COMPARATOR = Comparator.comparing(Category::getCategoryNumber);
 
 }
