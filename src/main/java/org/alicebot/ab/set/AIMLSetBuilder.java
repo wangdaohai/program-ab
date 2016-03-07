@@ -2,6 +2,8 @@ package org.alicebot.ab.set;
 
 import org.alicebot.ab.MagicStrings;
 import org.alicebot.ab.utils.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,12 +11,30 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class AIMLSetBuilder {
 
+    private static final Logger logger = LoggerFactory.getLogger(AIMLSetBuilder.class);
+
     private AIMLSetBuilder() {}
 
-    public static AIMLSet forPath(Path path) throws IOException {
+    public static Stream<AIMLSet> fromFolder(Path folder) throws IOException {
+        if (!folder.toFile().exists()) {
+            logger.warn("{} does not exist.", folder);
+            return Stream.empty();
+        }
+        logger.debug("Loading AIML Sets files from {}", folder);
+        return IOUtils.filesWithExtension(folder, ".txt")
+            .map(path -> {
+                try { return forPath(path); } catch (IOException e) {
+                    logger.error("Failed to load set for path {}", path, e);
+                    return null;
+                }
+            }).filter(s -> s != null);
+    }
+
+    private static AIMLSet forPath(Path path) throws IOException {
         String setName = IOUtils.basename(path);
 
         try (BufferedReader reader = Files.newBufferedReader(path)) {

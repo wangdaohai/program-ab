@@ -112,8 +112,7 @@ public final class Bot {
 
         preProcessor = new PreProcessor(this);
         addProperties();
-        int setCnt = addAIMLSets();
-        logger.debug("Loaded {} set elements.", setCnt);
+        addAIMLSets();
         long mapCnt = addAIMLMaps();
         logger.debug("Loaded {} map elements", mapCnt);
         this.pronounSet = getPronouns();
@@ -431,30 +430,18 @@ public final class Bot {
     }
 
     /** Load all AIML Sets */
-    int addAIMLSets() {
+    void addAIMLSets() {
         try {
-            // Directory path here
-            File folder = setsPath.toFile();
-            if (folder.exists()) {
-                logger.debug("Loading AIML Sets files from {}", setsPath);
-                return IOUtils.filesWithExtension(setsPath, ".txt")
-                    .mapToInt(path -> {
-                        try {
-                            AIMLSet aimlSet = AIMLSetBuilder.forPath(path);
-                            setMap.put(aimlSet.name(), aimlSet);
-                            return aimlSet.size();
-                        } catch (IOException e) {
-                            logger.error("Failed to read set from path {}", path, e);
-                            return 0;
-                        }
-                    }).sum();
-            } else {
-                logger.warn("addAIMLSets: {} does not exist.", folder);
+            setMap.putAll(AIMLSetBuilder.fromFolder(setsPath)
+                .collect(Collectors.toMap(AIMLSet::name, s -> s)));
+            if (logger.isDebugEnabled()) {
+                logger.debug("Loaded {} set elements in {} sets.",
+                    setMap.values().stream().mapToInt(AIMLSet::size).sum(),
+                    setMap.size());
             }
         } catch (Exception ex) {
             logger.error("addAIMLSets error", ex);
         }
-        return 0;
     }
 
     /** Load all AIML Maps */
