@@ -1,4 +1,4 @@
-package org.alicebot.ab;
+package org.alicebot.ab.map;
 
 import org.junit.Test;
 
@@ -6,7 +6,7 @@ import static org.junit.Assert.assertEquals;
 // http://stackoverflow.com/questions/4757800/configuring-intellij-idea-for-unit-testing-with-junit
 
 /**
- * Created by User on 3/31/14.
+ * @since 3/31/14.
  */
 public class InflectorTest {
     @Test
@@ -24,6 +24,6 @@ public class InflectorTest {
 
     @Test
     public void testSingularize() throws Exception {
-
+        System.out.println(ComputeMap.PLURAL);
     }
 }

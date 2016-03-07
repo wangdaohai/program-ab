@@ -20,6 +20,9 @@ package org.alicebot.ab;
         Boston, MA  02110-1301, USA.
 */
 
+import org.alicebot.ab.map.AIMLMap;
+import org.alicebot.ab.map.AIMLMapBuilder;
+import org.alicebot.ab.map.ComputeMap;
 import org.alicebot.ab.set.AIMLSet;
 import org.alicebot.ab.set.AIMLSetBuilder;
 import org.alicebot.ab.set.ComputeSet;
@@ -113,20 +116,17 @@ public final class Bot {
         preProcessor = new PreProcessor(this);
         addProperties();
         addAIMLSets();
-        long mapCnt = addAIMLMaps();
-        logger.debug("Loaded {} map elements", mapCnt);
+        addAIMLMaps();
         this.pronounSet = getPronouns();
         AIMLSet number = ComputeSet.NATURAL_NUMBERS;
-        setMap.put(MagicStrings.natural_number_set_name, number);
-        AIMLMap successor = new AIMLMap(MagicStrings.map_successor);
-        mapMap.put(MagicStrings.map_successor, successor);
-        AIMLMap predecessor = new AIMLMap(MagicStrings.map_predecessor);
-        mapMap.put(MagicStrings.map_predecessor, predecessor);
-        AIMLMap singular = new AIMLMap(MagicStrings.map_singular);
-        mapMap.put(MagicStrings.map_singular, singular);
-        AIMLMap plural = new AIMLMap(MagicStrings.map_plural);
-        mapMap.put(MagicStrings.map_plural, plural);
-        //System.out.println("setMap = "+setMap);
+        setMap.put(number.name(), number);
+        for (AIMLMap map : new AIMLMap[]{
+            ComputeMap.SUCCESSOR, ComputeMap.PREDECESSOR,
+            ComputeMap.SINGULAR, ComputeMap.PLURAL
+        }) {
+            mapMap.put(map.name(), map);
+        }
+
         Instant aimlDate = Instant.ofEpochMilli(aimlPath.toFile().lastModified());
         Instant aimlIFDate = Instant.ofEpochMilli(aimlifPath.toFile().lastModified());
         logger.debug("AIML modified {} AIMLIF modified {}", aimlDate, aimlIFDate);
@@ -445,24 +445,18 @@ public final class Bot {
     }
 
     /** Load all AIML Maps */
-    long addAIMLMaps() {
+    void addAIMLMaps() {
         try {
-            if (mapsPath.toFile().exists()) {
-                logger.debug("Loading AIML Map files from {}", mapsPath);
-                return IOUtils.filesWithExtension(mapsPath, ".txt")
-                    .mapToLong(path -> {
-                        String mapName = IOUtils.basename(path);
-                        AIMLMap aimlMap = new AIMLMap(mapName);
-                        mapMap.put(mapName, aimlMap);
-                        return aimlMap.readMap(this);
-                    }).sum();
-            } else {
-                logger.warn("addAIMLMaps: {} does not exist.", mapsPath);
+            mapMap.putAll(AIMLMapBuilder.fromFolder(mapsPath)
+                .collect(Collectors.toMap(AIMLMap::name, m -> m)));
+            if (logger.isDebugEnabled()) {
+                logger.debug("Loaded {} map elements in {} maps",
+                    mapMap.values().stream().mapToInt(AIMLMap::size).sum(),
+                    mapMap.size());
             }
         } catch (Exception ex) {
             logger.warn("addAIMLMaps error", ex);
         }
-        return 0;
     }
 
     public void deleteLearnfCategories() {

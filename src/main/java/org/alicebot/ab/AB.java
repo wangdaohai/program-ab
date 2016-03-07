@@ -19,7 +19,7 @@ package org.alicebot.ab;
         Boston, MA  02110-1301, USA.
 */
 
-import org.alicebot.ab.set.InMemorySet;
+import org.alicebot.ab.set.MutableSet;
 import org.alicebot.ab.utils.IOUtils;
 import org.alicebot.ab.utils.LogUtil;
 import org.slf4j.Logger;
@@ -52,8 +52,8 @@ public final class AB {
     public int runCompletedCnt;
     public Bot bot;
     public Bot alice;
-    InMemorySet passed;
-    InMemorySet testSet;
+    MutableSet passed;
+    MutableSet testSet;
 
     public final Graphmaster inputGraph;
     public final Graphmaster patternGraph;
@@ -70,8 +70,8 @@ public final class AB {
         this.patternGraph = new Graphmaster(bot, "pattern");
         bot.brain.getCategories().forEach(patternGraph::addCategory);
         this.suggestedCategories = new ArrayList<>();
-        passed = new InMemorySet("passed");
-        testSet = new InMemorySet("1000");
+        passed = new MutableSet("passed");
+        testSet = new MutableSet("1000");
         readDeletedIFCategories();
     }
 
@@ -447,7 +447,7 @@ public final class AB {
             skipCategory(c);
         } else if ("s".equals(textLine) || "pass".equals(textLine)) { //
             passed.add(request);
-            InMemorySet difference = new InMemorySet("difference");
+            MutableSet difference = new MutableSet("difference");
             difference.addAll(testSet);
             difference.removeAll(passed);
             difference.writeSet(bot);

@@ -19,6 +19,7 @@ package org.alicebot.ab;
         Boston, MA  02110-1301, USA.
 */
 
+import org.alicebot.ab.map.AIMLMap;
 import org.alicebot.ab.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

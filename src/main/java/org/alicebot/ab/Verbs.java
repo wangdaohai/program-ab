@@ -1,6 +1,7 @@
 package org.alicebot.ab;
 
-import org.alicebot.ab.set.InMemorySet;
+import org.alicebot.ab.map.MutableMap;
+import org.alicebot.ab.set.MutableSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,19 +101,19 @@ public final class Verbs {
         getIrregulars();
         Utilities.lines(MagicStrings.rootPath.resolve("data/verb300.txt"))
             .forEachOrdered(allVerbs::add);
-        InMemorySet be = new InMemorySet("be");
-        InMemorySet is = new InMemorySet("is");
-        InMemorySet was = new InMemorySet("was");
-        InMemorySet been = new InMemorySet("been");
-        InMemorySet being = new InMemorySet("being");
-        AIMLMap is2be = new AIMLMap("is2be");
-        AIMLMap be2is = new AIMLMap("be2is");
-        AIMLMap was2be = new AIMLMap("was2be");
-        AIMLMap be2was = new AIMLMap("be2was");
-        AIMLMap been2be = new AIMLMap("been2be");
-        AIMLMap be2been = new AIMLMap("be2been");
-        AIMLMap be2being = new AIMLMap("be2being");
-        AIMLMap being2be = new AIMLMap("being2be");
+        MutableSet be = new MutableSet("be");
+        MutableSet is = new MutableSet("is");
+        MutableSet was = new MutableSet("was");
+        MutableSet been = new MutableSet("been");
+        MutableSet being = new MutableSet("being");
+        MutableMap is2be = new MutableMap("is2be");
+        MutableMap be2is = new MutableMap("be2is");
+        MutableMap was2be = new MutableMap("was2be");
+        MutableMap be2was = new MutableMap("be2was");
+        MutableMap been2be = new MutableMap("been2be");
+        MutableMap be2been = new MutableMap("be2been");
+        MutableMap be2being = new MutableMap("be2being");
+        MutableMap being2be = new MutableMap("being2be");
 
         for (String verb : allVerbs) {
             String isForm = is(verb);

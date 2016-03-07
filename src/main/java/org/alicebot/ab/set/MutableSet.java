@@ -11,13 +11,12 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
-/** Mutable Set */
-public class InMemorySet extends AIMLSet {
+public class MutableSet extends AIMLSet {
 
-    private static final Logger logger = LoggerFactory.getLogger(InMemorySet.class);
+    private static final Logger logger = LoggerFactory.getLogger(MutableSet.class);
     private final Set<String> values = new HashSet<>();
 
-    public InMemorySet(String name) {
+    public MutableSet(String name) {
         super(name);
     }
 
