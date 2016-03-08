@@ -1,5 +1,6 @@
 package org.alicebot.ab;
 
+import org.alicebot.ab.aiml.AIMLDefault;
 import org.alicebot.ab.utils.IOUtils;
 import org.alicebot.ab.utils.JapaneseUtils;
 import org.slf4j.Logger;
@@ -35,10 +36,11 @@ import java.nio.file.Path;
 public class Chat {
 
     private static final Logger logger = LoggerFactory.getLogger(Chat.class);
+    private static final String REPETITION_DETECTED = "REPETITIONDETECTED";
 
     public Bot bot;
     public boolean doWrites;
-    public String customerId = MagicStrings.default_Customer_id;
+    public final String customerId;
     public History<History<String>> thatHistory = History.ofHistory("that");
     public History<String> requestHistory = History.ofString("request");
     public History<String> responseHistory = History.ofString("response");
@@ -75,12 +77,12 @@ public class Chat {
         this.bot = bot;
         this.doWrites = doWrites;
         History<String> contextThatHistory = History.ofString("unknown");
-        contextThatHistory.add(MagicStrings.default_that);
+        contextThatHistory.add(AIMLDefault.default_that);
         thatHistory.add(contextThatHistory);
         addPredicates();
         addTriples();
-        predicates.put("topic", MagicStrings.default_topic);
-        predicates.put("jsenabled", MagicStrings.js_enabled);
+        predicates.put("topic", AIMLDefault.default_topic);
+        predicates.put("jsenabled", AIMLDefault.js_enabled);
         logger.debug("Chat Session Created for bot {}", bot.name);
     }
 
@@ -166,9 +168,9 @@ public class Chat {
                 repetition = false;
             }
         }
-        if (input.equals(MagicStrings.null_input)) { repetition = false; }
+        if (input.equals(AIMLDefault.null_input)) { repetition = false; }
         inputHistory.add(input);
-        if (repetition) {input = MagicStrings.repetition_detected;}
+        if (repetition) {input = REPETITION_DETECTED;}
 
         String response = AIMLProcessor.respond(input, that, topic, this);
         //MagicBooleans.trace("in chat.respond(), response: " + response);
@@ -179,7 +181,7 @@ public class Chat {
         for (String sentence : sentences) {
             that = sentence;
             //System.out.println("That "+i+" '"+that+"'");
-            if (that.trim().isEmpty()) { that = MagicStrings.default_that; }
+            if (that.trim().isEmpty()) { that = AIMLDefault.default_that; }
             contextThatHistory.add(that);
         }
         return response.trim() + "  ";
@@ -194,7 +196,7 @@ public class Chat {
      */
     String respond(String input, History<String> contextThatHistory) {
         History<String> hist = thatHistory.get(0);
-        String that = hist == null ? MagicStrings.default_that : hist.get(0);
+        String that = hist == null ? AIMLDefault.default_that : hist.get(0);
         return respond(input, that, predicates.get("topic"), contextThatHistory);
     }
 
@@ -228,7 +230,7 @@ public class Chat {
             response = response.trim();
         } catch (Exception ex) {
             logger.error("multisentenceRespond error", ex);
-            return MagicStrings.error_bot_response;
+            return StandardResponse.ERROR;
         }
 
         if (doWrites) {

@@ -19,6 +19,7 @@ package org.alicebot.ab;
         Boston, MA  02110-1301, USA.
 */
 
+import org.alicebot.ab.aiml.AIMLDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +46,7 @@ public class Properties {
      */
     public String get(String key) {
         String result = properties.get(key);
-        return result == null ? MagicStrings.default_property : result;
+        return result == null ? AIMLDefault.default_property : result;
     }
 
     /**

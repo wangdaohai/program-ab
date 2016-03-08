@@ -1,11 +1,26 @@
 package org.alicebot.ab.map;
 
-import org.alicebot.ab.MagicStrings;
+import org.alicebot.ab.aiml.AIMLDefault;
 
-public abstract class ComputeMap extends AIMLMap {
+import java.util.function.UnaryOperator;
 
-    public ComputeMap(String name) {
+public class ComputeMap extends AIMLMap {
+
+    public static final String MAP_SUCCESSOR = "successor";
+    public static final String MAP_PREDECESSOR = "predecessor";
+    public static final String MAP_SINGULAR = "singular";
+    public static final String MAP_PLURAL = "plural";
+
+    private final UnaryOperator<String> computation;
+
+    public ComputeMap(String name, UnaryOperator<String> computation) {
         super(name);
+        this.computation = computation;
+    }
+
+    @Override
+    public String get(String key) {
+        return computation.apply(key);
     }
 
     @Override
@@ -18,41 +33,25 @@ public abstract class ComputeMap extends AIMLMap {
         return ComputeMap.class.getSimpleName() + "{" + name() + "}";
     }
 
-    public static final ComputeMap SUCCESSOR = new ComputeMap(MagicStrings.map_successor) {
-        @Override
-        public String get(String key) {
-            try {
-                int number = Integer.parseInt(key);
-                return String.valueOf(number + 1);
-            } catch (Exception ex) {
-                return MagicStrings.default_map;
-            }
+    public static final ComputeMap SUCCESSOR = new ComputeMap(MAP_SUCCESSOR, key -> {
+        try {
+            int number = Integer.parseInt(key);
+            return String.valueOf(number + 1);
+        } catch (Exception ex) {
+            return AIMLDefault.default_map;
         }
-    };
+    });
 
-    public static final ComputeMap PREDECESSOR = new ComputeMap(MagicStrings.map_predecessor) {
-        @Override
-        public String get(String key) {
-            try {
-                int number = Integer.parseInt(key);
-                return String.valueOf(number - 1);
-            } catch (Exception ex) {
-                return MagicStrings.default_map;
-            }
+    public static final ComputeMap PREDECESSOR = new ComputeMap(MAP_PREDECESSOR, key -> {
+        try {
+            int number = Integer.parseInt(key);
+            return String.valueOf(number - 1);
+        } catch (Exception ex) {
+            return AIMLDefault.default_map;
         }
-    };
+    });
 
-    public static final ComputeMap SINGULAR = new ComputeMap(MagicStrings.map_singular) {
-        @Override
-        public String get(String key) {
-            return Inflector.INSTANCE.singularize(key);
-        }
-    };
+    public static final ComputeMap SINGULAR = new ComputeMap(MAP_SINGULAR, Inflector.INSTANCE::singularize);
 
-    public static final ComputeMap PLURAL = new ComputeMap(MagicStrings.map_plural) {
-        @Override
-        public String get(String key) {
-            return Inflector.INSTANCE.pluralize(key);
-        }
-    };
+    public static final ComputeMap PLURAL = new ComputeMap(MAP_PLURAL, Inflector.INSTANCE::pluralize);
 }

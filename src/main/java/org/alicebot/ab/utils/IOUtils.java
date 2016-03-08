@@ -13,12 +13,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class IOUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(IOUtils.class);
+
+    public static Path rootPath = Paths.get("c:/ab");
 
     private IOUtils() {}
 
@@ -97,6 +100,14 @@ public final class IOUtils {
 
     public static String getFile(Path path) {
         return lines(path).collect(Collectors.joining("\n"));
+    }
+
+    public static void setRootPath(String newRootPath) {
+        rootPath = Paths.get(newRootPath);
+    }
+
+    public static void setRootPath() {
+        setRootPath(System.getProperty("user.dir"));
     }
 }
 

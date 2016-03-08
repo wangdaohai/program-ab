@@ -19,6 +19,7 @@ package org.alicebot.ab;
         Boston, MA  02110-1301, USA.
 */
 
+import org.alicebot.ab.aiml.AIMLFile;
 import org.alicebot.ab.set.MutableSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ import java.util.Comparator;
 public class Category {
 
     private static final Logger logger = LoggerFactory.getLogger(Category.class);
+    private static final String AIMLIF_SPLIT_CHAR = ",";
 
     private String pattern;
     private String that;
@@ -111,7 +113,7 @@ public class Category {
      * @return file name
      */
     public String getFilename() {
-        return filename == null ? MagicStrings.unknown_aiml_file : filename;
+        return filename == null ? AIMLFile.UNKNOWN : filename;
     }
 
     /**
@@ -205,7 +207,7 @@ public class Category {
     public static String templateToLine(String template) {
         String result = template;
         result = result.replaceAll("(\r\n|\n\r|\r|\n)", "\\#Newline");
-        result = result.replaceAll(MagicStrings.aimlif_split_char, MagicStrings.aimlif_split_char_name);
+        result = result.replaceAll(AIMLIF_SPLIT_CHAR, MagicStrings.aimlif_split_char_name);
         return result;
     }
 
@@ -217,7 +219,7 @@ public class Category {
      */
     private static String lineToTemplate(String line) {
         String result = line.replaceAll("#Newline", "\n");
-        result = result.replaceAll(MagicStrings.aimlif_split_char_name, MagicStrings.aimlif_split_char);
+        result = result.replaceAll(MagicStrings.aimlif_split_char_name, AIMLIF_SPLIT_CHAR);
         return result;
     }
 
@@ -228,7 +230,7 @@ public class Category {
      * @return Category object
      */
     public static Category IFToCategory(String IF) {
-        String[] split = IF.split(MagicStrings.aimlif_split_char);
+        String[] split = IF.split(AIMLIF_SPLIT_CHAR);
         //System.out.println("Read: "+split);
         return new Category(Integer.parseInt(split[0]), split[1], split[2], split[3], lineToTemplate(split[4]), split[5]);
     }
@@ -240,7 +242,7 @@ public class Category {
      */
     public String categoryToIF() {
         //System.out.println("categoryToIF: template="+templateToLine(category.getTemplate()));
-        String c = MagicStrings.aimlif_split_char;
+        String c = AIMLIF_SPLIT_CHAR;
         return getActivationCnt() + c + getPattern() + c + getThat() + c + getTopic() + c + templateToLine(getTemplate()) + c + getFilename();
     }
 

@@ -1,5 +1,6 @@
 package org.alicebot.ab;
 
+import org.alicebot.ab.aiml.AIMLDefault;
 import org.junit.Test;
 
 import java.util.stream.IntStream;
@@ -24,7 +25,7 @@ public class HistoryTest {
     @Test
     public void unknownItem() {
         History<String> history = History.ofString("plop");
-        assertEquals(MagicStrings.unknown_history_item, history.get(12));
+        assertEquals(AIMLDefault.unknown_history_item, history.get(12));
     }
 
     @Test

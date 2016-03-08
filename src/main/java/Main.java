@@ -20,6 +20,7 @@
 */
 
 import org.alicebot.ab.*;
+import org.alicebot.ab.utils.IOUtils;
 import org.alicebot.ab.utils.LogUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +39,7 @@ public final class Main {
 
     public static void main(String[] args) throws IOException {
 
-        MagicStrings.setRootPath();
+        IOUtils.setRootPath();
 
         AIMLProcessor.extension = new PCAIMLProcessorExtension();
         mainFunction(args);
@@ -67,10 +68,10 @@ public final class Main {
                 }
             }
         }
-        logger.debug("Working Directory = {}", MagicStrings.rootPath);
+        logger.debug("Working Directory = {}", IOUtils.rootPath);
         Graphmaster.enableShortCuts = true;
         //Timer timer = new Timer();
-        Bot bot = new Bot(botName, MagicStrings.rootPath, action); //
+        Bot bot = new Bot(botName, IOUtils.rootPath, action); //
         //EnglishNumberToWords.makeSetMap(bot);
         //getGloss(bot, "c:/ab/data/wn30-lfs/wne-2006-12-06.xml");
         if (MagicBooleans.make_verbs_sets_maps) { Verbs.makeVerbSetsMaps(bot); }

@@ -1,5 +1,6 @@
 package org.alicebot.ab;
 
+import org.alicebot.ab.aiml.AIMLDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,6 +9,7 @@ import java.util.*;
 public class TripleStore {
 
     private static final Logger logger = LoggerFactory.getLogger(TripleStore.class);
+    private static final String UNDEFINED_TRIPLE = "NIL";
 
     public int idCnt = 0;
     public String name = "unknown";
@@ -153,7 +155,7 @@ public class TripleStore {
             existingTriples.remove(id);
             objectTriples.put(o, existingTriples);
         } else {
-            id = MagicStrings.undefined_triple;
+            id = UNDEFINED_TRIPLE;
         }
 
         return id;
@@ -165,13 +167,13 @@ public class TripleStore {
     }
 
     public String addTriple(String subject, String predicate, String object) {
-        if (subject == null || predicate == null || object == null) { return MagicStrings.undefined_triple; }
+        if (subject == null || predicate == null || object == null) { return UNDEFINED_TRIPLE; }
         Triple triple = new Triple(subject, predicate, object);
         return mapTriple(triple);
     }
 
     public String deleteTriple(String subject, String predicate, String object) {
-        if (subject == null || predicate == null || object == null) { return MagicStrings.undefined_triple; }
+        if (subject == null || predicate == null || object == null) { return UNDEFINED_TRIPLE; }
         logger.debug("Deleting {} {} {}", subject, predicate, object);
         Triple triple = new Triple(subject, predicate, object);
         return unMapTriple(triple);
@@ -254,7 +256,7 @@ public class TripleStore {
     }
 
     public String formatAIMLTripleList(Set<String> triples) {
-        String result = MagicStrings.default_list_item;//"NIL"
+        String result = AIMLDefault.default_list_item;//"NIL"
         for (String x : triples) {
             result = x + " " + result;//"CONS "+x+" "+result;
         }
@@ -307,19 +309,19 @@ public class TripleStore {
         Clause newClause = clause.copy();
         if (vars.contains(subj)) {
             String value = tuple.getValue(subj);
-            if (!value.equals(MagicStrings.unbound_variable)) {
+            if (!value.equals(AIMLDefault.unbound_variable)) {
                 newClause.subj = value;
             }
         }
         if (vars.contains(pred)) {
             String value = tuple.getValue(pred);
-            if (!value.equals(MagicStrings.unbound_variable)) {
+            if (!value.equals(AIMLDefault.unbound_variable)) {
                 newClause.pred = value;
             }
         }
         if (vars.contains(obj)) {
             String value = tuple.getValue(obj);
-            if (!value.equals(MagicStrings.unbound_variable)) {
+            if (!value.equals(AIMLDefault.unbound_variable)) {
                 newClause.obj = value;
             }
         }

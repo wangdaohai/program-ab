@@ -4,7 +4,7 @@ import net.reduls.sanmoku.Morpheme;
 import net.reduls.sanmoku.Tagger;
 import org.alicebot.ab.AIMLProcessor;
 import org.alicebot.ab.MagicBooleans;
-import org.alicebot.ab.MagicStrings;
+import org.alicebot.ab.aiml.AIMLDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.NamedNodeMap;
@@ -53,15 +53,15 @@ public final class JapaneseUtils {
 
     public static String tokenizeXML(String xmlExpression) {
         //System.out.println("tokenizeXML "+xmlExpression);
-        String response = MagicStrings.template_failed;
         try {
             xmlExpression = "<sentence>" + xmlExpression + "</sentence>";
             Node root = DomUtils.parseString(xmlExpression);
-            response = recursEval(root);
+            String response = recursEval(root);
+            return AIMLProcessor.trimTag(response, "sentence");
         } catch (Exception e) {
             logger.error("tokenizeXML error ", e);
+            return AIMLDefault.template_failed;
         }
-        return AIMLProcessor.trimTag(response, "sentence");
     }
 
     private static String recursEval(Node node) {

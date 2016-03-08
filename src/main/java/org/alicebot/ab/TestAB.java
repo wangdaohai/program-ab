@@ -1,5 +1,6 @@
 package org.alicebot.ab;
 
+import org.alicebot.ab.aiml.AIMLDefault;
 import org.alicebot.ab.utils.IOUtils;
 import org.alicebot.ab.utils.LogUtil;
 import org.slf4j.Logger;
@@ -29,7 +30,7 @@ public final class TestAB {
         while (true) {
             String textLine = IOUtils.readInputTextLine("Human");
             if (textLine == null || textLine.length() < 1) {
-                textLine = MagicStrings.null_input;
+                textLine = AIMLDefault.null_input;
             }
             if ("q".equals(textLine)) {
                 System.exit(0);
@@ -37,7 +38,7 @@ public final class TestAB {
                 bot.writeQuit();
                 System.exit(0);
             } else if ("sc".equals(textLine)) {
-                sraixCache(MagicStrings.rootPath.resolve("data/sraixdata6.txt"), chatSession);
+                sraixCache(IOUtils.rootPath.resolve("data/sraixdata6.txt"), chatSession);
             } else if ("iqtest".equals(textLine)) {
                 ChatTest ct = new ChatTest(bot);
                 try {
@@ -79,16 +80,16 @@ public final class TestAB {
         Chat chatSession = new Chat(bot, false);
         //        bot.preProcessor.normalizeFile("c:/ab/bots/super/aiml/thats.txt", "c:/ab/bots/super/aiml/normalthats.txt");
         bot.brain.nodeStats();
-        BufferedReader testInput = Files.newBufferedReader(MagicStrings.rootPath.resolve("data/lognormal-500.txt"));
+        BufferedReader testInput = Files.newBufferedReader(IOUtils.rootPath.resolve("data/lognormal-500.txt"));
         //IOUtils testInput = new IOUtils(MagicStrings.rootPath + "/data/callmom-inputs.txt", "read");
-        BufferedWriter testOutput = Files.newBufferedWriter(MagicStrings.rootPath.resolve("data/lognormal-500-out.txt"),
+        BufferedWriter testOutput = Files.newBufferedWriter(IOUtils.rootPath.resolve("data/lognormal-500-out.txt"),
             StandardOpenOption.TRUNCATE_EXISTING);
         //IOUtils testOutput = new IOUtils(MagicStrings.rootPath + "/data/callmom-outputs.txt", "write");
         String textLine = testInput.readLine();
         int i = 1;
         System.out.print(0);
         while (textLine != null) {
-            if (textLine == null || textLine.length() < 1) { textLine = MagicStrings.null_input; }
+            if (textLine == null || textLine.length() < 1) { textLine = AIMLDefault.null_input; }
             if ("q".equals(textLine)) {
                 System.exit(0);
             } else if ("wq".equals(textLine)) {
@@ -96,7 +97,7 @@ public final class TestAB {
                 System.exit(0);
             } else if ("ab".equals(textLine)) {
                 testAB(bot, sample_file);
-            } else if (textLine.equals(MagicStrings.null_input)) {
+            } else if (textLine.equals(AIMLDefault.null_input)) {
                 testOutput.newLine();
             } else if (textLine.startsWith("#")) {
                 testOutput.write(textLine);

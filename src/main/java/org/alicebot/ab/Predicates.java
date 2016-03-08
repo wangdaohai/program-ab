@@ -19,6 +19,7 @@ package org.alicebot.ab;
         Boston, MA  02110-1301, USA.
 */
 
+import org.alicebot.ab.aiml.AIMLDefault;
 import org.alicebot.ab.utils.JapaneseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,8 +50,8 @@ public class Predicates {
         if (MagicBooleans.jp_tokenize) {
             if ("topic".equals(key)) { value = JapaneseUtils.tokenizeSentence(value); }
         }
-        if ("topic".equals(key) && value.isEmpty()) { value = MagicStrings.default_get; }
-        if (value.equals(MagicStrings.too_much_recursion)) { value = MagicStrings.default_list_item; }
+        if ("topic".equals(key) && value.isEmpty()) { value = AIMLDefault.default_get; }
+        if (value.equals(AIMLDefault.too_much_recursion)) { value = AIMLDefault.default_list_item; }
         return valueMap.put(key, value);
     }
 
@@ -63,7 +64,7 @@ public class Predicates {
     public String get(String key) {
         //MagicBooleans.trace("predicates.get(key: " + key + ")");
         String result = valueMap.get(key);
-        if (result == null) { result = MagicStrings.default_get; }
+        if (result == null) { result = AIMLDefault.default_get; }
         //MagicBooleans.trace("in predicates.get, returning: " + result);
         return result;
     }

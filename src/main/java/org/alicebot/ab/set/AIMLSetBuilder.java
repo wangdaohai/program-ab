@@ -1,6 +1,5 @@
 package org.alicebot.ab.set;
 
-import org.alicebot.ab.MagicStrings;
 import org.alicebot.ab.utils.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +15,7 @@ import java.util.stream.Stream;
 public final class AIMLSetBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(AIMLSetBuilder.class);
+    private static final String REMOTE_SET_KEY = "external";
 
     private AIMLSetBuilder() {}
 
@@ -39,7 +39,7 @@ public final class AIMLSetBuilder {
 
         try (BufferedReader reader = Files.newBufferedReader(path)) {
             String firstLine = reader.readLine();
-            if (firstLine.startsWith(MagicStrings.remote_set_key)) {
+            if (firstLine.startsWith(REMOTE_SET_KEY)) {
                 return buildRemoteSet(setName, firstLine);
             }
         }

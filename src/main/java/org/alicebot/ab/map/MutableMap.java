@@ -1,7 +1,7 @@
 package org.alicebot.ab.map;
 
 import org.alicebot.ab.Bot;
-import org.alicebot.ab.MagicStrings;
+import org.alicebot.ab.aiml.AIMLDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +23,7 @@ public class MutableMap extends AIMLMap {
 
     @Override
     public String get(String key) {
-        return values.getOrDefault(key, MagicStrings.default_map);
+        return values.getOrDefault(key, AIMLDefault.default_map);
     }
 
     public String put(String key, String value) {

@@ -20,6 +20,7 @@ package org.alicebot.ab;
         Boston, MA  02110-1301, USA.
 */
 
+import org.alicebot.ab.aiml.AIMLFile;
 import org.alicebot.ab.map.AIMLMap;
 import org.alicebot.ab.map.AIMLMapBuilder;
 import org.alicebot.ab.map.ComputeMap;
@@ -45,6 +46,7 @@ import java.util.stream.Stream;
 public final class Bot {
 
     private static final Logger logger = LoggerFactory.getLogger(Bot.class);
+    private static final String DEFAULT_BOT = "alice2";
 
     public final Properties properties = new Properties();
     public final PreProcessor preProcessor;
@@ -55,7 +57,7 @@ public final class Bot {
     // public Graphmaster unfinishedGraph;
     //  public final ArrayList<Category> categories;
 
-    public String name = MagicStrings.default_bot_name;
+    public final String name;
     public Map<String, AIMLSet> setMap = new HashMap<>();
     public Map<String, AIMLMap> mapMap = new HashMap<>();
     public Set<String> pronounSet = new HashSet<>();
@@ -70,14 +72,14 @@ public final class Bot {
      * Constructor (default action, default path, default bot name)
      */
     public Bot() {
-        this(MagicStrings.default_bot);
+        this(DEFAULT_BOT);
     }
 
     /**
      * Constructor (default action, default path)
      */
     public Bot(String name) {
-        this(name, MagicStrings.rootPath);
+        this(name, IOUtils.rootPath);
     }
 
     /**
@@ -172,13 +174,13 @@ public final class Bot {
      * @param moreCategories list of categories
      */
     void addMoreCategories(String file, Iterable<Category> moreCategories) {
-        if (file.contains(MagicStrings.deleted_aiml_file)) {
+        if (file.contains(AIMLFile.DELETED)) {
            /* for (Category c : moreCategories) {
                 //System.out.println("Delete "+c.getPattern());
                 deletedGraph.addCategory(c);
             }*/
 
-        } else if (file.contains(MagicStrings.learnf_aiml_file)) {
+        } else if (file.contains(AIMLFile.LEARNF)) {
             logger.debug("Reading Learnf file");
             for (Category c : moreCategories) {
                 brain.addCategory(c);
@@ -315,14 +317,14 @@ public final class Bot {
      * write learned categories to AIMLIF file
      */
     public void writeLearnfIFCategories() {
-        writeCertainIFCategories(learnfGraph, MagicStrings.learnf_aiml_file);
+        writeCertainIFCategories(learnfGraph, AIMLFile.LEARNF);
     }
 
     /**
      * write unfinished categories to AIMLIF file
      */
    /* public void writeUnfinishedIFCategories() {
-        writeCertainIFCategories(unfinishedGraph, MagicStrings.unfinished_aiml_file);
+        writeCertainIFCategories(unfinishedGraph, AIMLFile.UNFINISHED);
     }*/
 
     /**

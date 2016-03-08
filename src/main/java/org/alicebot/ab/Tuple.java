@@ -1,5 +1,6 @@
 package org.alicebot.ab;
 
+import org.alicebot.ab.aiml.AIMLDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,8 +49,8 @@ public class Tuple {
                 return false;
             }
         }
-        if (valueMap.values().contains(MagicStrings.unbound_variable)) { return false; }
-        if (tuple.valueMap.values().contains(MagicStrings.unbound_variable)) { return false; }
+        if (valueMap.values().contains(AIMLDefault.unbound_variable)) { return false; }
+        if (tuple.valueMap.values().contains(AIMLDefault.unbound_variable)) { return false; }
         return true;
     }
 
@@ -77,7 +78,7 @@ public class Tuple {
         }
         if (varSet != null) {
             for (String key : varSet) {
-                valueMap.put(key, MagicStrings.unbound_variable);
+                valueMap.put(key, AIMLDefault.unbound_variable);
             }
         }
         name = "tuple" + index;
@@ -107,11 +108,11 @@ public class Tuple {
 
     public String getValue(String var) {
         String result = get(var);
-        return result == null ? MagicStrings.default_get : result;
+        return result == null ? AIMLDefault.default_get : result;
     }
 
     public void bind(String var, String value) {
-        if (get(var) != null && !get(var).equals(MagicStrings.unbound_variable)) {
+        if (get(var) != null && !get(var).equals(AIMLDefault.unbound_variable)) {
             logger.warn("{} already bound to {}", var, get(var));
         } else {
             valueMap.put(var, value);

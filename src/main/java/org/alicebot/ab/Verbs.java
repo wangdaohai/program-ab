@@ -86,7 +86,7 @@ public final class Verbs {
     public static void getIrregulars() {
         // Do, Did, Done, Does, Doing
         // be, was, been, is, being
-        IOUtils.lines(MagicStrings.rootPath.resolve("data/irrverbs.txt"))
+        IOUtils.lines(IOUtils.rootPath.resolve("data/irrverbs.txt"))
             .map(String::toLowerCase).map(l -> l.split(",")).filter(l -> l.length == 5)
             .forEach(triple -> {
                 irregular.add(triple[0]);
@@ -100,7 +100,7 @@ public final class Verbs {
 
     public static void makeVerbSetsMaps(Bot bot) {
         getIrregulars();
-        IOUtils.lines(MagicStrings.rootPath.resolve("data/verb300.txt"))
+        IOUtils.lines(IOUtils.rootPath.resolve("data/verb300.txt"))
             .forEachOrdered(allVerbs::add);
         MutableSet be = new MutableSet("be");
         MutableSet is = new MutableSet("is");

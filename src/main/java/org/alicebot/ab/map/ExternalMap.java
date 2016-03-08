@@ -1,7 +1,7 @@
 package org.alicebot.ab.map;
 
-import org.alicebot.ab.MagicStrings;
 import org.alicebot.ab.Sraix;
+import org.alicebot.ab.aiml.AIMLDefault;
 
 public class ExternalMap extends AIMLMap {
 
@@ -17,8 +17,8 @@ public class ExternalMap extends AIMLMap {
     @Override
     public String get(String key) {
         String query = name().toUpperCase() + " " + key;
-        String response = Sraix.sraix(null, query, MagicStrings.default_map, null, host, botId, null, "0");
-        return response == null ? MagicStrings.default_map : response;
+        String response = Sraix.sraix(null, query, AIMLDefault.default_map, null, host, botId, null, "0");
+        return response == null ? AIMLDefault.default_map : response;
     }
 
     @Override

@@ -19,6 +19,7 @@ package org.alicebot.ab;
         Boston, MA  02110-1301, USA.
 */
 
+import org.alicebot.ab.aiml.AIMLDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +37,7 @@ public final class History<T> {
     private final T defaultValue;
 
     public static History<String> ofString(String name) {
-        return new History<>(name, MagicStrings.unknown_history_item);
+        return new History<>(name, AIMLDefault.unknown_history_item);
     }
 
     public static History<History<String>> ofHistory(String name) {

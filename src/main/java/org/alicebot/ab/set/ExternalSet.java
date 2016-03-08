@@ -1,6 +1,5 @@
 package org.alicebot.ab.set;
 
-import org.alicebot.ab.MagicStrings;
 import org.alicebot.ab.Sraix;
 
 import java.util.Collections;
@@ -9,6 +8,8 @@ import java.util.Set;
 
 /** Set whose content need to be fetched on an external system */
 public class ExternalSet extends AIMLSet {
+
+    public static final String SET_MEMBER_STRING = "ISA";
 
     private final String host;
     private final String botId;
@@ -28,7 +29,7 @@ public class ExternalSet extends AIMLSet {
         if (inCache.contains(s)) { return true; }
         if (outCache.contains(s)) { return true; }
         if (s.split(" ").length > maxLength) { return false; }
-        String query = MagicStrings.set_member_string + name().toUpperCase() + " " + s;
+        String query = SET_MEMBER_STRING + name().toUpperCase() + " " + s;
         String response = Sraix.sraix(null, query, "false", null, host, botId, null, "0");
         //System.out.println("External "+name+" contains "+s+"? "+response);
         if ("true".equals(response)) {
