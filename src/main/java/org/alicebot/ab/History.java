@@ -67,7 +67,7 @@ public final class History<T> {
      */
     public T get(int index) {
         if (index >= MagicNumbers.max_history) {
-            return null;
+            throw new IllegalArgumentException("Max history index is " + MagicNumbers.max_history + ", got " + index);
         }
         if (history[index] == null) {
             return defaultValue;

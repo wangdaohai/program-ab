@@ -11,11 +11,21 @@ import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Optional;
+
 public final class IntervalUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(IntervalUtils.class);
 
     private IntervalUtils() {}
+
+    public static Optional<Integer> getInterval(String from, String to, String jformat, String style) {
+        if ("years".equals(style)) { return Optional.of(getYearsBetween(from, to, jformat)); }
+        if ("months".equals(style)) { return Optional.of(getMonthsBetween(from, to, jformat)); }
+        if ("days".equals(style)) { return Optional.of(getDaysBetween(from, to, jformat)); }
+        if ("hours".equals(style)) { return Optional.of(getHoursBetween(from, to, jformat)); }
+        return Optional.empty();
+    }
 
     // http://docs.oracle.com/javase/1.4.2/docs/api/java/text/SimpleDateFormat.html
     public static int getHoursBetween(final String date1, final String date2, String format) {

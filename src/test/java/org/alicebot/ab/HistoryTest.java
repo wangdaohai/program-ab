@@ -6,7 +6,7 @@ import org.junit.Test;
 import java.util.stream.IntStream;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 public class HistoryTest {
 
@@ -32,7 +32,10 @@ public class HistoryTest {
     public void forgetHistory() {
         History<String> history = History.ofString("plop");
         IntStream.range(0, MagicNumbers.max_history * 2).mapToObj(String::valueOf).forEach(history::add);
-        assertNull(history.get(MagicNumbers.max_history));
+        try {
+            history.get(MagicNumbers.max_history);
+            fail("Should not access beyond max_history");
+        } catch (IllegalArgumentException ignore) {}
         assertEquals(String.valueOf(MagicNumbers.max_history), history.get(MagicNumbers.max_history - 1));
         assertEquals(String.valueOf(MagicNumbers.max_history * 2 - 1), history.get(0));
     }

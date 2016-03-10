@@ -9,8 +9,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
 
 public final class CalendarUtils {
 
@@ -31,22 +29,19 @@ public final class CalendarUtils {
         return LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM dd, yyyy"));
     }
 
-    public static String date(String jformat, String locale, String timezone) {
-        //HashSet<String> attributeNames = Utilities.stringSet("jformat","format","locale","timezone");
+    public static String date(String jformat) {
+        return format(new Date(), jformat);
+    }
+
+    public static String format(Date date, String jformat) {
         if (jformat == null) { jformat = "EEE MMM dd HH:mm:ss zzz yyyy"; }
-        if (locale == null) { locale = Locale.US.getISO3Country(); }
-        if (timezone == null) { timezone = TimeZone.getDefault().getDisplayName(); }
-        //System.out.println("Format = "+format+" Locale = "+locale+" Timezone = "+timezone);
-        String dateAsString = new Date().toString();
         try {
-            SimpleDateFormat simpleDateFormat =
-                new SimpleDateFormat(jformat);
-            dateAsString = simpleDateFormat.format(new Date());
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(jformat);
+            return simpleDateFormat.format(date);
         } catch (Exception ex) {
-            logger.error("CalendarUtils.date Bad date: Format = {} Locale = {} Timezone = {}", jformat, locale, timezone, ex);
+            logger.error("CalendarUtils.format Bad date format = {}", jformat, ex);
+            return date.toString();
         }
-        //MagicBooleans.trace("CalendarUtils.date: "+dateAsString);
-        return dateAsString;
     }
 
 }
