@@ -379,7 +379,7 @@ public final class AIMLProcessor {
     }
 
     private static String tupleGet(String tupleName, String varName) {
-        Tuple tuple = Tuple.tupleMap.get(tupleName);
+        Tuple tuple = Tuple.forName(tupleName);
         //System.out.println("Tuple = "+tuple.toString());
         //System.out.println("Value = "+tuple.getValue(varName));
         return tuple == null ? AIMLDefault.default_get : tuple.getValue(varName);
@@ -1010,7 +1010,7 @@ public final class AIMLProcessor {
         Clause clause = new Clause(subj, pred, obj);
         Set<Tuple> tuples = ps.chatSession.tripleStore.selectFromSingleClause(partial, clause, true);
         String tupleList = tuples.stream()
-            .map(t -> t.name).collect(Collectors.joining(" "))
+            .map(Tuple::name).collect(Collectors.joining(" "))
             .trim();
         if (tupleList.isEmpty()) { tupleList = "NIL"; }
         String var = "";
@@ -1064,7 +1064,7 @@ public final class AIMLProcessor {
         }
         Set<Tuple> tuples = ps.chatSession.tripleStore.select(vars, visibleVars, clauses);
         String result = tuples.stream()
-            .map(t -> t.name).collect(Collectors.joining(" "))
+            .map(Tuple::name).collect(Collectors.joining(" "))
             .trim();
         return result.isEmpty() ? "NIL" : result;
     }

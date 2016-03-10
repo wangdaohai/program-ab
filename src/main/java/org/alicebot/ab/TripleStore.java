@@ -289,7 +289,6 @@ public class TripleStore {
         try {
 
             Tuple tuple = new Tuple(vars, visibleVars);
-            //System.out.println("TripleStore: select vars = "+tuple.printVars());
             result = selectFromRemainingClauses(tuple, clauses);
             if (logger.isDebugEnabled()) {
                 result.stream().map(Tuple::toString).forEach(logger::info);
