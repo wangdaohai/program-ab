@@ -1,6 +1,7 @@
 package org.alicebot.ab;
 
 import org.alicebot.ab.aiml.AIMLDefault;
+import org.alicebot.ab.aiml.AIMLProcessor;
 import org.alicebot.ab.utils.IOUtils;
 import org.alicebot.ab.utils.JapaneseUtils;
 import org.slf4j.Logger;

@@ -19,6 +19,7 @@ package org.alicebot.ab;
         Boston, MA  02110-1301, USA.
 */
 
+import org.alicebot.ab.aiml.AIMLProcessor;
 import org.alicebot.ab.utils.CalendarUtils;
 import org.alicebot.ab.utils.IOUtils;
 import org.alicebot.ab.utils.NetworkUtils;

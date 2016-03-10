@@ -20,6 +20,8 @@
 */
 
 import org.alicebot.ab.*;
+import org.alicebot.ab.aiml.AIMLProcessor;
+import org.alicebot.ab.aiml.PCAIMLProcessorExtension;
 import org.alicebot.ab.utils.IOUtils;
 import org.alicebot.ab.utils.LogUtil;
 import org.slf4j.Logger;

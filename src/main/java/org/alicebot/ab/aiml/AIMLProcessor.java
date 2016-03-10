@@ -1,4 +1,4 @@
-package org.alicebot.ab;
+package org.alicebot.ab.aiml;
 /* Program AB Reference AIML 2.0 implementation
         Copyright (C) 2013 ALICE A.I. Foundation
         Contact: info@alicebot.org
@@ -19,8 +19,7 @@ package org.alicebot.ab;
         Boston, MA  02110-1301, USA.
 */
 
-import org.alicebot.ab.aiml.AIMLDefault;
-import org.alicebot.ab.aiml.AIMLFile;
+import org.alicebot.ab.*;
 import org.alicebot.ab.map.AIMLMap;
 import org.alicebot.ab.utils.*;
 import org.slf4j.Logger;
@@ -145,8 +144,7 @@ public final class AIMLProcessor {
      * @param ignoreAttributes tag names to ignore when evaluating the tag.
      * @return the result of evaluating the tag contents.
      */
-
-    public static String evalTagContent(Node node, ParseState ps, Set<String> ignoreAttributes) {
+    static String evalTagContent(Node node, ParseState ps, Set<String> ignoreAttributes) {
         //MagicBooleans.trace("AIMLProcessor.evalTagContent(node: " + node + ", ps: " + ps + ", ignoreAttributes: " + ignoreAttributes);
         //MagicBooleans.trace("in AIMLProcessor.evalTagContent, node string: " + DomUtils.nodeToString(node));
         StringBuilder result = new StringBuilder();
@@ -174,7 +172,7 @@ public final class AIMLProcessor {
      * @param ps   current parse state
      * @return unevaluated generic XML string
      */
-    public static String genericXML(Node node, ParseState ps) {
+    static String genericXML(Node node, ParseState ps) {
         String evalResult = evalTagContent(node, ps, null);
         return unevaluatedXML(evalResult, node);
     }

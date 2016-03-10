@@ -1,4 +1,4 @@
-package org.alicebot.ab;
+package org.alicebot.ab.aiml;
 /* Program AB Reference AIML 2.0 implementation
         Copyright (C) 2013 ALICE A.I. Foundation
         Contact: info@alicebot.org
@@ -19,6 +19,7 @@ package org.alicebot.ab;
         Boston, MA  02110-1301, USA.
 */
 
+import org.alicebot.ab.ParseState;
 import org.w3c.dom.Node;
 
 import java.util.Set;
