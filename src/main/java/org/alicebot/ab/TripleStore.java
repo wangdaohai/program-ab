@@ -11,15 +11,15 @@ public class TripleStore {
     private static final Logger logger = LoggerFactory.getLogger(TripleStore.class);
     private static final String UNDEFINED_TRIPLE = "NIL";
 
-    public int idCnt = 0;
-    public String name = "unknown";
-    public Chat chatSession;
-    public Bot bot;
-    public Map<String, Triple> idTriple = new HashMap<>();
-    public Map<String, String> tripleStringId = new HashMap<>();
-    public Map<String, HashSet<String>> subjectTriples = new HashMap<>();
-    public Map<String, HashSet<String>> predicateTriples = new HashMap<>();
-    public Map<String, HashSet<String>> objectTriples = new HashMap<>();
+    private int idCnt = 0;
+    private String name = "unknown";
+    private Chat chatSession;
+    private Bot bot;
+    private Map<String, Triple> idTriple = new HashMap<>();
+    private Map<String, String> tripleStringId = new HashMap<>();
+    private Map<String, HashSet<String>> subjectTriples = new HashMap<>();
+    private Map<String, HashSet<String>> predicateTriples = new HashMap<>();
+    private Map<String, HashSet<String>> objectTriples = new HashMap<>();
 
     public TripleStore(String name, Chat chatSession) {
         this.name = name;
@@ -57,7 +57,7 @@ public class TripleStore {
         }
     }
 
-    public String mapTriple(Triple triple) {
+    private String mapTriple(Triple triple) {
         String id = triple.id;
         idTriple.put(id, triple);
         String s = triple.subject;
@@ -107,7 +107,7 @@ public class TripleStore {
         }
     }
 
-    public String unMapTriple(Triple triple) {
+    private String unMapTriple(Triple triple) {
         String s = triple.subject;
         String p = triple.predicate;
         String o = triple.object;
@@ -162,7 +162,7 @@ public class TripleStore {
 
     }
 
-    public Set<String> allTriples() {
+    private Set<String> allTriples() {
         return new HashSet<>(idTriple.keySet());
     }
 
@@ -186,11 +186,11 @@ public class TripleStore {
         }
     }
 
-    Set<String> emptySet() {
+    private Set<String> emptySet() {
         return new HashSet<>();
     }
 
-    public Set<String> getTriples(String s, String p, String o) {
+    private Set<String> getTriples(String s, String p, String o) {
         logger.debug("TripleStore: getTriples [{}] {}:{}:{}", idTriple.size(), s, p, o);
         //printAllTriples();
         Set<String> subjectSet;
@@ -263,19 +263,19 @@ public class TripleStore {
         return result.trim();
     }
 
-    public String getSubject(String id) {
+    private String getSubject(String id) {
         return idTriple.containsKey(id) ? idTriple.get(id).subject : "Unknown subject";
     }
 
-    public String getPredicate(String id) {
+    private String getPredicate(String id) {
         return idTriple.containsKey(id) ? idTriple.get(id).predicate : "Unknown predicate";
     }
 
-    public String getObject(String id) {
+    private String getObject(String id) {
         return idTriple.containsKey(id) ? idTriple.get(id).object : "Unknown object";
     }
 
-    public String stringTriple(String id) {
+    private String stringTriple(String id) {
         Triple triple = idTriple.get(id);
         return id + " " + triple.subject + " " + triple.predicate + " " + triple.object;
     }
@@ -301,7 +301,7 @@ public class TripleStore {
         return result;
     }
 
-    public Clause adjustClause(Tuple tuple, Clause clause) {
+    private Clause adjustClause(Tuple tuple, Clause clause) {
         Set<String> vars = tuple.getVars();
         String subj = clause.subj;
         String pred = clause.pred;
@@ -329,7 +329,7 @@ public class TripleStore {
 
     }
 
-    public Tuple bindTuple(Tuple partial, String triple, Clause clause) {
+    private Tuple bindTuple(Tuple partial, String triple, Clause clause) {
         Tuple tuple = new Tuple(partial);
         if (clause.subj.startsWith("?")) { tuple.bind(clause.subj, getSubject(triple)); }
         if (clause.pred.startsWith("?")) { tuple.bind(clause.pred, getPredicate(triple)); }
@@ -352,7 +352,7 @@ public class TripleStore {
         return result;
     }
 
-    public Set<Tuple> selectFromRemainingClauses(Tuple partial, List<Clause> clauses) {
+    private Set<Tuple> selectFromRemainingClauses(Tuple partial, List<Clause> clauses) {
         //System.out.println("TripleStore: partial = "+partial.toString()+" clauses.size()=="+clauses.size());
         Set<Tuple> result = new HashSet<>();
         Clause clause = clauses.get(0);

@@ -39,7 +39,7 @@ public class Chat {
     private static final String REPETITION_DETECTED = "REPETITIONDETECTED";
 
     public Bot bot;
-    public boolean doWrites;
+    private boolean doWrites;
     public final String customerId;
     public History<History<String>> thatHistory = History.ofHistory("that");
     public History<String> requestHistory = History.ofString("request");
@@ -72,7 +72,7 @@ public class Chat {
      * @param bot        bot to chat with
      * @param customerId unique customer identifier
      */
-    public Chat(Bot bot, boolean doWrites, String customerId) {
+    private Chat(Bot bot, boolean doWrites, String customerId) {
         this.customerId = customerId;
         this.bot = bot;
         this.doWrites = doWrites;
@@ -89,7 +89,7 @@ public class Chat {
     /**
      * Load all predicate defaults
      */
-    void addPredicates() {
+    private void addPredicates() {
         try {
             predicates.getPredicateDefaults(bot.configPath.resolve("predicates.txt"));
         } catch (Exception ex) {
@@ -100,7 +100,7 @@ public class Chat {
     /**
      * Load Triple Store knowledge base
      */
-    void addTriples() {
+    private void addTriples() {
         Path path = bot.configPath.resolve("triples.txt");
         logger.debug("Loading Triples from {}", path);
         int tripleCnt = 0;
@@ -158,7 +158,7 @@ public class Chat {
      * @param contextThatHistory history of "that" values for this request/response interaction
      * @return bot's reply
      */
-    String respond(String input, String that, String topic, History<String> contextThatHistory) {
+    private String respond(String input, String that, String topic, History<String> contextThatHistory) {
         //MagicBooleans.trace("chat.respond(input: " + input + ", that: " + that + ", topic: " + topic + ", contextThatHistory: " + contextThatHistory + ")");
         boolean repetition = true;
         //inputHistory.printHistory();
@@ -194,7 +194,7 @@ public class Chat {
      * @param contextThatHistory history of "that" values for this request/response interaction
      * @return bot's reply
      */
-    String respond(String input, History<String> contextThatHistory) {
+    private String respond(String input, History<String> contextThatHistory) {
         History<String> hist = thatHistory.get(0);
         String that = hist == null ? AIMLDefault.default_that : hist.get(0);
         return respond(input, that, predicates.get("topic"), contextThatHistory);

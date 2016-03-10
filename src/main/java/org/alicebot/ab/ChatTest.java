@@ -7,9 +7,9 @@ public class ChatTest {
 
     private final Logger logger = LoggerFactory.getLogger(ChatTest.class);
 
-    Bot bot;
-    Chat chatSession;
-    String[][] pairs = {
+    private Bot bot;
+    private Chat chatSession;
+    private String[][] pairs = {
         // Mitsuku demo
         {"wen iz ur bd", "My birthday is October 9"},
         {"I am Stephen Peter Worswick", "Stephen"},

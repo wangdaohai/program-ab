@@ -21,6 +21,7 @@ package org.alicebot.ab;
 
 import org.alicebot.ab.aiml.AIMLFile;
 import org.alicebot.ab.set.MutableSet;
+import org.alicebot.ab.utils.DomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +42,7 @@ public class Category {
     private String filename;
     private int activationCnt;
     private final int categoryNumber; // for loading order
-    public static int categoryCnt = 0;
+    private static int categoryCnt = 0;
     private MutableSet matches;
 
     /**
@@ -60,15 +61,6 @@ public class Category {
      */
     public int getActivationCnt() {
         return activationCnt;
-    }
-
-    /**
-     * get the index number of this category
-     *
-     * @return unique integer identifying this category
-     */
-    public int getCategoryNumber() {
-        return categoryNumber;
     }
 
     /**
@@ -291,7 +283,7 @@ public class Category {
      * @param pattern pattern expression
      * @return true or false
      */
-    public boolean validPatternForm(String pattern) {
+    private boolean validPatternForm(String pattern) {
         if (pattern.length() < 1) {
             validationMessage += "Zero length. ";
             return false;
@@ -304,6 +296,25 @@ public class Category {
             }*/
         }
         return true;
+    }
+
+    /**
+     * check to see if a template is a valid XML expression.
+     *
+     * @param template AIML template contents
+     * @return true or false.
+     */
+    private static boolean validTemplate(String template) {
+        logger.debug("validTemplate(template: {})", template);
+        try {
+            template = "<template>" + template + "</template>";
+            DomUtils.parseString(template);
+            return true;
+        } catch (Exception e) {
+            logger.error("Invalid Template {}", template, e);
+            return false;
+        }
+
     }
 
     public String validationMessage = "";
@@ -327,7 +338,7 @@ public class Category {
             validationMessage += "Badly formatted <topic>";
             return false;
         }
-        if (!AIMLProcessor.validTemplate(template)) {
+        if (!validTemplate(template)) {
             validationMessage += "Badly formatted <template>";
             return false;
         }
@@ -388,6 +399,6 @@ public class Category {
     public static Comparator<Category> ACTIVATION_COMPARATOR = Comparator.comparing(Category::getActivationCnt).reversed();
 
     /** Compare two categories for sorting purposes based on category index number */
-    public static Comparator<Category> CATEGORY_NUMBER_COMPARATOR = Comparator.comparing(Category::getCategoryNumber);
+    public static Comparator<Category> CATEGORY_NUMBER_COMPARATOR = Comparator.comparing(c -> c.categoryNumber);
 
 }

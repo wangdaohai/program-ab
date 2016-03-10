@@ -45,7 +45,7 @@ public final class Main {
         mainFunction(args);
     }
 
-    public static void mainFunction(String[] args) throws IOException {
+    private static void mainFunction(String[] args) throws IOException {
         String botName = "alice2";
         MagicBooleans.jp_tokenize = false;
         LogUtil.activateDebug(true);
@@ -108,7 +108,7 @@ public final class Main {
         }
     }
 
-    public static void convert(Bot bot, String action) {
+    private static void convert(Bot bot, String action) {
         if ("aiml2csv".equals(action)) {
             bot.writeAIMLIFFiles();
         } else if ("csv2aiml".equals(action)) {
@@ -133,7 +133,7 @@ public final class Main {
         }
     }
 
-    public static void getGlossFromInputStream(Bot bot, InputStream in) {
+    private static void getGlossFromInputStream(Bot bot, InputStream in) {
         logger.info("getGlossFromInputStream");
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
         Map<String, String> def = new HashMap<>();

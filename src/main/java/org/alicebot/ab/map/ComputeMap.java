@@ -6,14 +6,14 @@ import java.util.function.UnaryOperator;
 
 public class ComputeMap extends AIMLMap {
 
-    public static final String MAP_SUCCESSOR = "successor";
-    public static final String MAP_PREDECESSOR = "predecessor";
-    public static final String MAP_SINGULAR = "singular";
-    public static final String MAP_PLURAL = "plural";
+    private static final String MAP_SUCCESSOR = "successor";
+    private static final String MAP_PREDECESSOR = "predecessor";
+    private static final String MAP_SINGULAR = "singular";
+    private static final String MAP_PLURAL = "plural";
 
     private final UnaryOperator<String> computation;
 
-    public ComputeMap(String name, UnaryOperator<String> computation) {
+    private ComputeMap(String name, UnaryOperator<String> computation) {
         super(name);
         this.computation = computation;
     }

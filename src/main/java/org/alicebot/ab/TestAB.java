@@ -146,7 +146,7 @@ public final class TestAB {
         //bot.brain.nodeStats();
     }
 
-    public static void sraixCache(Path path, Chat chatSession) {
+    private static void sraixCache(Path path, Chat chatSession) {
         MagicBooleans.cache_sraix = true;
         try {
             Files.lines(path).limit(650000).forEach(strLine -> {

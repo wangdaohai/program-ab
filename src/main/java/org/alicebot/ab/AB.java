@@ -46,25 +46,25 @@ public final class AB {
      * Experimental class that analyzes log data and suggests
      * new AIML patterns.
      */
-    public boolean shuffle_mode = true;
-    public boolean sort_mode = !shuffle_mode;
-    public boolean filter_atomic_mode = false;
-    public boolean filter_wild_mode = false;
-    public boolean offer_alice_responses = true;
+    private boolean shuffle_mode = true;
+    private boolean sort_mode = !shuffle_mode;
+    private boolean filter_atomic_mode = false;
+    private boolean filter_wild_mode = false;
+    private boolean offer_alice_responses = true;
 
     private final Path logFile;
 
-    public int runCompletedCnt;
-    public Bot bot;
-    public Bot alice;
-    MutableSet passed;
-    MutableSet testSet;
+    private int runCompletedCnt;
+    private Bot bot;
+    private Bot alice;
+    private MutableSet passed;
+    private MutableSet testSet;
 
-    public final Graphmaster inputGraph;
-    public final Graphmaster patternGraph;
-    public final Graphmaster deletedGraph;
-    public ArrayList<Category> suggestedCategories;
-    public static int limit = 500000;
+    private final Graphmaster inputGraph;
+    private final Graphmaster patternGraph;
+    private final Graphmaster deletedGraph;
+    private ArrayList<Category> suggestedCategories;
+    private static int limit = 500000;
 
     public AB(Bot bot, String sampleFile) {
         logFile = IOUtils.rootPath.resolve("data").resolve(sampleFile);
@@ -88,18 +88,18 @@ public final class AB {
      * @param timer           tells elapsed time in ms
      */
 
-    public void productivity(int runCompletedCnt, Timer timer) {
+    private void productivity(int runCompletedCnt, Timer timer) {
         float time = timer.elapsedTimeMins();
         logger.info("Completed {} in {} min. Productivity {} cat/min",
             runCompletedCnt, time, (float) runCompletedCnt / time);
     }
 
-    public void readDeletedIFCategories() {
+    private void readDeletedIFCategories() {
         bot.readCertainIFCategories(deletedGraph, AIMLFile.DELETED);
         logger.debug("--- DELETED CATEGORIES -- read {} deleted categories", deletedGraph.getCategories().size());
     }
 
-    public void writeDeletedIFCategories() {
+    private void writeDeletedIFCategories() {
         logger.info("--- DELETED CATEGORIES -- write");
         bot.writeCertainIFCategories(deletedGraph, AIMLFile.DELETED);
         logger.info("--- DELETED CATEGORIES -- write {} deleted categories", deletedGraph.getCategories().size());
@@ -113,7 +113,7 @@ public final class AB {
      * @param template the category's template
      * @param filename the filename for the category.
      */
-    public void saveCategory(String pattern, String template, String filename) {
+    private void saveCategory(String pattern, String template, String filename) {
         String that = "*";
         String topic = "*";
         Category c = new Category(0, pattern, that, topic, template, filename);
@@ -133,7 +133,7 @@ public final class AB {
      *
      * @param c the category
      */
-    public void deleteCategory(Category c) {
+    private void deleteCategory(Category c) {
         c.setFilename(AIMLFile.DELETED);
         c.setTemplate(DELETED_TEMPLATE);
         deletedGraph.addCategory(c);
@@ -146,7 +146,7 @@ public final class AB {
      *
      * @param c the category
      */
-    public void skipCategory(Category c) {
+    private void skipCategory(Category c) {
        /* c.setFilename(AIMLFile.UNFINISHED);
         c.setTemplate(UNFINISHED_TEMPLATE);
         bot.unfinishedGraph.addCategory(c);
@@ -166,7 +166,7 @@ public final class AB {
      * read sample inputs from log file, turn them into Paths, and
      * add them to the graph.
      */
-    public void graphInputs() {
+    private void graphInputs() {
         try {
             Files.lines(logFile).limit(limit).forEach(strLine -> {
                 //strLine = preProcessor.normalize(strLine);
@@ -184,13 +184,13 @@ public final class AB {
         }
     }
 
-    static int leafPatternCnt = 0;
-    static int starPatternCnt = 0;
+    private static int leafPatternCnt = 0;
+    private static int starPatternCnt = 0;
 
     /**
      * find suggested patterns in a graph of inputs
      */
-    public void findPatterns() {
+    private void findPatterns() {
         findPatterns(inputGraph.root, "");
         logger.info("{} Leaf Patterns {} Star Patterns", leafPatternCnt, starPatternCnt);
     }
@@ -201,7 +201,7 @@ public final class AB {
      * @param node                    current graph node
      * @param partialPatternThatTopic partial pattern path
      */
-    void findPatterns(Nodemapper node, String partialPatternThatTopic) {
+    private void findPatterns(Nodemapper node, String partialPatternThatTopic) {
         if (node.isLeaf()) {
             //System.out.println("LEAF: "+node.category.getActivationCnt()+". "+partialPatternThatTopic);
             if (node.category.getActivationCnt() > MagicNumbers.node_activation_cnt) {
@@ -252,7 +252,7 @@ public final class AB {
     /**
      * classify inputs into matching categories
      */
-    public void classifyInputs() {
+    private void classifyInputs() {
         try {
             long count = Files.lines(logFile)
                 .map(l -> l.startsWith("Human: ") ? l.substring("Human: ".length()) : l)
@@ -308,7 +308,7 @@ public final class AB {
         logger.info("{} classifying inputs", timer.elapsedTimeSecs());
     }
 
-    public List<Category> nonZeroActivationCount(List<Category> suggestedCategories) {
+    private List<Category> nonZeroActivationCount(List<Category> suggestedCategories) {
         return suggestedCategories.stream()
             .filter(c -> c.getActivationCnt() > 0)
             .collect(Collectors.toList());
@@ -396,7 +396,7 @@ public final class AB {
      * @param textLine response typed by the botmaster
      * @param c        AIML category selected
      */
-    public void terminalInteractionStep(Bot bot, String request, String textLine, Category c, String alicetemplate) {
+    private void terminalInteractionStep(Bot bot, String request, String textLine, Category c, String alicetemplate) {
         if (textLine.contains("<pattern>") && textLine.contains("</pattern>")) {
             int index = textLine.indexOf("<pattern>") + "<pattern>".length();
             int jndex = textLine.indexOf("</pattern>");

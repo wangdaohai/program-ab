@@ -14,9 +14,9 @@ public class Tuple {
     private static final Logger logger = LoggerFactory.getLogger(Tuple.class);
 
     private final Map<String, String> valueMap = new HashMap<>();
-    public static int index = 0;
+    private static int index = 0;
     public static Map<String, Tuple> tupleMap = new HashMap<>();
-    public HashSet<String> visibleVars = new HashSet<>();
+    private HashSet<String> visibleVars = new HashSet<>();
     String name;
 
     @Override
@@ -68,7 +68,7 @@ public class Tuple {
         return result;
     }
 
-    public Tuple(Set<String> varSet, Set<String> visibleVars, Tuple tuple) {
+    private Tuple(Set<String> varSet, Set<String> visibleVars, Tuple tuple) {
         //System.out.println("varSet="+varSet);
         //System.out.println("visbileVars="+visibleVars);
         if (visibleVars != null) { this.visibleVars.addAll(visibleVars); }

@@ -17,25 +17,25 @@ public final class Verbs {
 
     private Verbs() {}
 
-    static Set<String> es = Utilities.stringSet("sh", "ch", "th", "ss", "x");
-    static Set<String> ies = Utilities.stringSet("ly", "ry", "ny", "fy", "dy", "py");
-    static Set<String> ring = Utilities.stringSet("be", "me", "re", "se", "ve", "de", "le", "ce", "ze", "ke", "te", "ge", "ne", "pe", "ue");
-    static Set<String> bing = Utilities.stringSet("ab", "at", "op", "el", "in", "ur", "op", "er", "un", "in", "it", "et", "ut", "im", "id", "ol", "ig");
-    static Set<String> notBing = Utilities.stringSet("der", "eat", "ber", "ain", "sit", "ait", "uit", "eet", "ter", "lop", "ver", "wer", "aim", "oid", "eel", "out", "oin", "fer", "vel", "mit");
+    private static Set<String> es = Utilities.stringSet("sh", "ch", "th", "ss", "x");
+    private static Set<String> ies = Utilities.stringSet("ly", "ry", "ny", "fy", "dy", "py");
+    private static Set<String> ring = Utilities.stringSet("be", "me", "re", "se", "ve", "de", "le", "ce", "ze", "ke", "te", "ge", "ne", "pe", "ue");
+    private static Set<String> bing = Utilities.stringSet("ab", "at", "op", "el", "in", "ur", "op", "er", "un", "in", "it", "et", "ut", "im", "id", "ol", "ig");
+    private static Set<String> notBing = Utilities.stringSet("der", "eat", "ber", "ain", "sit", "ait", "uit", "eet", "ter", "lop", "ver", "wer", "aim", "oid", "eel", "out", "oin", "fer", "vel", "mit");
 
-    public static Set<String> irregular = new HashSet<>();
-    public static Map<String, String> be2was = new HashMap<>();
-    public static Map<String, String> be2been = new HashMap<>();
-    public static Map<String, String> be2is = new HashMap<>();
-    public static Map<String, String> be2being = new HashMap<>();
-    public static Set<String> allVerbs = new HashSet<>();
+    private static Set<String> irregular = new HashSet<>();
+    private static Map<String, String> be2was = new HashMap<>();
+    private static Map<String, String> be2been = new HashMap<>();
+    private static Map<String, String> be2is = new HashMap<>();
+    private static Map<String, String> be2being = new HashMap<>();
+    private static Set<String> allVerbs = new HashSet<>();
 
-    public static String endsWith(String verb, Set<String> endings) {
+    private static String endsWith(String verb, Set<String> endings) {
         for (String x : endings) { if (verb.endsWith(x)) { return x; }}
         return null;
     }
 
-    public static String is(String verb) {
+    private static String is(String verb) {
         if (irregular.contains(verb)) { return be2is.get(verb); }
         if (verb.endsWith("go")) { return verb + "es"; }
         if (endsWith(verb, es) != null) { return verb + "es"; }
@@ -43,7 +43,7 @@ public final class Verbs {
         return verb + "s";
     }
 
-    public static String was(String verb) {
+    private static String was(String verb) {
         String ending;
         verb = verb.trim();
         if ("admit".equals(verb)) { return "admitted"; }
@@ -61,7 +61,7 @@ public final class Verbs {
         return verb + "ed";
     }
 
-    public static String being(String verb) {
+    private static String being(String verb) {
         String ending;
         if (irregular.contains(verb)) { return be2being.get(verb); }
         if ("admit".equals(verb)) { return "admitting"; }
@@ -78,12 +78,12 @@ public final class Verbs {
         return verb + "ing";
     }
 
-    public static String been(String verb) {
+    private static String been(String verb) {
         if (irregular.contains(verb)) { return (be2been.get(verb)); }
         return was(verb);
     }
 
-    public static void getIrregulars() {
+    private static void getIrregulars() {
         // Do, Did, Done, Does, Doing
         // be, was, been, is, being
         IOUtils.lines(IOUtils.rootPath.resolve("data/irrverbs.txt"))

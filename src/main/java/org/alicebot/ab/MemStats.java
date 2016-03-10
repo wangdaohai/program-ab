@@ -33,7 +33,7 @@ public final class MemStats {
 
     private MemStats() {}
 
-    public static long prevHeapSize = 0;
+    private static long prevHeapSize = 0;
 
     /**
      * print out some statistics about heap size

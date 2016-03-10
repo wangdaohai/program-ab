@@ -54,7 +54,7 @@ public final class IntervalUtils {
         }
     }
 
-    public static int getMonthsBetween(final String date1, final String date2, String format) {
+    private static int getMonthsBetween(final String date1, final String date2, String format) {
         try {
             final DateTimeFormatter fmt = getDateTimeFormatter(format);
             return Months.monthsBetween(
@@ -67,7 +67,7 @@ public final class IntervalUtils {
         }
     }
 
-    public static int getDaysBetween(final String date1, final String date2, String format) {
+    private static int getDaysBetween(final String date1, final String date2, String format) {
         try {
             final DateTimeFormatter fmt = getDateTimeFormatter(format);
             return Days.daysBetween(

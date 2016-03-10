@@ -46,9 +46,9 @@ public final class Sraix {
 
     private Sraix() {}
 
-    public static Map<String, String> custIdMap = new HashMap<>();
+    private static Map<String, String> custIdMap = new HashMap<>();
 
-    public static String custid = "1"; // customer ID number for Pandorabots
+    private static String custid = "1"; // customer ID number for Pandorabots
 
     public static String sraix(Chat chatSession, String input, String defaultResponse, String hint, String host, String botid, String apiKey, String limit) {
         String response;
@@ -68,7 +68,7 @@ public final class Sraix {
         return response;
     }
 
-    public static String sraixPandorabots(String input, Chat chatSession, String host, String botid) {
+    private static String sraixPandorabots(String input, Chat chatSession, String host, String botid) {
         //System.out.println("Entering SRAIX with input="+input+" host ="+host+" botid="+botid);
         String responseContent = pandorabotsRequest(input, host, botid);
         if (responseContent == null) {
@@ -78,7 +78,7 @@ public final class Sraix {
         }
     }
 
-    public static String pandorabotsRequest(String input, String host, String botid) {
+    private static String pandorabotsRequest(String input, String host, String botid) {
         try {
             custid = "0";
             String key = host + ":" + botid;
@@ -118,7 +118,7 @@ public final class Sraix {
         }
     }
 
-    public static String pandorabotsResponse(String sraixResponse, Chat chatSession, String host, String botid) {
+    private static String pandorabotsResponse(String sraixResponse, Chat chatSession, String host, String botid) {
         String botResponse = SRAIX_FAILED;
         try {
             int n1 = sraixResponse.indexOf("<that>");
@@ -143,7 +143,7 @@ public final class Sraix {
         return botResponse;
     }
 
-    public static String sraixPannous(String input, String hint, Chat chatSession) {
+    private static String sraixPannous(String input, String hint, Chat chatSession) {
         try {
             String rawInput = input;
             if (hint == null) { hint = NO_HINT; }
@@ -280,7 +280,7 @@ public final class Sraix {
         return SRAIX_FAILED;
     } // sraixPannous
 
-    public static void log(String pattern, String template) {
+    private static void log(String pattern, String template) {
         logger.info("Logging {}", pattern);
         template = template.trim();
         if (MagicBooleans.cache_sraix) {

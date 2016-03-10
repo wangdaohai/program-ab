@@ -72,7 +72,7 @@ public final class Bot {
     /**
      * Constructor (default action, default path, default bot name)
      */
-    public Bot() {
+    private Bot() {
         this(DEFAULT_BOT);
     }
 
@@ -86,7 +86,7 @@ public final class Bot {
     /**
      * Constructor (default action)
      */
-    public Bot(String name, java.nio.file.Path path) {
+    private Bot(String name, java.nio.file.Path path) {
         this(name, path, "auto");
     }
 
@@ -161,7 +161,7 @@ public final class Bot {
 
     }
 
-    Set<String> getPronouns() {
+    private Set<String> getPronouns() {
         Set<String> pronounSet = IOUtils.lines(configPath.resolve("pronouns.txt"))
             .map(String::trim).filter(p -> !p.isEmpty()).collect(Collectors.toSet());
         logger.debug("Read pronouns: {}", pronounSet);
@@ -174,7 +174,7 @@ public final class Bot {
      * @param file           name of AIML file
      * @param moreCategories list of categories
      */
-    void addMoreCategories(String file, Iterable<Category> moreCategories) {
+    private void addMoreCategories(String file, Iterable<Category> moreCategories) {
         if (file.contains(AIMLFile.DELETED)) {
             /* skip */
         } else if (file.contains(AIMLFile.LEARNF)) {
@@ -193,7 +193,7 @@ public final class Bot {
     /**
      * Load all brain categories from AIML directory
      */
-    void addCategoriesFromAIML() {
+    private void addCategoriesFromAIML() {
         try {
             Timer timer = new Timer();
             timer.start();
@@ -324,7 +324,7 @@ public final class Bot {
      * @param cats     array list of categories
      * @param filename AIMLIF filename
      */
-    public void writeIFCategories(List<Category> cats, String filename) {
+    private void writeIFCategories(List<Category> cats, String filename) {
         //System.out.println("writeIFCategories "+filename);
         if (aimlifPath.toFile().exists()) {
             try {
@@ -380,7 +380,7 @@ public final class Bot {
         aimlPath.toFile().setLastModified(new Date().getTime());
     }
 
-    Iterable<String> aimlFileContent(String fileName, List<Category> categories) {
+    private Iterable<String> aimlFileContent(String fileName, List<Category> categories) {
         return Stream.of(
             Stream.of("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "<aiml>"),
             Stream.of(Utilities.getCopyright(this, fileName)),
@@ -392,7 +392,7 @@ public final class Bot {
     /**
      * load bot properties
      */
-    void addProperties() {
+    private void addProperties() {
         try {
             properties.getProperties(configPath.resolve("properties.txt"));
         } catch (Exception ex) {
@@ -406,7 +406,7 @@ public final class Bot {
      * @param path name of AIMLIF file
      * @return array list of categories read
      */
-    public List<Category> readIFCategories(Path path) {
+    private List<Category> readIFCategories(Path path) {
         try {
             return Files.lines(path).map(strLine -> {
                 try {
@@ -423,7 +423,7 @@ public final class Bot {
     }
 
     /** Load all AIML Sets */
-    void addAIMLSets() {
+    private void addAIMLSets() {
         try {
             setMap.putAll(AIMLSetBuilder.fromFolder(setsPath)
                 .collect(Collectors.toMap(AIMLSet::name, s -> s)));
@@ -438,7 +438,7 @@ public final class Bot {
     }
 
     /** Load all AIML Maps */
-    void addAIMLMaps() {
+    private void addAIMLMaps() {
         try {
             mapMap.putAll(AIMLMapBuilder.fromFolder(mapsPath)
                 .collect(Collectors.toMap(AIMLMap::name, m -> m)));
@@ -482,7 +482,7 @@ public final class Bot {
     /**
      * traverse graph and test all categories found in leaf nodes for shadows
      */
-    void shadowChecker(Nodemapper node) {
+    private void shadowChecker(Nodemapper node) {
         if (node.isLeaf()) {
             String input = node.category.getPattern();
             input = brain.replaceBotProperties(input);
@@ -505,7 +505,7 @@ public final class Bot {
         }
     }
 
-    public String instantiateSets(String pattern) {
+    private String instantiateSets(String pattern) {
         String[] splitPattern = pattern.split(" ");
         pattern = "";
         for (String x : splitPattern) {

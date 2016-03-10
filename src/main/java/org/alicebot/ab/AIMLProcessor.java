@@ -46,10 +46,10 @@ public final class AIMLProcessor {
 
     private AIMLProcessor() {}
 
-    public static int sraiCount = 0;
+    private static int sraiCount = 0;
 
     // Helper functions:
-    public static int checkForRepeat(String input, Chat chatSession) {
+    private static int checkForRepeat(String input, Chat chatSession) {
         return input.equals(chatSession.inputHistory.get(1)) ? 1 : 0;
     }
 
@@ -81,7 +81,7 @@ public final class AIMLProcessor {
      * @param srCnt       number of {@code <srai>} activations.
      * @return bot's reply.
      */
-    public static String respond(String input, String that, String topic, Chat chatSession, int srCnt) {
+    private static String respond(String input, String that, String topic, Chat chatSession, int srCnt) {
         logger.debug("input: {}, that: {}, topic: {}, chatSession: {}, srCnt: {}",
             input, that, topic, chatSession, srCnt);
         if (input == null || input.isEmpty()) { input = AIMLDefault.null_input; }
@@ -378,7 +378,7 @@ public final class AIMLProcessor {
         return result;
     }
 
-    public static String tupleGet(String tupleName, String varName) {
+    private static String tupleGet(String tupleName, String varName) {
         Tuple tuple = Tuple.tupleMap.get(tupleName);
         //System.out.println("Tuple = "+tuple.toString());
         //System.out.println("Value = "+tuple.getValue(varName));
@@ -984,7 +984,7 @@ public final class AIMLProcessor {
         return ps.chatSession.tripleStore.addTriple(subject, predicate, object);
     }
 
-    public static String uniq(Node node, ParseState ps) {
+    private static String uniq(Node node, ParseState ps) {
         HashSet<String> vars = new HashSet<>();
         HashSet<String> visibleVars = new HashSet<>();
         String subj = "?subject";
@@ -1021,7 +1021,7 @@ public final class AIMLProcessor {
         return tupleGet(firstTuple, var);
     }
 
-    public static String select(Node node, ParseState ps) {
+    private static String select(Node node, ParseState ps) {
         List<Clause> clauses = new ArrayList<>();
         NodeList childList = node.getChildNodes();
         //String[] splitTuple;
@@ -1069,37 +1069,7 @@ public final class AIMLProcessor {
         return result.isEmpty() ? "NIL" : result;
     }
 
-    public static String subject(Node node, ParseState ps) {
-        String id = evalTagContent(node, ps, null);
-
-        TripleStore ts = ps.chatSession.tripleStore;
-        String subject = "unknown";
-        if (ts.idTriple.containsKey(id)) { subject = ts.idTriple.get(id).subject; }
-        //System.out.println("subject "+id+"="+subject);
-        return subject;
-    }
-
-    public static String predicate(Node node, ParseState ps) {
-        String id = evalTagContent(node, ps, null);
-        TripleStore ts = ps.chatSession.tripleStore;
-        if (ts.idTriple.containsKey(id)) {
-            return ts.idTriple.get(id).predicate;
-        } else {
-            return "unknown";
-        }
-    }
-
-    public static String object(Node node, ParseState ps) {
-        String id = evalTagContent(node, ps, null);
-        TripleStore ts = ps.chatSession.tripleStore;
-        if (ts.idTriple.containsKey(id)) {
-            return ts.idTriple.get(id).object;
-        } else {
-            return "unknown";
-        }
-    }
-
-    public static String javascript(Node node, ParseState ps) {
+    private static String javascript(Node node, ParseState ps) {
         //MagicBooleans.trace("AIMLProcessor.javascript(node: " + node + ", ps: " + ps + ")");
         String script = evalTagContent(node, ps, null);
         try {
@@ -1112,7 +1082,7 @@ public final class AIMLProcessor {
         }
     }
 
-    public static String firstWord(String sentence) {
+    private static String firstWord(String sentence) {
         String content = (sentence == null ? "" : sentence).trim();
         if (content.isEmpty()) {
             return AIMLDefault.default_list_item;
@@ -1123,7 +1093,7 @@ public final class AIMLProcessor {
         }
     }
 
-    public static String restWords(String sentence) {
+    private static String restWords(String sentence) {
         String content = (sentence == null ? "" : sentence).trim();
         if (content.contains(" ")) {
             return content.substring(content.indexOf(' ') + 1);
@@ -1132,26 +1102,26 @@ public final class AIMLProcessor {
         }
     }
 
-    public static String first(Node node, ParseState ps) {
+    private static String first(Node node, ParseState ps) {
         String content = evalTagContent(node, ps, null);
         return firstWord(content);
 
     }
 
-    public static String rest(Node node, ParseState ps) {
+    private static String rest(Node node, ParseState ps) {
         String content = evalTagContent(node, ps, null);
         content = ps.chatSession.bot.preProcessor.normalize(content);
         return restWords(content);
 
     }
 
-    public static String resetlearnf(ParseState ps) {
+    private static String resetlearnf(ParseState ps) {
         ps.chatSession.bot.deleteLearnfCategories();
         return "Deleted Learnf Categories";
 
     }
 
-    public static String resetlearn(ParseState ps) {
+    private static String resetlearn(ParseState ps) {
         ps.chatSession.bot.deleteLearnCategories();
         return "Deleted Learn Categories";
 
@@ -1287,7 +1257,7 @@ public final class AIMLProcessor {
      * @param ps       AIML Parse state
      * @return result of evaluating template.
      */
-    public static String evalTemplate(String template, ParseState ps) {
+    private static String evalTemplate(String template, ParseState ps) {
         //MagicBooleans.trace("AIMLProcessor.evalTemplate(template: " + template + ", ps: " + ps + ")");
         try {
             template = "<template>" + template + "</template>";
@@ -1297,25 +1267,6 @@ public final class AIMLProcessor {
             logger.error("evalTemplate error", e);
             return AIMLDefault.template_failed;
         }
-    }
-
-    /**
-     * check to see if a template is a valid XML expression.
-     *
-     * @param template AIML template contents
-     * @return true or false.
-     */
-    public static boolean validTemplate(String template) {
-        logger.debug("AIMLProcessor.validTemplate(template: {})", template);
-        try {
-            template = "<template>" + template + "</template>";
-            DomUtils.parseString(template);
-            return true;
-        } catch (Exception e) {
-            logger.error("Invalid Template {}", template, e);
-            return false;
-        }
-
     }
 
 }

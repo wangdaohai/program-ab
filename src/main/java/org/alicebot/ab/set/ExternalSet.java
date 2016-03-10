@@ -9,7 +9,7 @@ import java.util.Set;
 /** Set whose content need to be fetched on an external system */
 public class ExternalSet extends AIMLSet {
 
-    public static final String SET_MEMBER_STRING = "ISA";
+    private static final String SET_MEMBER_STRING = "ISA";
 
     private final String host;
     private final String botId;

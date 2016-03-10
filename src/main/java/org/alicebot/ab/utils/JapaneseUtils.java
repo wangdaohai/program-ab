@@ -23,7 +23,7 @@ public final class JapaneseUtils {
      * @param fragment fragment of input containing only text and no XML tags
      * @return tokenized fragment
      */
-    public static String tokenizeFragment(String fragment) {
+    private static String tokenizeFragment(String fragment) {
         //System.out.println("buildFragment "+fragment);
         StringBuilder result = new StringBuilder();
         for (Morpheme e : Tagger.parse(fragment)) {
@@ -51,7 +51,7 @@ public final class JapaneseUtils {
         return result.trim();
     }
 
-    public static String tokenizeXML(String xmlExpression) {
+    private static String tokenizeXML(String xmlExpression) {
         //System.out.println("tokenizeXML "+xmlExpression);
         try {
             xmlExpression = "<sentence>" + xmlExpression + "</sentence>";
@@ -83,13 +83,13 @@ public final class JapaneseUtils {
         return "JP Morph Error";
     }
 
-    public static String genericXML(Node node) {
+    private static String genericXML(Node node) {
         //System.out.println("genericXML "+node.getNodeName());
         String result = evalTagContent(node);
         return unevaluatedXML(result, node);
     }
 
-    public static String evalTagContent(Node node) {
+    private static String evalTagContent(Node node) {
         StringBuilder result = new StringBuilder();
         //System.out.println("evalTagContent "+node.getNodeName());
         try {

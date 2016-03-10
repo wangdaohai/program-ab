@@ -34,7 +34,7 @@ public class PCAIMLProcessorExtension implements AIMLProcessorExtension {
 
     private static final Logger logger = LoggerFactory.getLogger(PCAIMLProcessorExtension.class);
 
-    public Set<String> extensionTagNames = Utilities.stringSet("contactid", "multipleids", "displayname", "dialnumber", "emailaddress", "contactbirthday", "addinfo");
+    private Set<String> extensionTagNames = Utilities.stringSet("contactid", "multipleids", "displayname", "dialnumber", "emailaddress", "contactbirthday", "addinfo");
 
     @Override
     public Set<String> extensionTagSet() {

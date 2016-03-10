@@ -10,7 +10,7 @@ public abstract class ComputeSet extends AIMLSet {
 
     private static final String NATURAL_NUMBER_SET_NAME = "number";
 
-    public ComputeSet(String name) {
+    private ComputeSet(String name) {
         super(name);
     }
 

@@ -69,7 +69,7 @@ public final class EnglishNumberToWords {
         return numNames[number] + " hundred" + soFar;
     }
 
-    public static String convert(long number) {
+    private static String convert(long number) {
         // 0 to 999 999 999 999
         if (number == 0) { return "zero"; }
 

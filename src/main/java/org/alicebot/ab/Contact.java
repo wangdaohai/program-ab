@@ -10,14 +10,14 @@ import java.util.regex.Pattern;
  * This class is here to simulate a Contacts database for the purpose of testing contactaction.aiml
  */
 public final class Contact {
-    public static int contactCount = 0;
-    public static Map<String, Contact> idContactMap = new HashMap<>();
-    public static Map<String, String> nameIdMap = new HashMap<>();
-    public String contactId;
-    public String displayName;
-    public String birthday;
-    public Map<String, String> phones;
-    public Map<String, String> emails;
+    private static int contactCount = 0;
+    private static Map<String, Contact> idContactMap = new HashMap<>();
+    private static Map<String, String> nameIdMap = new HashMap<>();
+    private String contactId;
+    private String displayName;
+    private String birthday;
+    private Map<String, String> phones;
+    private Map<String, String> emails;
 
     public static String multipleIds(String contactName) {
         String patternString = " (" + contactName.toUpperCase() + ") ";
@@ -98,21 +98,21 @@ public final class Contact {
         addBirthday(birthday);
     }
 
-    public void addPhone(String type, String dialNumber) {
+    private void addPhone(String type, String dialNumber) {
         phones.put(type.toUpperCase(), dialNumber);
     }
 
-    public void addEmail(String type, String emailAddress) {
+    private void addEmail(String type, String emailAddress) {
         emails.put(type.toUpperCase(), emailAddress);
     }
 
-    public void addName(String name) {
+    private void addName(String name) {
         displayName = name;
         nameIdMap.put(displayName.toUpperCase(), contactId);
         //System.out.println(nameIdMap.toString());
     }
 
-    public void addBirthday(String birthday) {
+    private void addBirthday(String birthday) {
         this.birthday = birthday;
     }
 

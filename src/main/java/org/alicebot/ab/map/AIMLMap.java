@@ -29,7 +29,7 @@ public abstract class AIMLMap {
 
     private final String name;
 
-    public AIMLMap(String name) {
+    protected AIMLMap(String name) {
         this.name = name;
     }
 

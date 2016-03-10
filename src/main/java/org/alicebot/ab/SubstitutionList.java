@@ -18,7 +18,7 @@ public class SubstitutionList {
 
     private final List<Substitution> substitutions;
 
-    public SubstitutionList(List<Substitution> substitutions) {
+    private SubstitutionList(List<Substitution> substitutions) {
         this.substitutions = substitutions;
     }
 
