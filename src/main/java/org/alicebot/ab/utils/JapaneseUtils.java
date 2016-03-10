@@ -2,9 +2,9 @@ package org.alicebot.ab.utils;
 
 import net.reduls.sanmoku.Morpheme;
 import net.reduls.sanmoku.Tagger;
-import org.alicebot.ab.AIMLProcessor;
 import org.alicebot.ab.MagicBooleans;
 import org.alicebot.ab.aiml.AIMLDefault;
+import org.alicebot.ab.aiml.AIMLParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.NamedNodeMap;
@@ -57,7 +57,7 @@ public final class JapaneseUtils {
             xmlExpression = "<sentence>" + xmlExpression + "</sentence>";
             Node root = DomUtils.parseString(xmlExpression);
             String response = recursEval(root);
-            return AIMLProcessor.trimTag(response, "sentence");
+            return AIMLParser.trimTag(response, "sentence");
         } catch (Exception e) {
             logger.error("tokenizeXML error ", e);
             return AIMLDefault.template_failed;

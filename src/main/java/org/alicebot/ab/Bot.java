@@ -21,6 +21,7 @@ package org.alicebot.ab;
 */
 
 import org.alicebot.ab.aiml.AIMLFile;
+import org.alicebot.ab.aiml.AIMLParser;
 import org.alicebot.ab.map.AIMLMap;
 import org.alicebot.ab.map.AIMLMapBuilder;
 import org.alicebot.ab.map.ComputeMap;
@@ -175,28 +176,17 @@ public final class Bot {
      */
     void addMoreCategories(String file, Iterable<Category> moreCategories) {
         if (file.contains(AIMLFile.DELETED)) {
-           /* for (Category c : moreCategories) {
-                //System.out.println("Delete "+c.getPattern());
-                deletedGraph.addCategory(c);
-            }*/
-
+            /* skip */
         } else if (file.contains(AIMLFile.LEARNF)) {
             logger.debug("Reading Learnf file");
             for (Category c : moreCategories) {
                 brain.addCategory(c);
                 learnfGraph.addCategory(c);
-                //patternGraph.addCategory(c);
             }
-            //this.categories.addAll(moreCategories);
         } else {
             for (Category c : moreCategories) {
-                //System.out.println("Brain size="+brain.root.size());
-                //brain.printgraph();
                 brain.addCategory(c);
-                //patternGraph.addCategory(c);
-                //brain.printgraph();
             }
-            //this.categories.addAll(moreCategories);
         }
     }
 
@@ -208,6 +198,7 @@ public final class Bot {
             Timer timer = new Timer();
             timer.start();
             File folder = aimlPath.toFile();
+            AIMLParser parser = new AIMLParser();
             if (folder.exists()) {
                 logger.debug("Loading AIML files from {}", aimlPath);
                 int cnt = IOUtils.filesWithExtension(aimlPath, ".aiml")
@@ -215,7 +206,7 @@ public final class Bot {
                         String file = path.getFileName().toString();
                         logger.debug(file);
                         try {
-                            List<Category> moreCategories = AIMLProcessor.AIMLToCategories(aimlPath, file);
+                            List<Category> moreCategories = parser.AIMLToCategories(aimlPath, file);
                             addMoreCategories(file, moreCategories);
                             return moreCategories.size();
                         } catch (Exception iex) {
@@ -519,7 +510,7 @@ public final class Bot {
         pattern = "";
         for (String x : splitPattern) {
             if (x.startsWith("<SET>")) {
-                String setName = AIMLProcessor.trimTag(x, "SET");
+                String setName = AIMLParser.trimTag(x, "SET");
                 AIMLSet set = setMap.get(setName);
                 x = set != null ? "FOUNDITEM" : "NOTFOUND";
             }
