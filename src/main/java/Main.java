@@ -43,7 +43,7 @@ public final class Main {
 
         IOUtils.setRootPath();
 
-        AIMLProcessor.extension = new PCAIMLProcessorExtension();
+        AIMLProcessor.registerExtensions(PCAIMLProcessorExtension.values());
         mainFunction(args);
     }
 

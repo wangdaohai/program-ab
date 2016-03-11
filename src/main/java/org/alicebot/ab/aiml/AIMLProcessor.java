@@ -41,7 +41,7 @@ public final class AIMLProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(AIMLProcessor.class);
 
-    public static AIMLProcessorExtension extension;
+    private static final Collection<AIMLProcessorExtension> extensions = new ArrayList<>();
 
     private final Chat chatSession;
 
@@ -1240,8 +1240,8 @@ public final class AIMLProcessor {
                 return resetlearnf();
             } else if ("resetlearn".equals(nodeName)) {
                 return resetlearn();
-            } else if (extension != null && extension.canProcessTag(nodeName)) {
-                return extension.recursEval(node, n -> evalTagContent(node, ps, null));
+            } else if (hasExtensionFor(nodeName)) {
+                return extensionProcess(node, ps);
             } else {
                 return (genericXML(node, ps));
             }
@@ -1249,6 +1249,21 @@ public final class AIMLProcessor {
             logger.error("recursEval error", ex);
             return "";
         }
+    }
+
+    public static void registerExtensions(AIMLProcessorExtension... extensions) {
+        Collections.addAll(AIMLProcessor.extensions, extensions);
+    }
+
+    private static boolean hasExtensionFor(String tagName) {
+        return extensions.stream().anyMatch(e -> e.canProcessTag(tagName));
+    }
+
+    private String extensionProcess(Node node, ParseState ps) {
+        return extensions.stream()
+            .filter(e -> e.canProcessTag(node.getNodeName())).findFirst()
+            .map(e -> e.recursEval(node, n -> evalTagContent(n, ps, null)))
+            .orElseThrow(() -> new IllegalArgumentException("No extension for " + node.getNodeName()));
     }
 
     /**
