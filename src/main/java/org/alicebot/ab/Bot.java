@@ -37,7 +37,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -486,8 +493,7 @@ public final class Bot {
         if (node.isLeaf()) {
             String input = node.category.getPattern();
             input = brain.replaceBotProperties(input);
-            input =
-                input.replace("*", "XXX").replace("_", "XXX").replace("^", "").replace("#", "");
+            input = input.replace("*", "XXX").replace("_", "XXX").replace("^", "").replace("#", "");
             String that = node.category.getThat().replace("*", "XXX").replace("_", "XXX").replace("^", "").replace("#", "");
             String topic = node.category.getTopic().replace("*", "XXX").replace("_", "XXX").replace("^", "").replace("#", "");
             input = instantiateSets(input);

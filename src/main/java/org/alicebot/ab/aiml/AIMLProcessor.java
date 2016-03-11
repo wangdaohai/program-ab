@@ -19,16 +19,39 @@ package org.alicebot.ab.aiml;
         Boston, MA  02110-1301, USA.
 */
 
-import org.alicebot.ab.*;
+import org.alicebot.ab.Category;
+import org.alicebot.ab.Chat;
+import org.alicebot.ab.Clause;
+import org.alicebot.ab.History;
+import org.alicebot.ab.MagicBooleans;
+import org.alicebot.ab.MagicNumbers;
+import org.alicebot.ab.MagicStrings;
+import org.alicebot.ab.Nodemapper;
+import org.alicebot.ab.ParseState;
+import org.alicebot.ab.Predicates;
+import org.alicebot.ab.Sraix;
+import org.alicebot.ab.StandardResponse;
+import org.alicebot.ab.Tuple;
+import org.alicebot.ab.Utilities;
 import org.alicebot.ab.map.AIMLMap;
-import org.alicebot.ab.utils.*;
+import org.alicebot.ab.utils.CalendarUtils;
+import org.alicebot.ab.utils.DomUtils;
+import org.alicebot.ab.utils.IOUtils;
+import org.alicebot.ab.utils.IntervalUtils;
+import org.alicebot.ab.utils.JapaneseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
