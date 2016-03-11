@@ -58,8 +58,8 @@ public final class AIMLMapBuilder {
 
     private static Map<String, String> extractValues(Path path) throws IOException {
         return Files.lines(path).map(l -> l.split(":")).filter(l -> l.length >= 2)
-            .collect(Collectors.toMap(a -> a[0], a -> a[1], (v1, v2) -> {
-                logger.warn("Duplicate values in {}: {}, {}", path, v1, v2);
+            .collect(Collectors.toMap(a -> a[0].toUpperCase(), a -> a[1], (v1, v2) -> {
+                logger.debug("Duplicate values in {}: {}, {}", path, v1, v2);
                 return v2;
             }));
     }
