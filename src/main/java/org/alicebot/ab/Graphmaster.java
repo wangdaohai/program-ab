@@ -114,13 +114,13 @@ public class Graphmaster {
         }
         }*/
         //
-        Path p = Path.sentenceToPath(inputThatTopic);
+        Path p = Path.fromSentence(inputThatTopic);
         addPath(p, category);
         categoryCnt++;
     }
 
     private boolean thatStarTopicStar(Path path) {
-        String tail = Path.pathToSentence(path).trim();
+        String tail = Path.toSentence(path).trim();
         //System.out.println("thatStarTopicStar "+tail+" "+tail.equals("<THAT> * <TOPIC> *"));
         return "<THAT> * <TOPIC> *".equals(tail);
     }
@@ -158,7 +158,7 @@ public class Graphmaster {
      * @param category AIML Category
      */
     private void addPath(Nodemapper node, Path path, Category category) {
-        //if (path != null) System.out.println("Enable shortcuts = "+enableShortCuts+" path="+Path.pathToSentence(path)+" "+thatStarTopicStar(path));
+        //if (path != null) System.out.println("Enable shortcuts = "+enableShortCuts+" path="+Path.toSentence(path)+" "+thatStarTopicStar(path));
         if (path == null) {
             node.category = category;
             node.height = 0;
@@ -217,7 +217,7 @@ public class Graphmaster {
      * @return leaf node or null if no matching node is found
      */
     private Nodemapper findNode(String input, String that, String topic) {
-        Nodemapper result = findNode(root, Path.sentenceToPath(inputThatTopic(input, that, topic)));
+        Nodemapper result = findNode(root, Path.fromSentence(inputThatTopic(input, that, topic)));
         if (verbose) { logger.debug("findNode {} {}", inputThatTopic(input, that, topic), result); }
         return result;
     }
@@ -237,7 +237,7 @@ public class Graphmaster {
                 logger.debug("findNode: path is null, returning node {}", node.category.inputThatTopic());
             }
             return node;
-        } else if ("<THAT> * <TOPIC> *".equals(Path.pathToSentence(path).trim()) && node.shortCut && "<THAT>".equals(path.word)) {
+        } else if ("<THAT> * <TOPIC> *".equals(Path.toSentence(path).trim()) && node.shortCut && "<THAT>".equals(path.word)) {
             if (verbose) { logger.debug("findNode: shortcut, returning {}", node.category.inputThatTopic()); }
             return node;
         } else if (node.containsKey(path.word)) {
@@ -263,7 +263,7 @@ public class Graphmaster {
         try {
             String inputThatTopic = inputThatTopic(input, that, topic);
             //System.out.println("Matching: "+inputThatTopic);
-            Path p = Path.sentenceToPath(inputThatTopic);
+            Path p = Path.fromSentence(inputThatTopic);
             //p.print();
             n = match(p, inputThatTopic);
             if (logger.isDebugEnabled()) {
@@ -349,7 +349,7 @@ public class Graphmaster {
      */
     private Nodemapper match(Path path, Nodemapper node, String inputThatTopic, String starState, int starIndex, String[] inputStars, String[] thatStars, String[] topicStars, String matchTrace) {
         Nodemapper matchedNode;
-        //System.out.println("Match: Height="+node.height+" Length="+path.length+" Path="+Path.pathToSentence(path));
+        //System.out.println("Match: Height="+node.height+" Length="+path.length+" Path="+Path.toSentence(path));
         matchCount++;
         if ((matchedNode = nullMatch(path, node, matchTrace)) != null) {
             return matchedNode;
@@ -405,7 +405,7 @@ public class Graphmaster {
 
     private Nodemapper shortCutMatch(Path path, Nodemapper node, String inputThatTopic, String starState, int starIndex, String[] inputStars, String[] thatStars, String[] topicStars, String matchTrace) {
         if (node != null && node.shortCut && "<THAT>".equals(path.word) && node.category != null) {
-            String tail = Path.pathToSentence(path).trim();
+            String tail = Path.toSentence(path).trim();
             //System.out.println("Shortcut tail = "+tail);
             String that = tail.substring(tail.indexOf("<THAT>") + "<THAT>".length(), tail.indexOf("<TOPIC>")).trim();
             String topic = tail.substring(tail.indexOf("<TOPIC>") + "<TOPIC>".length(), tail.length()).trim();
@@ -441,7 +441,7 @@ public class Graphmaster {
                 return null;
             }
         } catch (Exception ex) {
-            logger.error("wordMatch error: {}", Path.pathToSentence(path), ex);
+            logger.error("wordMatch error: {}", Path.toSentence(path), ex);
             return null;
         }
     }
@@ -515,7 +515,7 @@ public class Graphmaster {
                 Nodemapper matchedNode;
                 if (nextNode.isLeaf() && !nextNode.shortCut) {
                     matchedNode = nextNode;
-                    starWords = Path.pathToSentence(path);
+                    starWords = Path.toSentence(path);
                     //System.out.println(starIndex+". starwords="+starWords);
                     setStars(starWords, starIndex, starState, inputStars, thatStars, topicStars);
                     return matchedNode;
@@ -535,7 +535,7 @@ public class Graphmaster {
                 }
             }
         } catch (Exception ex) {
-            logger.error("wildMatch error: {}", Path.pathToSentence(path), ex);
+            logger.error("wildMatch error: {}", Path.toSentence(path), ex);
         }
         fail("wild3 " + wildcard, matchTrace);
         return null;

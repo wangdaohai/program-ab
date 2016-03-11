@@ -20,101 +20,38 @@ package org.alicebot.ab;
         Boston, MA  02110-1301, USA.
 */
 
-/**
- * Linked list representation of Pattern Path and Input Path
- */
+/** Linked list representation of Pattern Path and Input Path. */
 public final class Path {
 
-    public String word;
-    public Path next;
-    public int length;
+    public final String word;
+    public final Path next;
+    public final int length;
 
-    /**
-     * Constructor - class has public members
-     */
-    private Path() {
-        next = null;
-        word = null;
-        length = 0;
+    private Path(String word, Path next) {
+        this.word = word;
+        this.next = next;
+        this.length = next == null ? 1 : (next.length + 1);
     }
 
-    /**
-     * convert a sentence (a string consisting of words separated by single spaces) into a Path
-     *
-     * @param sentence sentence to convert
-     * @return sentence in Path form
-     */
-    public static Path sentenceToPath(String sentence) {
-        sentence = sentence.trim();
-        return arrayToPath(sentence.split(" "));
+    /** Convert a sentence (a string consisting of words separated by single spaces) into a Path. */
+    public static Path fromSentence(String sentence) {
+        String[] array = sentence.trim().split(" ");
+        Path head = null;
+        for (int i = array.length - 1; i >= 0; i--) {
+            head = new Path(array[i], head);
+        }
+        return head;
     }
 
-    /**
-     * The inverse of sentenceToPath
-     *
-     * @param path input path
-     * @return sentence
-     */
-    public static String pathToSentence(Path path) {
+    /** The inverse of {@link #fromSentence}. */
+    public static String toSentence(Path path) {
         StringBuilder result = new StringBuilder();
         for (Path p = path; p != null; p = p.next) {
             result.append(" ").append(p.word);
         }
         return result.toString().trim();
-       /* if (path == null) return "";
-        else return path.word+" "+pathToSentence(path.next);*/
     }
 
-    /**
-     * convert an array of strings to a Path
-     *
-     * @param array array of strings
-     * @return sequence of strings as Path
-     */
-    private static Path arrayToPath(String[] array) {
-        Path tail = null;
-        Path head = null;
-        for (int i = array.length - 1; i >= 0; i--) {
-            head = new Path();
-            head.word = array[i];
-            head.next = tail;
-            if (tail == null) {
-                head.length = 1;
-            } else {
-                head.length = tail.length + 1;
-            }
-            tail = head;
-        }
-        return head;
-        //return arrayToPath(array, 0);
-    }
-
-    /**
-     * recursively convert an array to a Path
-     *
-     * @param array array of strings
-     * @param index array index
-     * @return Path form
-     */
-    private static Path arrayToPath(String[] array, int index) {
-        if (index >= array.length) {
-            return null;
-        } else {
-            Path newPath = new Path();
-            newPath.word = array[index];
-            newPath.next = arrayToPath(array, index + 1);
-            if (newPath.next == null) {
-                newPath.length = 1;
-            } else {
-                newPath.length = newPath.next.length + 1;
-            }
-            return newPath;
-        }
-    }
-
-    /**
-     * print a Path
-     */
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
