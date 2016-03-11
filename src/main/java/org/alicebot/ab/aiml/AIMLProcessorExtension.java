@@ -19,10 +19,9 @@ package org.alicebot.ab.aiml;
         Boston, MA  02110-1301, USA.
 */
 
-import org.alicebot.ab.ParseState;
 import org.w3c.dom.Node;
 
-import java.util.Set;
+import java.util.function.Function;
 
 /**
  * The interface needed to implement AIML Extension
@@ -32,19 +31,17 @@ import java.util.Set;
  * XML parse tree for each node associated with a new tag.
  */
 public interface AIMLProcessorExtension {
-    /**
-     * provide the AIMLProcessor with a list of extension tag names.
-     *
-     * @return Set of extension tag names
-     */
-    Set<String> extensionTagSet();
+
+    /** Returns whether the extension can process the tag */
+    boolean canProcessTag(String tagName);
 
     /**
      * recursively evaluate AIML from a node corresponding an extension tag
      *
-     * @param node current XML parse node
-     * @param ps   current parse state
+     * @param node           current XML parse node
+     * @param evalTagContent a function to evaluate a tag content
      * @return result of evaluating AIML
      */
-    String recursEval(Node node, ParseState ps);
+    String recursEval(Node node, Function<Node, String> evalTagContent);
+
 }

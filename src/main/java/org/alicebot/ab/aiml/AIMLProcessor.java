@@ -144,7 +144,7 @@ public final class AIMLProcessor {
      * @param ignoreAttributes tag names to ignore when evaluating the tag.
      * @return the result of evaluating the tag contents.
      */
-    static String evalTagContent(Node node, ParseState ps, Set<String> ignoreAttributes) {
+    private static String evalTagContent(Node node, ParseState ps, Set<String> ignoreAttributes) {
         //MagicBooleans.trace("AIMLProcessor.evalTagContent(node: " + node + ", ps: " + ps + ", ignoreAttributes: " + ignoreAttributes);
         //MagicBooleans.trace("in AIMLProcessor.evalTagContent, node string: " + DomUtils.nodeToString(node));
         StringBuilder result = new StringBuilder();
@@ -172,7 +172,7 @@ public final class AIMLProcessor {
      * @param ps   current parse state
      * @return unevaluated generic XML string
      */
-    static String genericXML(Node node, ParseState ps) {
+    private static String genericXML(Node node, ParseState ps) {
         String evalResult = evalTagContent(node, ps, null);
         return unevaluatedXML(evalResult, node);
     }
@@ -1237,8 +1237,8 @@ public final class AIMLProcessor {
                 return resetlearnf(ps);
             } else if ("resetlearn".equals(nodeName)) {
                 return resetlearn(ps);
-            } else if (extension != null && extension.extensionTagSet().contains(nodeName)) {
-                return extension.recursEval(node, ps);
+            } else if (extension != null && extension.canProcessTag(nodeName)) {
+                return extension.recursEval(node, n -> evalTagContent(node, ps, null));
             } else {
                 return (genericXML(node, ps));
             }
