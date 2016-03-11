@@ -25,6 +25,8 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -45,36 +47,17 @@ public class PCAIMLProcessorExtension implements AIMLProcessorExtension {
         NEW_CONTACT("addinfo") {
             @Override
             public String recursEval(Node node, Function<Node, String> evalTagContent) {
-                NodeList childList = node.getChildNodes();
-                String emailAddress = "unknown";
-                String displayName = "unknown";
-                String dialNumber = "unknown";
-                String emailType = "unknown";
-                String phoneType = "unknown";
-                String birthday = "unknown";
-                for (int i = 0; i < childList.getLength(); i++) {
-                    if ("birthday".equals(childList.item(i).getNodeName())) {
-                        birthday = evalTagContent.apply(childList.item(i));
-                    }
-                    if ("phonetype".equals(childList.item(i).getNodeName())) {
-                        phoneType = evalTagContent.apply(childList.item(i));
-                    }
-                    if ("emailtype".equals(childList.item(i).getNodeName())) {
-                        emailType = evalTagContent.apply(childList.item(i));
-                    }
-                    if ("dialnumber".equals(childList.item(i).getNodeName())) {
-                        dialNumber = evalTagContent.apply(childList.item(i));
-                    }
-                    if ("displayname".equals(childList.item(i).getNodeName())) {
-                        displayName = evalTagContent.apply(childList.item(i));
-                    }
-                    if ("emailaddress".equals(childList.item(i).getNodeName())) {
-                        emailAddress = evalTagContent.apply(childList.item(i));
-                    }
-                }
+                Map<String, String> children = evalChildren(node, evalTagContent);
+                String emailAddress = children.getOrDefault("emailaddress", "unknown");
+                String displayName = children.getOrDefault("displayname", "unknown");
+                String dialNumber = children.getOrDefault("dialnumber", "unknown");
+                String emailType = children.getOrDefault("emailtype", "unknown");
+                String phoneType = children.getOrDefault("phonetype", "unknown");
+                String birthday = children.getOrDefault("birthday", "unknown");
                 logger.info("Adding new contact {} {} {} {} {} {}",
                     displayName, phoneType, dialNumber, emailType, emailAddress, birthday);
                 // the contact adds itself to the contact list
+                //noinspection ResultOfObjectAllocationIgnored
                 new Contact(displayName, phoneType, dialNumber, emailType, emailAddress, birthday);
                 return "";
             }
@@ -103,34 +86,18 @@ public class PCAIMLProcessorExtension implements AIMLProcessorExtension {
         DIAL_NUMBER("dialnumber") {
             @Override
             public String recursEval(Node node, Function<Node, String> evalTagContent) {
-                NodeList childList = node.getChildNodes();
-                String id = "unknown";
-                String type = "unknown";
-                for (int i = 0; i < childList.getLength(); i++) {
-                    if ("id".equals(childList.item(i).getNodeName())) {
-                        id = evalTagContent.apply(childList.item(i));
-                    }
-                    if ("type".equals(childList.item(i).getNodeName())) {
-                        type = evalTagContent.apply(childList.item(i));
-                    }
-                }
+                Map<String, String> children = evalChildren(node, evalTagContent);
+                String id = children.getOrDefault("id", "unknown");
+                String type = children.getOrDefault("type", "unknown");
                 return Contact.dialNumber(type, id);
             }
         },
         EMAIL_ADDRESS("emailaddress") {
             @Override
             public String recursEval(Node node, Function<Node, String> evalTagContent) {
-                NodeList childList = node.getChildNodes();
-                String id = "unknown";
-                String type = "unknown";
-                for (int i = 0; i < childList.getLength(); i++) {
-                    if ("id".equals(childList.item(i).getNodeName())) {
-                        id = evalTagContent.apply(childList.item(i));
-                    }
-                    if ("type".equals(childList.item(i).getNodeName())) {
-                        type = evalTagContent.apply(childList.item(i));
-                    }
-                }
+                Map<String, String> children = evalChildren(node, evalTagContent);
+                String id = children.getOrDefault("id", "unknown");
+                String type = children.getOrDefault("type", "unknown");
                 return Contact.emailAddress(type, id);
             }
         },
@@ -151,6 +118,15 @@ public class PCAIMLProcessorExtension implements AIMLProcessorExtension {
         @Override
         public boolean canProcessTag(String tagName) {
             return this.tagName.equals(tagName);
+        }
+
+        protected Map<String, String> evalChildren(Node node, Function<Node, String> evalTagContent) {
+            NodeList childList = node.getChildNodes();
+            Map<String, String> children = new HashMap<>(childList.getLength());
+            for (int i = 0; i < childList.getLength(); i++) {
+                children.put(childList.item(i).getNodeName(), evalTagContent.apply(childList.item(i)));
+            }
+            return children;
         }
 
     }
