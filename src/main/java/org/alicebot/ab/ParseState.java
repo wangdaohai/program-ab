@@ -25,22 +25,16 @@ package org.alicebot.ab;
 public class ParseState {
     /** node containing the category processed */
     public final Nodemapper leaf;
-    /** client input */
-    public final String input;
     /** bot's last sentence */
     public final String that;
     /** current topic */
     public final String topic;
-    /** client session */
-    public final Chat chatSession;
     /** depth in the parse tree, to prevent runaway recursion */
     public final int depth;
     public final Predicates vars;
     public final StarBindings starBindings;
 
-    public ParseState(int depth, Chat chatSession, String input, String that, String topic, Nodemapper leaf) {
-        this.chatSession = chatSession;
-        this.input = input;
+    public ParseState(int depth, String that, String topic, Nodemapper leaf) {
         this.that = that;
         this.topic = topic;
         this.leaf = leaf;

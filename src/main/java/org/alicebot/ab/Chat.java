@@ -173,7 +173,7 @@ public class Chat {
         inputHistory.add(input);
         if (repetition) {input = REPETITION_DETECTED;}
 
-        String response = AIMLProcessor.respond(input, that, topic, this);
+        String response = new AIMLProcessor(this).respond(input, that, topic);
         //MagicBooleans.trace("in chat.respond(), response: " + response);
         String normResponse = bot.preProcessor.normalize(response);
         //MagicBooleans.trace("in chat.respond(), normResponse: " + normResponse);

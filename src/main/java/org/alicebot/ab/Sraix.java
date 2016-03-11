@@ -61,7 +61,7 @@ public final class Sraix {
         logger.info("Sraix: response = {} defaultResponse = {}", response, defaultResponse);
         if (response.equals(SRAIX_FAILED)) {
             if (chatSession != null && defaultResponse == null) {
-                response = AIMLProcessor.respond(SRAIX_FAILED, "nothing", "nothing", chatSession);
+                response = new AIMLProcessor(chatSession).respond(SRAIX_FAILED, "nothing", "nothing");
             } else if (defaultResponse != null) {
                 response = defaultResponse;
             }
@@ -256,7 +256,7 @@ public final class Sraix {
                 if (hint.equals(EVENT_HINT) && !text.startsWith("<year>")) {
                     return SRAIX_FAILED;
                 } else if (text.equals(SRAIX_FAILED)) {
-                    return AIMLProcessor.respond(SRAIX_FAILED, "nothing", "nothing", chatSession);
+                    return new AIMLProcessor(chatSession).respond(SRAIX_FAILED, "nothing", "nothing");
                 } else {
                     text = text.replace("&#39;", "'");
                     text = text.replace("&apos;", "'");
