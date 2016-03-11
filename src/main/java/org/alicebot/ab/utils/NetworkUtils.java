@@ -1,25 +1,25 @@
 package org.alicebot.ab.utils;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okio.BufferedSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.*;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.Enumeration;
 
 public final class NetworkUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(NetworkUtils.class);
 
-    private NetworkUtils() {}
+    private final OkHttpClient okHttpClient = new OkHttpClient();
 
-    public static String localIPAddress() {
+    public String localIPAddress() {
         try {
             Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
             while (en.hasMoreElements()) {
@@ -41,139 +41,24 @@ public final class NetworkUtils {
         return "127.0.0.1";
     }
 
-    public static String responseContent(String url) throws Exception {
-        HttpClient client = new DefaultHttpClient();
-        HttpGet request = new HttpGet();
-        request.setURI(new URI(url));
-        InputStream is = client.execute(request).getEntity().getContent();
-        BufferedReader inb = new BufferedReader(new InputStreamReader(is));
-        StringBuilder sb = new StringBuilder("");
-        String line;
-        String NL = System.getProperty("line.separator");
-        while ((line = inb.readLine()) != null) {
-            sb.append(line).append(NL);
+    public String responseContent(HttpUrl url) throws IOException {
+        Request request = new Request.Builder().url(url).build();
+        try (BufferedSource body = okHttpClient.newCall(request).execute().body().source()) {
+            return body.readUtf8();
         }
-        inb.close();
-        return sb.toString();
     }
 
-    /*public static String responseContent(String url) throws Exception {
-        String result="";
-
-        // Prepare a request object
-        HttpGet httpget = new HttpGet();
-        httpget.setURI(new URI(url));
-
-        HttpParams httpParameters = new BasicHttpParams();
-// Set the timeout in milliseconds until a connection is established.
-// The default value is zero, that means the timeout is not used.
-        int timeoutConnection = 3000;
-        HttpConnectionParams.setConnectionTimeout(httpParameters, timeoutConnection);
-// Set the default socket timeout (SO_TIMEOUT)
-// in milliseconds which is the timeout for waiting for data.
-        int timeoutSocket = 5000;
-        HttpConnectionParams.setSoTimeout(httpParameters, timeoutSocket);
-
-
-        HttpClient httpclient = new DefaultHttpClient(httpParameters);
-
-
-
-        // Execute the request
-        HttpResponse response = httpclient.execute(httpget);
-
-        // Examine the response status
-        System.out.println(response.getStatusLine());
-
-        // Get hold of the response entity
-        HttpEntity entity = response.getEntity();
-
-        // If the response does not enclose an entity, there is no need
-        // to worry about connection release
-        if (entity != null) {
-            InputStream is = entity.getContent();
-            try {
-                BufferedReader inb = new BufferedReader(new InputStreamReader(is));
-                StringBuilder sb = new StringBuilder("");
-                String line;
-                String NL = System.getProperty("line.separator");
-                while ((line = inb.readLine()) != null) {
-                    sb.append(line).append(NL);
-                }
-                inb.close();
-                result = sb.toString();
-                BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(is));
-                // do something useful with the response
-                System.out.println(reader.readLine());
-
-            } catch (IOException ex) {
-
-                // In case of an IOException the connection will be released
-                // back to the connection manager automatically
-                throw ex;
-
-            } catch (RuntimeException ex) {
-
-                // In case of an unexpected exception you may want to abort
-                // the HTTP request in order to shut down the underlying
-                // connection and release it back to the connection manager.
-                httpget.abort();
-                throw ex;
-
-            } finally {
-
-                // Closing the input stream will trigger connection release
-                is.close();
-
-            }
-
-            // When HttpClient instance is no longer needed,
-            // shut down the connection manager to ensure
-            // immediate deallocation of all system resources
-            httpclient.getConnectionManager().shutdown();
+    public HttpUrl pandoraBotUrl(String host, String botid, String custid, String input) {
+        HttpUrl.Builder builder = new HttpUrl.Builder()
+            .scheme("http")
+            .host(host)
+            .addPathSegment("pandora").addPathSegment("talk-xml")
+            .addQueryParameter("botid", botid)
+            .addQueryParameter("input", input);
+        if (!"0".equals(custid)) {
+            builder.addQueryParameter("custid", custid);
         }
-
-        return result;
-    }*/
-    public static String responseContentUri(URI uri) throws Exception {
-        HttpClient client = new DefaultHttpClient();
-        HttpPost request = new HttpPost();
-        request.setURI(uri);
-        InputStream is = client.execute(request).getEntity().getContent();
-        BufferedReader inb = new BufferedReader(new InputStreamReader(is));
-        StringBuilder sb = new StringBuilder("");
-        String line;
-        String NL = System.getProperty("line.separator");
-        while ((line = inb.readLine()) != null) {
-            sb.append(line).append(NL);
-        }
-        inb.close();
-        return sb.toString();
-    }
-
-    public static String spec(String host, String botid, String custid, String input) {
-        //System.out.println("--> custid = "+custid);
-        String spec = "";
-        try {
-            if ("0".equals(custid)) {    // get custid on first transaction with Pandorabots
-                spec = String.format("%s?botid=%s&input=%s",
-                    "http://" + host + "/pandora/talk-xml",
-                    botid,
-                    URLEncoder.encode(input, "UTF-8"));
-            } else {
-                spec =                 // re-use custid on each subsequent interaction
-                    String.format("%s?botid=%s&custid=%s&input=%s",
-                        "http://" + host + "/pandora/talk-xml",
-                        botid,
-                        custid,
-                        URLEncoder.encode(input, "UTF-8"));
-            }
-        } catch (Exception ex) {
-            logger.error("responseContentUri error", ex);
-        }
-        logger.info(spec);
-        return spec;
+        return builder.build();
     }
 
 }

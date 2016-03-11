@@ -19,6 +19,7 @@ package org.alicebot.ab;
         Boston, MA  02110-1301, USA.
 */
 
+import okhttp3.HttpUrl;
 import org.alicebot.ab.aiml.AIMLProcessor;
 import org.alicebot.ab.utils.CalendarUtils;
 import org.alicebot.ab.utils.IOUtils;
@@ -45,6 +46,8 @@ public final class Sraix {
     private static final String EVENT_HINT = "event";
     private static final String NO_HINT = "nohint";
 
+    private static final NetworkUtils network = new NetworkUtils();
+
     private Sraix() {}
 
     private static Map<String, String> custIdMap = new HashMap<>();
@@ -57,7 +60,9 @@ public final class Sraix {
             response = SRAIX_FAILED;
         } else if (host != null && botid != null) {
             response = sraixPandorabots(input, chatSession, host, botid);
-        } else { response = sraixPannous(input, hint, chatSession); }
+        } else {
+            response = sraixPannous(input, hint, chatSession);
+        }
         logger.info("Sraix: response = {} defaultResponse = {}", response, defaultResponse);
         if (response.equals(SRAIX_FAILED)) {
             if (chatSession != null && defaultResponse == null) {
@@ -84,35 +89,9 @@ public final class Sraix {
             custid = "0";
             String key = host + ":" + botid;
             if (custIdMap.containsKey(key)) { custid = custIdMap.get(key); }
-            //System.out.println("--> custid = "+custid);
-            //System.out.println("Pandorabots Request "+input);
-            String spec = NetworkUtils.spec(host, botid, custid, input);
-            //String fragment = "?botid="+botid+"&custid="+custid+"input="+input;
-            //URI uri = new URI("http", host, "/pandora/talk-xml", fragment);
-       /*     String scheme = "http";
-            String authority = host;
-            String path = "/pandora/talk-xml";
-            String query = "botid="+botid+"&custid="+custid+"&input="+input;
-            String fragment = null;
-            URI uri=null;  String out;
-            try {
-                uri = new URI(scheme, authority, path, query, fragment);
-                out = "\n";
-                out += "URI example:\n";
-                out += "        URI string: "+uri.toString()+"\n";
-                System.out.print(out);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }*/
-            //uri = new URI(spec);
-            //String subInput = input;
-            //while (subInput.contains(" ")) subInput = subInput.replace(" ", "+");
-            //spec = "http://"+host+"/pandora/talk-xml?botid="+botid+"&custid="+custid+"input="+subInput;
+            HttpUrl spec = network.pandoraBotUrl(host, botid, custid, input);
             logger.debug("Spec = {}", spec);
-            // System.out.println("URI="+uri);
-            // http://isengard.pandorabots.com:8008/pandora/talk-xml?botid=835f69388e345ab2&custid=dd3155d18e344a7c&input=%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF
-
-            return NetworkUtils.responseContent(spec);
+            return network.responseContent(spec);
         } catch (Exception ex) {
             logger.error("pandorabotsRequest error", ex);
             return null;
@@ -146,30 +125,27 @@ public final class Sraix {
 
     private static String sraixPannous(String input, String hint, Chat chatSession) {
         try {
-            String rawInput = input;
             if (hint == null) { hint = NO_HINT; }
-            input = " " + input + " ";
-            input = input.replace(" point ", ".");
-            input = input.replace(" rparen ", ")");
-            input = input.replace(" lparen ", "(");
-            input = input.replace(" slash ", "/");
-            input = input.replace(" star ", "*");
-            input = input.replace(" dash ", "-");
-            // input = chatSession.bot.preProcessor.denormalize(input);
-            input = input.trim();
-            input = input.replace(" ", "+");
-            int offset = CalendarUtils.timeZoneOffset();
-            //System.out.println("OFFSET = "+offset);
-            String locationString = "";
+            HttpUrl.Builder builder = new HttpUrl.Builder()
+                .scheme("https").host("ask.pannous.com").addPathSegment("api")
+                .addQueryParameter("input", pannousCleanInput(input)) // chatSession.bot.preProcessor.denormalize(input)
+                .addQueryParameter("locale", "en_US")
+                .addQueryParameter("timezone", String.valueOf(CalendarUtils.timeZoneOffset()))
+                .addQueryParameter("login", MagicStrings.pannous_login)
+                .addQueryParameter("ip", network.localIPAddress())
+                .addQueryParameter("botid", "0")
+                .addQueryParameter("key", MagicStrings.pannous_api_key)
+                .addQueryParameter("exclude", "Dialogues,ChatBot")
+                .addQueryParameter("out", "json")
+                .addQueryParameter("clientFeatures", "show-images,reminder,say")
+                .addQueryParameter("debug", "true");
             if (Chat.locationKnown) {
-                locationString = "&location=" + Chat.latitude + "," + Chat.longitude;
+                builder.addQueryParameter("location", Chat.latitude + "," + Chat.longitude);
             }
-            // https://weannie.pannous.com/api?input=when+is+daylight+savings+time+in+the+us&locale=en_US&login=pandorabots&ip=169.254.178.212&botid=0&key=CKNgaaVLvNcLhDupiJ1R8vtPzHzWc8mhIQDFSYWj&exclude=Dialogues,ChatBot&out=json
-            // exclude=Dialogues,ChatBot&out=json&clientFeatures=show-images,reminder,say&debug=true
-            String url = "https://ask.pannous.com/api?input=" + input + "&locale=en_US&timeZone=" + offset + locationString + "&login=" + MagicStrings.pannous_login + "&ip=" + NetworkUtils.localIPAddress() + "&botid=0&key=" + MagicStrings.pannous_api_key + "&exclude=Dialogues,ChatBot&out=json&clientFeatures=show-images,reminder,say&debug=true";
-            logger.debug("in Sraix.sraixPannous, url: '{}'", url);
-            String page = NetworkUtils.responseContent(url);
-            //MagicBooleans.trace("in Sraix.sraixPannous, page: " + page);
+
+            HttpUrl url = builder.build();
+            logger.debug("in Sraix.sraixPannous, url: {}", url);
+            String page = network.responseContent(url);
             String text = "";
             if (page == null || page.isEmpty()) {
                 text = SRAIX_FAILED;
@@ -271,7 +247,7 @@ public final class Sraix {
 
                     clippedPage = clippedPage + " " + imgRef + " " + urlRef;
                     clippedPage = clippedPage.trim();
-                    log(rawInput, clippedPage);
+                    log(input, clippedPage);
                     return clippedPage;
                 }
             }
@@ -280,6 +256,17 @@ public final class Sraix {
         }
         return SRAIX_FAILED;
     } // sraixPannous
+
+    private static String pannousCleanInput(String input) {
+        return (" " + input + " ")
+            .replace(" point ", ".")
+            .replace(" rparen ", ")")
+            .replace(" lparen ", "(")
+            .replace(" slash ", "/")
+            .replace(" star ", "*")
+            .replace(" dash ", "-")
+            .trim();
+    }
 
     private static void log(String pattern, String template) {
         logger.info("Logging {}", pattern);
