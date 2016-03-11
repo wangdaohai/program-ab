@@ -3,13 +3,23 @@ package org.alicebot.ab;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.TextStyle;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
 public class ChatTest {
 
+    public static final long BOT_AGE = ChronoUnit.YEARS.between(LocalDate.of(2012, 10, 9), LocalDate.now());
+    public static final String CURRENT_MONTH = LocalDate.now().getMonth().getDisplayName(TextStyle.FULL, Locale.US);
+    public static final String NEXT_YEAR = String.valueOf(LocalDateTime.now().getYear() + 1);
     private final Logger logger = LoggerFactory.getLogger(ChatTest.class);
 
-    private Bot bot;
-    private Chat chatSession;
-    private String[][] pairs = {
+    private final Chat chatSession;
+    private final String[][] pairs = {
         // Mitsuku demo
         {"wen iz ur bd", "My birthday is October 9"},
         {"I am Stephen Peter Worswick", "Stephen"},
@@ -19,7 +29,8 @@ public class ChatTest {
         {"Who is she?", "She is who"},
         {"What do you know about me?", "age: 43"},
         {"Play me a song by Elvis Presley", "Now loading your choice of music"},
-        {"what is 5+2-1*3", "4.0"},
+        {"what is 5+2-1*3", "4"},
+        {"what is 8/3", "2.666"},
         {"Peter is taller than Sue but shorter than Harry", "Harry"},
         {"Who is shorter than Harry", "Peter, Sue"},
         {"is sue taller than Harry", "No"},
@@ -56,7 +67,7 @@ public class ChatTest {
         {"my friend John threw a ball", "For fun?"},
         {"what did John do", "threw a ball"},
         {"who threw a ball", "John"},
-        {"my birthday is January 2nd 1970", "44 years old"},
+        {"my birthday is January 2nd 1970", ChronoUnit.YEARS.between(LocalDate.of(1970, 1, 2), LocalDate.now()) + " years old"},
 
         {"Jane was in a car for 14 hours.", "Can you tell me why she was it?"},
         {"who was in a car for 14 hours?", "Jane"},
@@ -82,7 +93,7 @@ public class ChatTest {
 
         // CBC 2001
         //  {"How is it going?","xxx"},
-        {"How old are you?", "1 years old"},
+        {"How old are you?", BOT_AGE + " years old"},
         {"Are you male or female?", "female"},
         {"What is your favorite color?", "green"},
         {"Are you a bot?", "robot"},
@@ -125,7 +136,7 @@ public class ChatTest {
         //   {"Tell me a poem.","xxx"},
         {"Who is your mother?", "As a robot, I don't really have a mother."},
         {"How tall are you?", "My height is 4.7 inches."},
-        {"What is seventeen plus thirty?", "47.0"},
+        {"What is seventeen plus thirty?", "47"},
         //   {"Do you have a computer at home?","xxx"},
         {"What nationality are you?", "USA"},
         {"Can you win this contest?", "I am smarter than all the other robots."},
@@ -133,9 +144,9 @@ public class ChatTest {
         {"What time is it?", "The time is"},
         {"What round is this?", "I've lost track."},
         {"Is it morning, noon, or night?", "It is"},
-        {"What month of the year is it?", "July"},
+        {"What month of the year is it?", CURRENT_MONTH},
         //      {"What day will it be tomorrow?","xxx"},
-        {"What year will it be next year", "2015"},
+        {"What year will it be next year", NEXT_YEAR},
         {"What would I use a hammer for?", "to hit nails"},
         {"What would I do with a screwdriver?", "to tighten screws"},
         {"Of what use is a taxi", "transport us"},
@@ -150,7 +161,7 @@ public class ChatTest {
         {"Do you know what game Harold likes to play?", "tennis"},
         // 2009 Questions
         {"What is the Loebner Prize?", "The Loebner Prize is an annual Turing Test sponsored by Hugh Loebner."},
-        {"How old are you?", "I am 1 years old"},
+        {"How old are you?", "I am " + BOT_AGE + " years old"},
         {"What color is a green ball?", "green"},
         //    {"Do you like cake?","Just keep me charged up."},
         {"what is 6 plus 7?", "13"},
@@ -198,7 +209,7 @@ public class ChatTest {
         // 2011 Questions
         {"My name is Ed. What is your name?", "ALICE 2.0"},
         {"Which is larger, an ant or an anteater?", "Anteater is larger."},
-        {"What month of the year is it?", "July"},
+        {"What month of the year is it?", CURRENT_MONTH},
         {"What is my name?", "Ed"},
         {"Dave is older than Steve but Steve is older than Jane. Who is youngest, Steve or Jane?", "Jane is younger."},
         //  {"What day will it be tomorrow?","xxx"},
@@ -211,10 +222,10 @@ public class ChatTest {
         {"What would I do with a screwdriver?", "to tighten screws"},
         {"How many letters are in the word 'banana'?", "6 letters"},
         {"Have you watched a good film lately?", "Right now my favorite movie is"},
-        {"What year will it be next year", "2015"},
+        {"What year will it be next year", NEXT_YEAR},
         {"What's your favorite fruit?", "Apple"},
         // {"Do you prefer white or black coffee?","xxx"},
-        {"How old are you?", "I am 1 years old"},
+        {"How old are you?", "I am " + BOT_AGE + " years old"},
         {"The football was kicked by Fred. Who kicked the football?", "Fred"},
 
         // 2012 Questions
@@ -222,8 +233,8 @@ public class ChatTest {
         {"How many letters are there in the name Bill?", "The word Bill has 4 letters."},
         {"How many letters are there in my name?", "The word \"Bill\" has 4 letters."},
         {"Which is larger, an apple or a watermelon?", "Watermelon is larger."},
-        {"How much is 3 + 2?", "5.0"},
-        {"How much is three plus two?", "5.0"},
+        {"How much is 3 + 2?", "5"},
+        {"How much is three plus two?", "5"},
         {"What is my name?", "Bill."},
         {"If John is taller than Mary, who is the shorter?", "Mary is shorter."},
         {"If it were 3:15 AM now, what time would it be in 60 minutes?", "4:15 AM"},
@@ -259,20 +270,29 @@ public class ChatTest {
     };
 
     public ChatTest(Bot bot) {
-        this.bot = bot;
         this.chatSession = new Chat(bot);
     }
 
     public void testMultisentenceRespond() {
 
+        int errors = 0;
+        List<Long> times = new ArrayList<>();
         for (String[] pair : pairs) {
             String request = pair[0];
             String expected = pair[1];
+            long before = System.currentTimeMillis();
             String actual = chatSession.multisentenceRespond(request);
+            times.add(System.currentTimeMillis() - before);
             if (!actual.contains(expected)) {
-                throw new IllegalStateException(actual + " should contain" + expected);
+                logger.error("In response to '{}': expected '{}', got '{}'", request, expected, actual);
+                errors++;
             }
         }
-        logger.info("Passed {} test cases.", pairs.length);
+        if (errors > 0) {
+            logger.error("got {} errors on {} test cases", errors, pairs.length);
+        } else {
+            logger.info("Passed {} test cases.", pairs.length);
+        }
+        logger.info(times.stream().mapToLong(a -> a).summaryStatistics().toString());
     }
 }

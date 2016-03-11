@@ -63,7 +63,7 @@ public final class Sraix {
         } else {
             response = sraixPannous(input, hint, chatSession);
         }
-        logger.info("Sraix: response = {} defaultResponse = {}", response, defaultResponse);
+        logger.debug("Sraix: response = {} defaultResponse = {}", response, defaultResponse);
         if (response.equals(SRAIX_FAILED)) {
             if (chatSession != null && defaultResponse == null) {
                 response = new AIMLProcessor(chatSession).respond(SRAIX_FAILED, "nothing", "nothing");
