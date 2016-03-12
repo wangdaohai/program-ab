@@ -17,7 +17,7 @@ public class ExternalMap extends AIMLMap {
     @Override
     public String get(String key) {
         String query = name().toUpperCase() + " " + key;
-        String response = Sraix.sraix(null, query, AIMLDefault.default_map, null, host, botId, null, "0");
+        String response = Sraix.sraix(null, query, AIMLDefault.default_map, null, host, botId);
         return response == null ? AIMLDefault.default_map : response;
     }
 

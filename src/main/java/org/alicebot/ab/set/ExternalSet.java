@@ -30,7 +30,7 @@ public class ExternalSet extends AIMLSet {
         if (outCache.contains(s)) { return true; }
         if (s.split(" ").length > maxLength) { return false; }
         String query = SET_MEMBER_STRING + name().toUpperCase() + " " + s;
-        String response = Sraix.sraix(null, query, "false", null, host, botId, null, "0");
+        String response = Sraix.sraix(null, query, "false", null, host, botId);
         //System.out.println("External "+name+" contains "+s+"? "+response);
         if ("true".equals(response)) {
             inCache.add(s);

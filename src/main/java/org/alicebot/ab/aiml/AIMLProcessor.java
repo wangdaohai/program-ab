@@ -313,10 +313,9 @@ public final class AIMLProcessor {
         String host = getAttributeOrTagValue(node, ps, "host");
         String botid = getAttributeOrTagValue(node, ps, "botid");
         String hint = getAttributeOrTagValue(node, ps, "hint");
-        String limit = getAttributeOrTagValue(node, ps, "limit");
         String defaultResponse = getAttributeOrTagValue(node, ps, "default");
         String evalResult = evalTagContent(node, ps, attributeNames);
-        return Sraix.sraix(chatSession, evalResult, defaultResponse, hint, host, botid, null, limit);
+        return Sraix.sraix(chatSession, evalResult, defaultResponse, hint, host, botid);
 
     }
 

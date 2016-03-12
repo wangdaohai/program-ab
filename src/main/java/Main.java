@@ -22,7 +22,6 @@
 import org.alicebot.ab.AB;
 import org.alicebot.ab.Bot;
 import org.alicebot.ab.Category;
-import org.alicebot.ab.Chat;
 import org.alicebot.ab.ChatTest;
 import org.alicebot.ab.Graphmaster;
 import org.alicebot.ab.MagicBooleans;
@@ -44,8 +43,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -216,19 +213,6 @@ public final class Main {
             }
         } catch (Exception ex) {
             logger.error("getGlossFromInputStream error", ex);
-        }
-    }
-
-    public static void sraixCache(String filename, Chat chatSession) {
-        try {
-            Files.lines(Paths.get(filename)).limit(1000).forEach(strLine -> {
-                logger.info("Human: {}", strLine);
-
-                String response = chatSession.multisentenceRespond(strLine);
-                logger.info("Robot: {}", response);
-            });
-        } catch (Exception ex) {
-            logger.error("sraixCache error", ex);
         }
     }
 

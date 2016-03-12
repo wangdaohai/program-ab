@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -40,6 +40,9 @@ import java.util.regex.Pattern;
 public final class Sraix {
 
     private static final Logger logger = LoggerFactory.getLogger(Sraix.class);
+
+    public static final int MAX_CLIPPED_PAGE_SIZE = 500;
+
     private static final String SRAIX_FAILED = "SRAIXFAILED";
     private static final String SHOPPING_HINT = "shopping";
     private static final String PIC_HINT = "pic";
@@ -47,19 +50,16 @@ public final class Sraix {
     private static final String NO_HINT = "nohint";
 
     private static final NetworkUtils network = new NetworkUtils();
+    private static final Map<String, String> custIdMap = new HashMap<>();
 
     private Sraix() {}
 
-    private static Map<String, String> custIdMap = new HashMap<>();
-
-    private static String custid = "1"; // customer ID number for Pandorabots
-
-    public static String sraix(Chat chatSession, String input, String defaultResponse, String hint, String host, String botid, String apiKey, String limit) {
+    public static String sraix(Chat chatSession, String input, String defaultResponse, String hint, String host, String botid) {
         String response;
         if (!MagicBooleans.enable_network_connection) {
             response = SRAIX_FAILED;
         } else if (host != null && botid != null) {
-            response = sraixPandorabots(input, chatSession, host, botid);
+            response = sraixPandorabots(input, host, botid);
         } else {
             response = sraixPannous(input, hint, chatSession);
         }
@@ -74,19 +74,19 @@ public final class Sraix {
         return response;
     }
 
-    private static String sraixPandorabots(String input, Chat chatSession, String host, String botid) {
+    private static String sraixPandorabots(String input, String host, String botid) {
         //System.out.println("Entering SRAIX with input="+input+" host ="+host+" botid="+botid);
         String responseContent = pandorabotsRequest(input, host, botid);
         if (responseContent == null) {
             return SRAIX_FAILED;
         } else {
-            return pandorabotsResponse(responseContent, chatSession, host, botid);
+            return pandorabotsResponse(responseContent, host, botid);
         }
     }
 
     private static String pandorabotsRequest(String input, String host, String botid) {
         try {
-            custid = "0";
+            String custid = "0";
             String key = host + ":" + botid;
             if (custIdMap.containsKey(key)) { custid = custIdMap.get(key); }
             HttpUrl spec = network.pandoraBotUrl(host, botid, custid, input);
@@ -98,7 +98,7 @@ public final class Sraix {
         }
     }
 
-    private static String pandorabotsResponse(String sraixResponse, Chat chatSession, String host, String botid) {
+    private static String pandorabotsResponse(String sraixResponse, String host, String botid) {
         String botResponse = SRAIX_FAILED;
         try {
             int n1 = sraixResponse.indexOf("<that>");
@@ -107,7 +107,7 @@ public final class Sraix {
             if (n2 > n1) { botResponse = sraixResponse.substring(n1 + "<that>".length(), n2); }
             n1 = sraixResponse.indexOf("custid=");
             if (n1 > 0) {
-                custid = sraixResponse.substring(n1 + "custid=\"".length(), sraixResponse.length());
+                String custid = sraixResponse.substring(n1 + "custid=\"".length(), sraixResponse.length());
                 n2 = custid.indexOf('\"');
                 custid = n2 > 0 ? custid.substring(0, n2) : "0";
                 String key = host + ":" + botid;
@@ -146,110 +146,109 @@ public final class Sraix {
             HttpUrl url = builder.build();
             logger.debug("in Sraix.sraixPannous, url: {}", url);
             String page = network.responseContent(url);
-            String text = "";
             if (page == null || page.isEmpty()) {
+                return SRAIX_FAILED;
+            }
+            JSONArray outputJson = new JSONObject(page).getJSONArray("output");
+            //MagicBooleans.trace("in Sraix.sraixPannous, outputJson class: " + outputJson.getClass() + ", outputJson: " + outputJson);
+            String imgRef = "";
+            String urlRef = "";
+            String text = "";
+            if (outputJson.length() == 0) {
                 text = SRAIX_FAILED;
             } else {
-                JSONArray outputJson = new JSONObject(page).getJSONArray("output");
-                //MagicBooleans.trace("in Sraix.sraixPannous, outputJson class: " + outputJson.getClass() + ", outputJson: " + outputJson);
-                String imgRef = "";
-                String urlRef = "";
-                if (outputJson.length() == 0) {
-                    text = SRAIX_FAILED;
-                } else {
-                    JSONObject firstHandler = outputJson.getJSONObject(0);
-                    //MagicBooleans.trace("in Sraix.sraixPannous, firstHandler class: " + firstHandler.getClass() + ", firstHandler: " + firstHandler);
-                    JSONObject actions = firstHandler.getJSONObject("actions");
-                    //MagicBooleans.trace("in Sraix.sraixPannous, actions class: " + actions.getClass() + ", actions: " + actions);
-                    if (actions.has("reminder")) {
-                        //MagicBooleans.trace("in Sraix.sraixPannous, found reminder action");
-                        Object obj = actions.get("reminder");
-                        if (obj instanceof JSONObject) {
-                            logger.debug("Found JSON Object");
-                            JSONObject sObj = (JSONObject) obj;
-                            String date = sObj.getString("date");
-                            date = date.substring(0, "2012-10-24T14:32".length());
-                            logger.debug("date={}", date);
-                            String duration = sObj.getString("duration");
-                            logger.debug("duration={}", duration);
+                JSONObject firstHandler = outputJson.getJSONObject(0);
+                //MagicBooleans.trace("in Sraix.sraixPannous, firstHandler class: " + firstHandler.getClass() + ", firstHandler: " + firstHandler);
+                JSONObject actions = firstHandler.getJSONObject("actions");
+                //MagicBooleans.trace("in Sraix.sraixPannous, actions class: " + actions.getClass() + ", actions: " + actions);
+                if (actions.has("reminder")) {
+                    //MagicBooleans.trace("in Sraix.sraixPannous, found reminder action");
+                    Object obj = actions.get("reminder");
+                    if (obj instanceof JSONObject) {
+                        logger.debug("Found JSON Object");
+                        JSONObject sObj = (JSONObject) obj;
+                        String date = sObj.getString("date");
+                        date = date.substring(0, "2012-10-24T14:32".length());
+                        logger.debug("date={}", date);
+                        String duration = sObj.getString("duration");
+                        logger.debug("duration={}", duration);
 
-                            Pattern datePattern = Pattern.compile("(.*)-(.*)-(.*)T(.*):(.*)");
-                            Matcher m = datePattern.matcher(date);
-                            if (m.matches()) {
-                                String year = m.group(1);
-                                String month = String.valueOf(Integer.parseInt(m.group(2)) - 1);
-                                String day = m.group(3);
+                        Pattern datePattern = Pattern.compile("(.*)-(.*)-(.*)T(.*):(.*)");
+                        Matcher m = datePattern.matcher(date);
+                        if (m.matches()) {
+                            String year = m.group(1);
+                            String month = String.valueOf(Integer.parseInt(m.group(2)) - 1);
+                            String day = m.group(3);
 
-                                String hour = m.group(4);
-                                String minute = m.group(5);
-                                text = "<year>" + year + "</year>" +
-                                    "<month>" + month + "</month>" +
-                                    "<day>" + day + "</day>" +
-                                    "<hour>" + hour + "</hour>" +
-                                    "<minute>" + minute + "</minute>" +
-                                    "<duration>" + duration + "</duration>";
+                            String hour = m.group(4);
+                            String minute = m.group(5);
+                            text = "<year>" + year + "</year>" +
+                                "<month>" + month + "</month>" +
+                                "<day>" + day + "</day>" +
+                                "<hour>" + hour + "</hour>" +
+                                "<minute>" + minute + "</minute>" +
+                                "<duration>" + duration + "</duration>";
 
-                            } else {
-                                text = StandardResponse.SCHEDULE_ERROR;
-                            }
-                        }
-                    } else if (actions.has("say") && !hint.equals(PIC_HINT) && !hint.equals(SHOPPING_HINT)) {
-                        logger.debug("in Sraix.sraixPannous, found say action");
-                        Object obj = actions.get("say");
-                        //MagicBooleans.trace("in Sraix.sraixPannous, obj class: " + obj.getClass());
-                        //MagicBooleans.trace("in Sraix.sraixPannous, obj instanceof JSONObject: " + (obj instanceof JSONObject));
-                        if (obj instanceof JSONObject) {
-                            JSONObject sObj = (JSONObject) obj;
-                            text = sObj.getString("text");
-                            if (sObj.has("moreText")) {
-                                JSONArray arr = sObj.getJSONArray("moreText");
-                                for (int i = 0; i < arr.length(); i++) {
-                                    text += " " + arr.getString(i);
-                                }
-                            }
                         } else {
-                            text = obj.toString();
+                            text = StandardResponse.SCHEDULE_ERROR;
                         }
                     }
-                    if (actions.has("show") && !text.contains("Wolfram")
-                        && actions.getJSONObject("show").has("images")) {
-                        logger.debug("in Sraix.sraixPannous, found show action");
-                        JSONArray arr = actions.getJSONObject("show").getJSONArray(
-                            "images");
-                        int i = (int) (arr.length() * Math.random());
-                        //for (int j = 0; j < arr.length(); j++) System.out.println(arr.getString(j));
-                        imgRef = arr.getString(i);
-                        if (imgRef.startsWith("//")) { imgRef = "http:" + imgRef; }
-                        imgRef = "<a href=\"" + imgRef + "\"><img src=\"" + imgRef + "\"/></a>";
-                        //System.out.println("IMAGE REF="+imgRef);
-
-                    }
-                    if (hint.equals(SHOPPING_HINT) && actions.has("open") && actions.getJSONObject("open").has("url")) {
-                        urlRef = "<oob><url>" + actions.getJSONObject("open").getString("url") + "</oob></url>";
-
+                } else if (actions.has("say") && !hint.equals(PIC_HINT) && !hint.equals(SHOPPING_HINT)) {
+                    logger.debug("in Sraix.sraixPannous, found say action");
+                    Object obj = actions.get("say");
+                    //MagicBooleans.trace("in Sraix.sraixPannous, obj class: " + obj.getClass());
+                    //MagicBooleans.trace("in Sraix.sraixPannous, obj instanceof JSONObject: " + (obj instanceof JSONObject));
+                    if (obj instanceof JSONObject) {
+                        JSONObject sObj = (JSONObject) obj;
+                        text = sObj.getString("text");
+                        if (sObj.has("moreText")) {
+                            JSONArray arr = sObj.getJSONArray("moreText");
+                            for (int i = 0; i < arr.length(); i++) {
+                                text += " " + arr.getString(i);
+                            }
+                        }
+                    } else {
+                        text = obj.toString();
                     }
                 }
-                if (hint.equals(EVENT_HINT) && !text.startsWith("<year>")) {
-                    return SRAIX_FAILED;
-                } else if (text.equals(SRAIX_FAILED)) {
-                    return new AIMLProcessor(chatSession).respond(SRAIX_FAILED, "nothing", "nothing");
-                } else {
-                    text = text.replace("&#39;", "'");
-                    text = text.replace("&apos;", "'");
-                    text = text.replaceAll("\\[(.*)\\]", "");
-                    String[] sentences = text.split("\\. ");
-                    //System.out.println("Sraix: text has "+sentences.length+" sentences:");
-                    String clippedPage = sentences[0];
-                    for (int i = 1; i < sentences.length; i++) {
-                        if (clippedPage.length() < 500) { clippedPage = clippedPage + ". " + sentences[i]; }
-                        //System.out.println(i+". "+sentences[i]);
-                    }
+                if (actions.has("show") && !text.contains("Wolfram")
+                    && actions.getJSONObject("show").has("images")) {
+                    logger.debug("in Sraix.sraixPannous, found show action");
+                    JSONArray arr = actions.getJSONObject("show").getJSONArray(
+                        "images");
+                    int i = (int) (arr.length() * Math.random());
+                    //for (int j = 0; j < arr.length(); j++) System.out.println(arr.getString(j));
+                    imgRef = arr.getString(i);
+                    if (imgRef.startsWith("//")) { imgRef = "http:" + imgRef; }
+                    imgRef = "<a href=\"" + imgRef + "\"><img src=\"" + imgRef + "\"/></a>";
+                    //System.out.println("IMAGE REF="+imgRef);
 
-                    clippedPage = clippedPage + " " + imgRef + " " + urlRef;
-                    clippedPage = clippedPage.trim();
-                    log(input, clippedPage);
-                    return clippedPage;
                 }
+                if (hint.equals(SHOPPING_HINT) && actions.has("open") && actions.getJSONObject("open").has("url")) {
+                    urlRef = "<oob><url>" + actions.getJSONObject("open").getString("url") + "</oob></url>";
+
+                }
+            }
+            if (hint.equals(EVENT_HINT) && !text.startsWith("<year>")) {
+                return SRAIX_FAILED;
+            } else if (text.equals(SRAIX_FAILED)) {
+                return new AIMLProcessor(chatSession).respond(SRAIX_FAILED, "nothing", "nothing");
+            } else {
+                text = text.replace("&#39;", "'");
+                text = text.replace("&apos;", "'");
+                text = text.replaceAll("\\[(.*)\\]", "");
+                String[] sentences = text.split("\\. ");
+                //System.out.println("Sraix: text has "+sentences.length+" sentences:");
+                StringBuilder clippedPage = new StringBuilder(sentences[0]);
+                for (int i = 1; i < sentences.length; i++) {
+                    if (clippedPage.length() >= MAX_CLIPPED_PAGE_SIZE) { break; }
+                    clippedPage.append(". ").append(sentences[i]);
+                }
+
+                clippedPage.append(" ").append(imgRef).append(" ").append(urlRef);
+                String result = clippedPage.toString().trim();
+                log(input, result);
+                return result;
             }
         } catch (Exception ex) {
             logger.error("Sraix '{}' failed", input, ex);
@@ -280,7 +279,7 @@ public final class Sraix {
                     template = template.trim();
                     if (!template.isEmpty()) {
                         Files.write(IOUtils.rootPath.resolve("bots/sraixcache/aimlif/sraixcache.aiml.csv"),
-                            Arrays.asList("0," + pattern + ",*,*," + template + ",sraixcache.aiml"),
+                            Collections.singleton("0," + pattern + ",*,*," + template + ",sraixcache.aiml"),
                             StandardOpenOption.APPEND);
                     }
                 }
